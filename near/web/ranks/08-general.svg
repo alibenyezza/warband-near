@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" role="img" aria-label="Warband rank 8: General">
+  <title>Warband rank 8: General</title>
+  <path d="M100 8 L184 38 V120 C184 172 146 210 100 232 C54 210 16 172 16 120 V38 Z" fill="#0b0a09" stroke="#a3221b" stroke-width="8"/>
+  <path d="M100 26 L166 50 V118 C166 160 136 191 100 210 C64 191 34 160 34 118 V50 Z" fill="#a3221b" opacity="0.18"/>
+  <circle cx="84" cy="66" r="5" fill="#ece4d2"/><circle cx="100" cy="66" r="5" fill="#ece4d2"/><circle cx="116" cy="66" r="5" fill="#ece4d2"/>
+  <text x="100" y="112" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="38" font-weight="700" fill="#ece4d2">8</text>
+  <path d="M70 150 L100 132 L130 150" fill="none" stroke="#ece4d2" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M70 137 L100 119 L130 137" fill="none" stroke="#ece4d2" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M70 124 L100 106 L130 124" fill="none" stroke="#ece4d2" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M70 111 L100 93 L130 111" fill="none" stroke="#ece4d2" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M70 98 L100 80 L130 98" fill="none" stroke="#ece4d2" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="100" y="196" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="15" letter-spacing="2" fill="#ece4d2">GENERAL</text>
+</svg>

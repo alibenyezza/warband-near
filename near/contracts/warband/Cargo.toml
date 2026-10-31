@@ -9,15 +9,8 @@ repository = "https://github.com/alibenyezza/warband-near"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[package.metadata.near.reproducible_build]
-image = "sourcescan/cargo-near:0.22.0-rust-1.95.0"
-image_digest = ""
-passed_env = []
-container_build_command = ["cargo", "near", "build", "non-reproducible-wasm", "--locked"]
-
 [dependencies]
 near-sdk = "5.30.0"
-near-contract-standards = "5.30.0"
 uint = { version = "0.10", default-features = false }
 
 [dev-dependencies]

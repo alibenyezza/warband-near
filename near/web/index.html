@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WARBAND · testnet</title>
+  <meta name="description" content="WARBAND: a NEAR memecoin where holders level up the longer they hold. Live testnet state.">
+  <link rel="icon" href="assets/seal-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="#top"><img src="assets/seal-icon.svg" alt="" width="30" height="30"><span>WARBAND</span></a>
+    <nav>
+      <a href="#market">Market</a>
+      <a href="#rank">Rank</a>
+      <a href="#band">Leaderboard</a>
+      <a href="#chest">War chest</a>
+      <a href="#log">Log</a>
+    </nav>
+    <span class="net" id="net">testnet</span>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <p class="prompt">$ near view <span id="token-id">warband-band.testnet</span> market<span class="cursor"></span></p>
+      <h1>Hold longer, weigh more.</h1>
+      <p class="lede">Every lot of BAND gains a level for each day it is held, up to 10. Your vote in the war chest DAO is
+        Σ lot × level, so a fresh whale weighs nothing and a patient holder decides. Selling only resets what you sell.
+        The rules are in the contract; nobody holds its keys.</p>
+      <div class="facts" id="facts"></div>
+    </section>
+
+    <section id="market" class="panel">
+      <p class="label">// 01 market</p>
+      <h2>Price and floor</h2>
+      <div class="grid six" id="market-grid"><p class="muted">Loading testnet state…</p></div>
+      <p class="note">The buyback opens when the price falls 20% under the recent high (today and yesterday). Anyone,
+        or the keeper agent, can call it; each call spends 10% of the reserve, at most 20% per day, and burns what it
+        buys.</p>
+    </section>
+
+    <section id="rank" class="panel">
+      <p class="label">// 02 rank</p>
+      <h2>Your lots and levels</h2>
+      <form id="lookup" class="lookup">
+        <input id="account" name="account" placeholder="account.testnet" value="warband-alice.testnet" autocomplete="off" spellcheck="false">
+        <button type="submit">Look up</button>
+      </form>
+      <div id="account-view"></div>
+    </section>
+
+    <section id="band" class="panel">
+      <p class="label">// 03 leaderboard</p>
+      <h2>The band, by vote weight</h2>
+      <div class="table-wrap"><table id="holders"><thead><tr><th>#</th><th>Account</th><th>Rank</th><th class="num">Balance</th><th class="num">Weight</th><th class="num">Delegated to DAO</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <section id="chest" class="panel bone">
+      <p class="label">// 04 war chest</p>
+      <h2>The DAO spends it, by level-weighted vote</h2>
+      <div class="grid" id="dao-grid"></div>
+      <div class="table-wrap"><table id="proposals"><thead><tr><th>#</th><th>Kind</th><th>Description</th><th>Status</th><th class="num">Approve</th><th class="num">Reject</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <section id="log" class="panel">
+      <p class="label">// 05 log</p>
+      <h2>Every buy, sell, transfer, buyback and flush</h2>
+      <div class="table-wrap"><table id="history"><thead><tr><th>#</th><th>When</th><th>What</th><th>Account</th><th class="num">NEAR</th><th class="num">BAND</th></tr></thead><tbody></tbody></table></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Read-only view of NEAR testnet, straight from the contracts over RPC. Built at NEAR HACKATHON 2026.
+      <a href="https://github.com/alibenyezza/warband-near">Source</a></p>
+  </footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

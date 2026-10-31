@@ -223,9 +223,9 @@ def main():
     axes[0].set_title("pump_and_dump: price and buyback floor (NEAR per BAND)")
     axes[0].legend()
     rows = results["sybil_split"]
-    axes[1].plot([r["day"] for r in rows], [r["sybil_share"] for r in rows], label="50 split accounts")
-    axes[1].plot([r["day"] for r in rows], [r["solo_share"] for r in rows], label="same bag on 1 account", ls="--")
-    axes[1].set_title("sybil_split: vote share (split on day 25)")
+    axes[1].plot([r["day"] for r in rows], [r["syb_level"] for r in rows], label="bag split across 50 accounts")
+    axes[1].plot([r["day"] for r in rows], [r["solo_level"] for r in rows], label="same bag kept on 1 account", ls="--")
+    axes[1].set_title("sybil_split: vote weight per token (bought day 20, split day 25)")
     axes[1].legend()
     for ax in axes:
         ax.set_xlabel("day")
