@@ -19,6 +19,7 @@
       <a href="#log">Log</a>
     </nav>
     <span class="net" id="net">testnet</span>
+    <button class="connect" id="connect" type="button">Connect wallet</button>
   </header>
 
   <main id="top">
@@ -48,6 +49,13 @@
         <button type="submit">Look up</button>
       </form>
       <div id="account-view"></div>
+      <div class="actions" id="actions">
+        <p class="note">With a testnet wallet connected (HOT, Meteor, Intear, MyNearWallet…), act on the contract from here.</p>
+        <form id="buy-form" class="lookup"><input id="buy-near" type="number" min="0.02" step="0.01" value="0.2" aria-label="NEAR to spend"><button type="submit">Buy with NEAR</button></form>
+        <form id="sell-form" class="lookup"><input id="sell-band" type="number" min="1" step="1" placeholder="BAND to sell" aria-label="BAND to sell"><button type="submit">Sell (youngest lots first)</button></form>
+        <div class="lookup"><button type="button" id="dao-register">Register as DAO voter</button><button type="button" id="sync">Push my weight to the DAO</button></div>
+        <p class="note" id="tx-status" role="status"></p>
+      </div>
     </section>
 
     <section id="band" class="panel">
@@ -75,5 +83,6 @@
       <a href="https://github.com/alibenyezza/warband-near">Source</a></p>
   </footer>
   <script type="module" src="app.js"></script>
+  <script type="module" src="wallet.js"></script>
 </body>
 </html>

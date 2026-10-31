@@ -42,7 +42,9 @@ and Rust for the tests.
 
 1. **See the live state.** Serve the page: `cd near/web && python3 -m http.server 8080`, open http://localhost:8080.
    You see the price and floor, the leaderboard by vote weight (not balance), the war chest and its proposals, and
-   the log of every buy, sell, transfer, buyback and flush. The page only reads testnet over RPC.
+   the log of every buy, sell, transfer, buyback and flush. The page reads testnet over RPC; with a testnet wallet
+   connected (`@hot-labs/near-connect`: HOT, Meteor, Intear, MyNearWallet…) you can also buy, sell, register as a
+   DAO voter and push your weight from the "Rank" section.
 2. **See that size does not buy the vote.** Look at proposal 1 on the page (or
    `near contract call-function as-read-only dao.warband-hq.testnet get_proposal json-args '{"id":1}' network-config testnet now`).
    Bob held 168M BAND, 2.7 times Alice's 62M, and proposed to pay himself 1 NEAR. His fresh tokens were level 0, so
@@ -228,7 +230,7 @@ Hyperliquid and Across, and is not used by the NEAR version.
 - DAO: Sputnik DAO v2, official release binary 3.0.0 (near-daos/sputnik-dao-contract), unmodified.
 - Agent: `near-api-js` 7.4.0, `tsx`, TypeScript.
 - Simulation: Python 3, matplotlib.
-- Page: no framework; fonts Inter and JetBrains Mono (SIL OFL, licenses in `near/web/assets/`).
+- Page: no framework, `@hot-labs/near-connect` 0.12.0 (jsDelivr) for the optional wallet; fonts Inter and JetBrains Mono (SIL OFL, licenses in `near/web/assets/`).
 - Tools: near-cli-rs 0.30.1.
 - AI: the code, scripts and README were written with Claude Code (Anthropic) under the author's direction; every
   on-chain step above was run and checked on testnet.

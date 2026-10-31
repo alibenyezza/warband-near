@@ -102,3 +102,8 @@ td.desc { white-space: normal; min-width: 220px; color: var(--muted); }
 .grid.six { grid-template-columns: repeat(3, 1fr); }
 @media (max-width: 720px) { .grid.six { grid-template-columns: 1fr 1fr; } }
 .badge { width: 34px; height: 40px; vertical-align: middle; margin-right: 10px; }
+.connect { margin-left: 4px; background: var(--wax-hi); color: var(--ink); border: 0; border-radius: 20px; padding: 7px 14px; font-weight: 600; font-size: 12px; cursor: pointer; }
+.actions { margin-top: 26px; padding-top: 18px; border-top: 1px dashed var(--line); }
+.actions .lookup button { background: var(--surface); color: var(--text); border: 1px solid var(--line); }
+.actions .lookup button[type="submit"] { background: var(--wax-hi); color: var(--ink); border: 0; }
+.actions[data-off] form, .actions[data-off] .lookup { opacity: 0.45; pointer-events: none; }
