@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0a09">
+<title>Warchest — Hold longer. Rank higher.</title>
+<meta name="description" content="Every trade fills a shared chest. Every day you hold, you rank up. The higher your rank, the bigger your share. Pre-launch.">
+<meta property="og:title" content="Warchest — Hold longer. Rank higher.">
+<meta property="og:description" content="Every trade fills the chest. Every day you hold, you rank up. Ten ranks. No shortcuts.">
+<meta property="og:image" content="/assets/og.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/seal-icon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="header">
+  <a class="brand" href="#" aria-label="Warchest home"><img src="assets/seal.svg" alt="" width="34" height="34"><img class="wordmark" src="assets/wordmark-bone.svg" alt="Warchest" width="108" height="23"></a>
+  <nav id="navigation" aria-label="Main navigation">
+    <a href="#chest">The chest</a>
+    <a href="#treasury">Treasury</a>
+    <a href="#ranks">Ranks</a>
+    <a href="#status">Status</a>
+    <a href="docs.html">Notes <span>↗</span></a>
+  </nav>
+  <div class="nav-actions">
+    <span class="status"><i></i>PRE-LAUNCH</span>
+    <a class="button button-small" href="/dashboard/?preview=1">Explore app <span>↗</span></a>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="navigation" aria-label="Open menu">☰</button>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-visual"><canvas id="hero-globe" aria-label="Animated globe, tinted in wax red"></canvas></div>
+    <div class="hero-copy">
+      <div class="prompt">warchest <b>~</b> $ <span>hold --until warlord</span><i class="cursor"></i></div>
+      <h1 id="hero-title">Hold longer.<br><em>Rank higher.</em></h1>
+      <p>Every trade fills a shared chest. Every day you hold, you climb a rank. <br>The higher your rank, the bigger your share.</p>
+      <div class="hero-actions">
+        <a class="button" href="/dashboard/?preview=1">Enter Warchest <span>↗</span></a>
+        <a class="text-link" href="#chest">How it works <span>↓</span></a>
+      </div>
+    </div>
+    <div class="globe-controls">
+      <button id="rotate-toggle" aria-label="Pause globe rotation" aria-pressed="false">Ⅱ</button>
+      <button id="zoom-in" aria-label="Zoom in on globe">＋</button>
+      <button id="zoom-out" aria-label="Zoom out of globe">−</button>
+    </div>
+    <div class="hero-bottom"><span><i></i>NO RANK FOR SALE</span><a href="#chest">EXPLORE <span>↓</span></a></div>
+  </section>
+
+  <section class="protocol section-pad" id="chest">
+    <div class="protocol-heading reveal">
+      <p class="label">// 01 — The chest</p>
+      <h2>The market fills it.<br><span>Time decides who it rewards.</span></h2>
+      <img class="protocol-seal" src="assets/seal-mono-bone.svg" alt="" width="150" height="150">
+    </div>
+    <div class="protocol-steps">
+      <article class="protocol-step reveal">
+        <div class="step-figure">10<span>%</span><small>of every trade</small></div>
+        <div><h3>Every trade fills the chest.</h3><p>Every buy and every sell sends 10% to one shared treasury, collected in ETH by a Uniswap v4 hook. Ordinary wallet transfers pay nothing.</p></div>
+      </article>
+      <article class="protocol-step reveal">
+        <div class="step-figure">10<small>ranks, one per day</small></div>
+        <div><h3>Every day you hold, you rank up.</h3><p>Your tokens climb one rank per full day held, from Recruit to Warlord. Sell part of your bag and only the sold part loses its rank: your oldest tokens keep theirs.</p></div>
+      </article>
+      <article class="protocol-step reveal">
+        <div class="step-figure">×R<small>tokens × rank</small></div>
+        <div><h3>Higher rank, bigger share.</h3><p>What the chest earns is shared by tokens × rank. The same bag at rank 10 weighs five times a bag at rank 2. Time is the only way up.</p></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="network" id="treasury">
+    <div class="network-layout">
+      <div class="network-copy reveal">
+        <p class="label">// 02 — The treasury</p>
+        <h2>One chest.<br>It never sleeps.<br><span>It fights back.</span></h2>
+        <p>A shared treasury with three jobs: collect, defend, earn.</p>
+        <div class="segmented" role="group" aria-label="Treasury journey">
+          <button class="active" data-route="0" aria-pressed="true">Fill</button>
+          <button data-route="1" aria-pressed="false">Siege</button>
+          <button data-route="2" aria-pressed="false">Earn</button>
+        </div>
+        <div class="route-detail" aria-live="polite">
+          <span id="route-kicker">01 — FILL</span>
+          <h3 id="route-title">Every trade fills the chest.</h3>
+          <p id="route-description">The hook takes 10% of every buy and every sell through the official pool, always in ETH. Ordinary transfers pay nothing.</p>
+          <div class="route-path"><span id="route-from">Uniswap v4</span><span>⟶</span><span id="route-to">The chest</span></div>
+        </div>
+        <span class="map-note"><i></i>CONCEPTUAL VIEW · NOT LIVE TRANSACTIONS</span>
+      </div>
+      <div class="network-visual"><canvas id="network-globe" aria-label="Wax red globe showing the treasury journey"></canvas></div>
+    </div>
+    <div class="network-footer">
+      <span>The numbers behind the chest.</span>
+      <div><b>−30% <small>arms Siege</small></b><b>50% <small>of each sell bought back</small></b><b>20% <small>liquid reserve</small></b><b>100% <small>of buybacks burned</small></b></div>
+    </div>
+  </section>
+
+  <section class="conviction section-pad" id="ranks">
+    <div class="conviction-grid">
+      <div class="reveal">
+        <p class="label">// 03 — Ranks</p>
+        <h2>Ten ranks.<br><span>No shortcuts.</span></h2>
+        <p class="section-description">Move the slider: one lot of 1,000 $WAR, held for a number of full days. Rank 0 on the day you buy, one rank per full UTC day, capped at 10.</p>
+        <a class="text-link" href="docs.html#ranks">Understand the mechanics <span>↗</span></a>
+        <div class="conviction-note"><span>↳</span><p>Sell a portion, keep your progress.<br><small>Only the sold part loses its rank. Your oldest tokens keep theirs.</small></p></div>
+      </div>
+      <div class="terminal reveal">
+        <div class="terminal-bar"><span>warchest:rank</span><span>1,000 $WAR</span></div>
+        <div class="terminal-body">
+          <div class="terminal-line">$ rank --days <output id="day-output" for="days">7</output></div>
+          <div class="rank-result">
+            <span id="multiplier">07</span>
+            <div><b id="rank-name">Colonel</b><small id="level-caption">RANK 07 / 10</small></div>
+          </div>
+          <div class="level-bars" aria-hidden="true"></div>
+          <label class="slider-label" for="days">Days held</label>
+          <input type="range" id="days" min="0" max="12" step="1" value="7" aria-describedby="level-caption">
+          <div class="range-endpoints"><span>DAY 0</span><span>DAY 12</span></div>
+          <div class="terminal-bottom"><span>share weight</span><strong id="weight">7,000</strong></div>
+          <p class="terminal-note">Your weight in the reward split: a share of what the chest distributes, not a promised return.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="transparency section-pad" id="status">
+    <div class="section-intro reveal">
+      <div><p class="label">// 04 — Status</p><h2>Nothing behind<br><span>the curtain.</span></h2></div>
+      <p>Pre-launch and built in public. Contracts are not deployed and an external audit is pending.</p>
+    </div>
+    <div class="status-grid">
+      <div class="terminal log reveal">
+        <div class="terminal-bar"><span>warchest:status</span><span>main</span></div>
+        <ol class="terminal-body">
+          <li><b class="ok">[ built ]</b> Token and 10% fee hook on Uniswap v4</li>
+          <li><b class="ok">[ built ]</b> Rank tracking per lot, oldest tokens keep their rank</li>
+          <li><b class="ok">[ built ]</b> Treasury vault with on-chain price safeguards</li>
+          <li><b class="wip">[ wip&nbsp;&nbsp; ]</b> Rewards shared by tokens × rank</li>
+          <li><b class="wip">[ wip&nbsp;&nbsp; ]</b> Siege mode: buyback and burn</li>
+          <li><b class="wip">[ wip&nbsp;&nbsp; ]</b> Yield vaults and 20% liquid reserve</li>
+          <li><b>[ todo&nbsp; ]</b> Independent external audit</li>
+          <li><b>[ todo&nbsp; ]</b> Mainnet launch<i class="cursor"></i></li>
+        </ol>
+      </div>
+      <div class="resources">
+        <a href="docs.html" class="resource reveal"><span class="resource-icon">01</span><div><h3>Read the notes.</h3><p>The fee, ranks, rewards, Siege and the treasury, with what is built and what is not.</p></div><b>↗</b></a>
+        <a href="https://github.com/warchest0/warchest" target="_blank" rel="noopener noreferrer" class="resource reveal"><span class="resource-icon">02</span><div><h3>Open code. Real scrutiny.</h3><p>Contracts, indexer and keeper are public. Independent external auditing is still pending.</p></div><b>↗</b></a>
+        <a href="/dashboard/?preview=1" class="resource reveal"><span class="resource-icon">03</span><div><h3>Try the app preview.</h3><p>Ranks, lots and the leaderboard with sample data. Nothing is live yet.</p></div><b>↗</b></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <img class="closing-seal" src="assets/seal-mono-bone.svg" alt="" width="520" height="520">
+    <div class="closing-copy reveal">
+      <span class="label">$WAR · Coming soon</span>
+      <h2>Hold longer.<br>Rank higher.</h2>
+      <a class="button button-light" href="/dashboard/?preview=1">Explore Warchest <span>↗</span></a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-top">
+    <a class="brand" href="#"><img src="assets/seal.svg" alt="" width="34" height="34"><img class="wordmark" src="assets/wordmark-bone.svg" alt="Warchest" width="108" height="23"></a>
+    <span>A treasury that rewards patience.</span>
+    <a href="docs.html">Notes ↗</a>
+    <a href="https://github.com/warchest0/warchest" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+  </div>
+  <div class="footer-bottom">
+    <span>© <span id="year">2026</span> Warchest</span>
+    <span>Pre-launch · Not deployed · External audit pending · Not an offer or investment advice</span>
+    <button id="motion-toggle" aria-pressed="false">Motion: on</button>
+  </div>
+</footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>
