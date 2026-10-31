@@ -5,15 +5,18 @@
 // It cannot do anything else: its key only allows these three methods on the Warband contract, with no deposit.
 // Usage: npm run guardian            (one round)
 //        npm run guardian -- --watch (every 60 s)
-import { teraToGas } from "near-api-js";
+import { actions, teraToGas } from "near-api-js";
 import { agentAccount, log, reason, view, WARBAND, type Holder, type Market } from "./near.js";
 
 const agent = agentAccount();
 
 async function call(methodName: string, args: Record<string, unknown> = {}) {
   try {
-    const tx = await agent.callFunction({ contractId: WARBAND, methodName, args, gas: teraToGas("60") });
-    log("ok", { method: methodName, args, result: tx ?? null });
+    const tx = await agent.signAndSendTransaction({
+      receiverId: WARBAND,
+      actions: [actions.functionCall(methodName, args, teraToGas("60"), 0n)],
+    });
+    log("ok", { method: methodName, args, tx: tx.transaction.hash });
     return true;
   } catch (e) {
     log("refused", { method: methodName, args, reason: reason(e) });
