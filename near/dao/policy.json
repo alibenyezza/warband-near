@@ -1,0 +1,43 @@
+{
+  "roles": [
+    {
+      "name": "everyone",
+      "kind": "Everyone",
+      "permissions": ["*:AddProposal"],
+      "vote_policy": {}
+    },
+    {
+      "name": "council",
+      "kind": { "Group": ["warband-hq.testnet"] },
+      "permissions": [
+        "config:*",
+        "policy:*",
+        "policy_add_or_update_role:*",
+        "policy_remove_role:*",
+        "policy_update_default_vote_policy:*",
+        "policy_update_parameters:*",
+        "add_member_to_role:*",
+        "remove_member_from_role:*",
+        "set_vote_token:*",
+        "vote:*"
+      ],
+      "vote_policy": {}
+    },
+    {
+      "name": "holders",
+      "kind": { "Member": "1" },
+      "permissions": ["transfer:*", "add_bounty:*", "bounty_done:*", "call:*"],
+      "vote_policy": {
+        "transfer": { "weight_kind": "TokenWeight", "quorum": "0", "threshold": [1, 2] },
+        "add_bounty": { "weight_kind": "TokenWeight", "quorum": "0", "threshold": [1, 2] },
+        "bounty_done": { "weight_kind": "TokenWeight", "quorum": "0", "threshold": [1, 2] },
+        "call": { "weight_kind": "TokenWeight", "quorum": "0", "threshold": [1, 2] }
+      }
+    }
+  ],
+  "default_vote_policy": { "weight_kind": "RoleWeight", "quorum": "0", "threshold": [1, 2] },
+  "proposal_bond": "100000000000000000000000",
+  "proposal_period": "604800000000000",
+  "bounty_bond": "100000000000000000000000",
+  "bounty_forgiveness_period": "86400000000000"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "warband-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Keeper agent for WARBAND: signs with a function-call key that can only call buyback, sync_weight and flush_to_dao",
+  "license": "MIT",
+  "scripts": {
+    "keygen": "tsx src/keygen.ts",
+    "guardian": "tsx --env-file=.env src/guardian.ts",
+    "attack": "tsx --env-file=.env src/attack.ts",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "near-api-js": "7.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  }
+}
