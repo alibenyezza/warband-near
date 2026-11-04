@@ -25,6 +25,16 @@ fn config(dao: Option<&str>) -> Config {
         buyback_chunk_bps: 1_000,
         buyback_daily_cap_bps: 2_000,
         dao_id: dao.map(acc),
+        raid: RaidConfig {
+            chest_share_bps: 0,
+            min_join_balance: U128(ONE_TOKEN),
+            min_joiners: 1,
+            target_bps: 2_500,
+            mint_bps: 10,
+            fail_burn_bps: 1_000,
+            raid_pulls: 20,
+            ticket_cost_bps: 40,
+        },
     }
 }
 

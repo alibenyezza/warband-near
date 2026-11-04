@@ -9,17 +9,25 @@
 //!   Part of the fee goes to the DAO treasury (the war chest), the rest to a buyback reserve.
 //! - The buyback is a rule, not a decision: anyone may call `buyback`, and it only spends when the price is under
 //!   the floor (a drawdown from the recent high), a chunk at a time, within a daily cap. Bought tokens are burned.
+//! - Raids (see raids.rs and RAIDS.md): one raid per day. Holders join with their seasoned balance; when enough of
+//!   the supply and enough accounts show up, raiders are minted a share and win loot pulls from the raid chest, and
+//!   the streak grows. A missed raid burns a slice of the chest and resets the streak. Badges are soulbound NEP-171
+//!   tokens that boost loot odds.
 //! - No owner, no admin method, no upgrade path: every parameter is set by `new` and readable with `config`.
 //!   The deploy script deletes the account's full-access key after init.
 
 mod math;
+#[cfg(test)]
+mod raid_tests;
+mod raids;
 #[cfg(test)]
 mod tests;
 
 use math::{bps, mul_div};
 use near_sdk::json_types::{U128, U64};
 use near_sdk::serde_json::{self, json};
-use near_sdk::store::{IterableMap, LookupMap};
+use near_sdk::store::{IterableMap, LookupMap, Vector};
+pub use raids::{Badge, Joined, RaidConfig, RaidState};
 use near_sdk::{
     env, ext_contract, near, require, AccountId, BorshStorageKey, Gas, NearToken, PanicOnDefault, Promise,
     PromiseOrValue,
@@ -30,8 +38,9 @@ pub const MAX_LOTS: usize = 32;
 const HISTORY_SIZE: u64 = 100;
 const DECIMALS: u8 = 18;
 const ONE_TOKEN: u128 = 10u128.pow(DECIMALS as u32);
-/// Flat storage deposit per holder: account entry, up to MAX_LOTS lots, delegation record.
-pub const STORAGE_DEPOSIT: u128 = 12_500_000_000_000_000_000_000; // 0.0125 NEAR
+/// Flat storage deposit per holder: account entry, up to MAX_LOTS lots, delegation record, raid entry and up to
+/// four badges.
+pub const STORAGE_DEPOSIT: u128 = 15_000_000_000_000_000_000_000; // 0.015 NEAR
 const MIN_DAO_FLUSH: u128 = 100_000_000_000_000_000_000_000; // 0.1 NEAR
 
 const GAS_FOR_RESOLVE_TRANSFER: Gas = Gas::from_tgas(10);
@@ -44,6 +53,8 @@ const GAS_FOR_CALLBACK: Gas = Gas::from_tgas(10);
 enum StorageKey {
     Accounts,
     History,
+    Raids,
+    Badges,
 }
 
 /// Launch parameters. Set once by `new`, never writable afterwards.
@@ -71,6 +82,8 @@ pub struct Config {
     pub buyback_daily_cap_bps: u16,
     /// Sputnik DAO v2 that receives the war chest share and the level-weighted vote weight. None = no DAO.
     pub dao_id: Option<AccountId>,
+    /// Raid rules (raids.rs).
+    pub raid: RaidConfig,
 }
 
 #[near(serializers = [borsh, json])]
@@ -88,6 +101,10 @@ pub struct Holder {
     /// Weight last pushed to the DAO (optimistic, rolled back by the callback on failure).
     pub delegated: u128,
     pub dao_registered: bool,
+    /// The raid this holder joined and is not yet paid for.
+    pub joined: Option<Joined>,
+    /// Indexes of this holder's badges in `badges`.
+    pub badges: Vec<u32>,
 }
 
 #[near(serializers = [borsh, json])]
@@ -127,6 +144,18 @@ pub struct Contract {
     bb_spent: u128,
     history: LookupMap<u64, Entry>,
     history_len: u64,
+    /// Raid chest (NEAR from fees) and the raid ledger.
+    chest: u128,
+    raids: LookupMap<u64, RaidState>,
+    /// Every raid before this one is settled.
+    raids_settled: u64,
+    streak: u32,
+    best_streak: u32,
+    raids_won: u32,
+    raids_lost: u32,
+    minted: u128,
+    pull_nonce: u64,
+    badges: Vector<Badge>,
 }
 
 #[ext_contract(ext_dao)]
@@ -228,6 +257,7 @@ impl Contract {
         require!(config.floor_drawdown_bps > 0 && config.floor_drawdown_bps < 10_000, "bad floor");
         require!(config.buyback_chunk_bps > 0 && config.buyback_chunk_bps <= 10_000, "bad chunk");
         require!(config.buyback_daily_cap_bps > 0 && config.buyback_daily_cap_bps <= 10_000, "bad daily cap");
+        config.raid.validate();
         let near_reserve = config.virtual_near.0;
         let token_reserve = config.curve_supply.0;
         let price = mul_div(near_reserve, ONE_TOKEN, token_reserve);
@@ -250,6 +280,17 @@ impl Contract {
             bb_spent: 0,
             history: LookupMap::new(StorageKey::History),
             history_len: 0,
+            chest: 0,
+            raids: LookupMap::new(StorageKey::Raids),
+            // day 0 is launch day: nobody can hold seasoned tokens yet, so the first raid is day 1
+            raids_settled: 1,
+            streak: 0,
+            best_streak: 0,
+            raids_won: 0,
+            raids_lost: 0,
+            minted: 0,
+            pull_nonce: 0,
+            badges: Vector::new(StorageKey::Badges),
         }
     }
 
@@ -262,7 +303,7 @@ impl Contract {
         let buyer = env::predecessor_account_id();
         let mut deposit = env::attached_deposit().as_yoctonear();
         if !self.accounts.contains_key(&buyer) {
-            require!(deposit > STORAGE_DEPOSIT, "attach more than the 0.0125 NEAR storage deposit");
+            require!(deposit > STORAGE_DEPOSIT, "attach more than the 0.015 NEAR storage deposit");
             deposit -= STORAGE_DEPOSIT;
             self.register(&buyer, STORAGE_DEPOSIT);
         }
@@ -507,7 +548,7 @@ impl Contract {
                 Promise::new(env::predecessor_account_id()).transfer(NearToken::from_yoctonear(attached)).detach();
             }
         } else {
-            require!(attached >= STORAGE_DEPOSIT, "attach at least 0.0125 NEAR");
+            require!(attached >= STORAGE_DEPOSIT, "attach at least 0.015 NEAR");
             self.register(&account, STORAGE_DEPOSIT);
             if attached > STORAGE_DEPOSIT {
                 Promise::new(env::predecessor_account_id())
@@ -633,7 +674,7 @@ impl Contract {
 impl Contract {
     fn register(&mut self, account: &AccountId, storage: u128) {
         self.accounts
-            .insert(account.clone(), Holder { lots: vec![], storage, delegated: 0, dao_registered: false });
+            .insert(account.clone(), Holder { lots: vec![], storage, delegated: 0, dao_registered: false, joined: None, badges: vec![] });
     }
 
     fn balance(&self, account: &AccountId) -> u128 {
@@ -766,6 +807,9 @@ impl Contract {
     }
 
     fn take_fee(&mut self, fee: u128) {
+        let to_chest = bps(fee, self.config.raid.chest_share_bps);
+        self.chest += to_chest;
+        let fee = fee - to_chest;
         let to_dao = bps(fee, self.config.dao_share_bps);
         self.dao_pending += to_dao;
         self.buyback_reserve += fee - to_dao;
@@ -776,6 +820,7 @@ impl Contract {
     }
 
     fn roll_day(&mut self) {
+        self.roll_raids();
         let today = self.day_index();
         if today != self.high_day {
             self.high_prev = if today == self.high_day + 1 { self.high_today } else { 0 };

@@ -2,3 +2,4 @@ target/
 .env
 *.wasm
 neardev/
+__pycache__/
