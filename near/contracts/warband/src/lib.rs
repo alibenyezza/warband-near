@@ -849,6 +849,16 @@ impl Contract {
     }
 
     fn record(&mut self, kind: &str, account: &AccountId, near: u128, tokens: u128) {
+        self.store_entry(kind, account, near, tokens);
+        env::log_str(&format!(
+            "EVENT_JSON:{}",
+            json!({ "standard": "warband", "version": "1.0.0", "event": kind,
+                    "data": [{ "account_id": account, "near": U128(near), "tokens": U128(tokens), "price": U128(self.price()) }] })
+        ));
+    }
+
+    /// Adds a line to the public log without an event (for actions that already emit their own).
+    pub(crate) fn store_entry(&mut self, kind: &str, account: &AccountId, near: u128, tokens: u128) {
         let n = self.history_len;
         let entry = Entry {
             n: U64(n),
@@ -861,11 +871,6 @@ impl Contract {
         };
         self.history.insert(n % HISTORY_SIZE, entry);
         self.history_len += 1;
-        env::log_str(&format!(
-            "EVENT_JSON:{}",
-            json!({ "standard": "warband", "version": "1.0.0", "event": kind,
-                    "data": [{ "account_id": account, "near": U128(near), "tokens": U128(tokens), "price": U128(self.price()) }] })
-        ));
     }
 }
 

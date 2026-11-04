@@ -25,7 +25,9 @@ use crate::*;
 pub const TIERS: [(&str, u32, u16); 4] = [("common", 8_500, 5), ("rare", 1_200, 50), ("epic", 270, 300), ("legendary", 30, 1_500)];
 /// Level used for the odds is capped here (x2 on epic and legendary).
 const MAX_ODDS_LEVEL: u32 = 10;
-const MAX_SETTLE_PER_CALL: u64 = 60;
+// each burning lost day writes two logs (~330 bytes); a receipt holds 100 logs and 16 KiB, so a long empty stretch
+// is settled 20 days per call (any action or settle_raids moves it on)
+const MAX_SETTLE_PER_CALL: u64 = 20;
 const MAX_PULLS_PER_CLAIM: u32 = 64;
 const PULL_SCALE: u128 = 1_000_000;
 
@@ -203,6 +205,7 @@ impl Contract {
         self.raids.insert(today, raid);
         self.accounts.get_mut(&account).unwrap().joined = Some(Joined { raid: U64(today), amount: U128(seasoned) });
         log_event("raid_join", json!({ "account_id": account, "raid": U64(today), "amount": U128(seasoned) }));
+        self.store_entry("raid_join", &account, 0, seasoned);
         U128(seasoned)
     }
 
@@ -230,7 +233,7 @@ impl Contract {
         if pull.near.0 > 0 {
             Promise::new(account.clone()).transfer(NearToken::from_yoctonear(pull.near.0)).detach();
         }
-        self.record("pull", &account, pull.near.0, cost);
+        self.record(&format!("pull_{}", pull.tier), &account, pull.near.0, cost);
         self.sync_down(&account);
         pull
     }
@@ -367,7 +370,7 @@ impl Contract {
 }
 
 impl Contract {
-    /// Settle every raid before today, in order (at most 60 per call), then open today's raid with its target.
+    /// Settle every raid before today, in order (at most 20 per call), then open today's raid with its target.
     pub(crate) fn roll_raids(&mut self) {
         let today = self.day_index();
         let mut n = 0;
@@ -482,6 +485,10 @@ impl Contract {
             badges.push(BADGES[LEGENDARY as usize].0.into());
         }
         log_event("pull", json!({ "account_id": account, "tier": TIERS[tier].0, "near": U128(win) }));
+        // the big ones go to the public log; commons and rares are summed in the raid_claim line
+        if tier >= 2 {
+            self.store_entry(&format!("loot_{}", TIERS[tier].0), account, win, 0);
+        }
         PullView { tier: TIERS[tier].0.into(), near: U128(win) }
     }
 

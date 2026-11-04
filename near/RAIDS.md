@@ -80,7 +80,7 @@ carried by a single whale. A band that plays prints a little, and a band that qu
 | Make the raid fail by changing the supply | The target is fixed when the raid opens, so buying or selling during the raid does not move it. | The joined balance is measured at join time. |
 | Drain the chest with extra pulls | At the best odds a pull is worth less than its ticket (checked at launch). Each pull pays a share of the current chest, so the chest can never go negative or empty in one pull. | — |
 | Choose a good random result | `env::random_seed()` mixed with the account and a counter. A caller cannot see the seed before its own transaction runs, and a pull commits in the same receipt, so there is nothing to revert. | A block producer could bias the seed. That is acceptable for testnet loot, not for large prizes. |
-| A day with no activity | The first action afterwards settles up to 60 missed raids in order (`MAX_SETTLE_PER_CALL`). Empty raids leave no storage. | Every missed day burns 10% of the chest. That is a rule of the game, not a bug. |
+| A day with no activity | The first action afterwards settles up to 20 missed raids in order (`MAX_SETTLE_PER_CALL`); anyone can call `settle_raids` to move a longer stretch on. A burning lost day writes two logs and a receipt holds 100 logs and 16 KiB, so a larger batch would block every action. Empty raids leave no storage. | Every missed day burns 10% of the chest. That is a rule of the game, not a bug. |
 | Storage growth | The holder deposit went from 0.0125 to 0.015 NEAR. It covers 32 lots, a pending raid and four badges (`the_storage_deposit_covers_a_full_holder`). Settled raids nobody joined are deleted. | Raid records stay (about 100 bytes each, at most one per day). |
 
 ## Real and simulated

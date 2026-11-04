@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>WARBAND · testnet</title>
-  <meta name="description" content="WARBAND: a NEAR memecoin where holders level up the longer they hold. Live testnet state.">
+  <meta name="description" content="WARBAND: a NEAR memecoin played as a daily raid. Hold, show up with the band, loot the chest. Live testnet state.">
   <link rel="icon" href="assets/seal-icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -12,11 +12,13 @@
   <header class="header">
     <a class="brand" href="#top"><img src="assets/seal-icon.svg" alt="" width="30" height="30"><span>WARBAND</span></a>
     <nav>
+      <a href="#raid">Raid</a>
+      <a href="#loot">Loot</a>
+      <a href="#badges">Badges</a>
+      <a href="#rank">You</a>
       <a href="#market">Market</a>
-      <a href="#rank">Rank</a>
-      <a href="#band">Leaderboard</a>
+      <a href="#band">Band</a>
       <a href="#chest">War chest</a>
-      <a href="#log">Log</a>
     </nav>
     <span class="net" id="net">testnet</span>
     <button class="connect" id="connect" type="button">Connect wallet</button>
@@ -24,33 +26,60 @@
 
   <main id="top">
     <section class="hero">
-      <p class="prompt">$ near view <span id="token-id">warband-band.testnet</span> market<span class="cursor"></span></p>
-      <h1>Hold longer, weigh more.</h1>
-      <p class="lede">Every lot of BAND gains a level for each day it is held, up to 10. Your vote in the war chest DAO is
-        Σ lot × level, so a fresh whale weighs nothing and a patient holder decides. Selling only resets what you sell.
-        The rules are in the contract; nobody holds its keys.</p>
+      <p class="prompt">$ near view <span id="token-id">warband-raids.testnet</span> raid_status<span class="cursor"></span></p>
+      <h1>Hold. Show up. Loot.</h1>
+      <p class="lede">Every day the band raids. Holders check in with tokens held for at least a day. If enough of the
+        band shows up, the raiders are minted a share and pull loot from the chest. If it does not, part of the chest is
+        bought back and burned. Lots still level up the longer you hold, and the level still weighs your DAO vote.
+        Everything runs in the contract; nobody holds its keys.</p>
       <div class="facts" id="facts"></div>
     </section>
 
-    <section id="market" class="panel">
-      <p class="label">// 01 market</p>
-      <h2>Price and floor</h2>
-      <div class="grid six" id="market-grid"><p class="muted">Loading testnet state…</p></div>
-      <p class="note">The buyback opens when the price falls 20% under the recent high (today and yesterday). Anyone,
-        or the keeper agent, can call it; each call spends 10% of the reserve, at most 20% per day, and burns what it
-        buys.</p>
+    <section id="raid" class="panel">
+      <p class="label">// 01 raid of the day</p>
+      <div class="raid-head">
+        <h2 id="raid-title">Raid</h2>
+        <div class="clock"><span>ends in</span><strong id="raid-clock">–:––</strong></div>
+      </div>
+      <div id="raid-last" class="last" hidden></div>
+      <div class="meter" aria-label="Seasoned tokens joined against the target">
+        <div class="meter-bar"><i id="raid-fill"></i><b id="raid-goal"></b></div>
+        <div class="meter-legend"><span id="raid-joined">0 BAND joined</span><span id="raid-target">target –</span></div>
+      </div>
+      <div class="pips" id="raid-pips" aria-label="Raiders checked in"></div>
+      <div class="grid six" id="raid-grid"></div>
+      <div class="joined" id="raid-joiners"></div>
+      <p class="note">A raid is won when the raiders' seasoned balance reaches 25% of the supply and at least 10 accounts
+        join. Each raider is minted 0.1% of what it joined with, up to 0.2% on a 10-raid streak, and the raid's 20
+        loot pulls are shared by joined balance, so splitting a bag across accounts earns nothing extra.</p>
+    </section>
+
+    <section id="loot" class="panel">
+      <p class="label">// 02 loot</p>
+      <h2>The chest pays out</h2>
+      <div class="tiers" id="tiers"></div>
+      <ol class="feed" id="feed"><li class="muted">Waiting for the first raid…</li></ol>
+    </section>
+
+    <section id="badges" class="panel bone">
+      <p class="label">// 03 badges</p>
+      <h2>Soulbound, they stay when you sell</h2>
+      <div class="badge-wall" id="badge-wall"></div>
+      <p class="note">NEP-171 tokens minted by the contract. <code>nft_transfer</code> always fails. Each badge adds two
+        levels to the loot odds, up to double the base odds for epic and legendary pulls.</p>
     </section>
 
     <section id="rank" class="panel">
-      <p class="label">// 02 rank</p>
-      <h2>Your lots and levels</h2>
+      <p class="label">// 04 you</p>
+      <h2>Your lots, raid and odds</h2>
       <form id="lookup" class="lookup">
-        <input id="account" name="account" placeholder="account.testnet" value="warband-alice.testnet" autocomplete="off" spellcheck="false">
+        <input id="account" name="account" placeholder="account.testnet" value="archer.warband-camp.testnet" autocomplete="off" spellcheck="false">
         <button type="submit">Look up</button>
       </form>
       <div id="account-view"></div>
       <div class="actions" id="actions">
-        <p class="note">With a testnet wallet connected (HOT, Meteor, Intear, MyNearWallet…), act on the contract from here.</p>
+        <p class="note">With a testnet wallet connected (HOT, Meteor, Intear, MyNearWallet…), play from here.</p>
+        <div class="lookup"><button type="button" id="join" class="primary">Join today's raid</button><button type="button" id="claim">Claim my loot</button><button type="button" id="pull">Burn tokens for a pull</button><button type="button" id="warlord">Claim Warlord</button></div>
         <form id="buy-form" class="lookup"><input id="buy-near" type="number" min="0.02" step="0.01" value="0.2" aria-label="NEAR to spend"><button type="submit">Buy with NEAR</button></form>
         <form id="sell-form" class="lookup"><input id="sell-band" type="number" min="1" step="1" placeholder="BAND to sell" aria-label="BAND to sell"><button type="submit">Sell (youngest lots first)</button></form>
         <div class="lookup"><button type="button" id="dao-register">Register as DAO voter</button><button type="button" id="sync">Push my weight to the DAO</button></div>
@@ -58,28 +87,39 @@
       </div>
     </section>
 
+    <section id="market" class="panel">
+      <p class="label">// 05 market</p>
+      <h2>Price and floor</h2>
+      <div class="grid six" id="market-grid"><p class="muted">Loading testnet state…</p></div>
+      <p class="note">The buyback opens when the price falls 20% under the recent high (today and yesterday). Anyone,
+        or the keeper agent, can call it; each call spends 10% of the reserve, at most 20% per day, and burns what it
+        buys.</p>
+    </section>
+
     <section id="band" class="panel">
-      <p class="label">// 03 leaderboard</p>
-      <h2>The band, by vote weight</h2>
-      <div class="table-wrap"><table id="holders"><thead><tr><th>#</th><th>Account</th><th>Rank</th><th class="num">Balance</th><th class="num">Weight</th><th class="num">Delegated to DAO</th></tr></thead><tbody></tbody></table></div>
+      <p class="label">// 06 the band</p>
+      <h2>By vote weight</h2>
+      <div class="table-wrap"><table id="holders"><thead><tr><th>#</th><th>Account</th><th>Rank</th><th>Badges</th><th class="num">Balance</th><th class="num">Weight</th><th class="num">Delegated to DAO</th></tr></thead><tbody></tbody></table></div>
     </section>
 
     <section id="chest" class="panel bone">
-      <p class="label">// 04 war chest</p>
+      <p class="label">// 07 war chest</p>
       <h2>The DAO spends it, by level-weighted vote</h2>
       <div class="grid" id="dao-grid"></div>
       <div class="table-wrap"><table id="proposals"><thead><tr><th>#</th><th>Kind</th><th>Description</th><th>Status</th><th class="num">Approve</th><th class="num">Reject</th></tr></thead><tbody></tbody></table></div>
     </section>
 
     <section id="log" class="panel">
-      <p class="label">// 05 log</p>
-      <h2>Every buy, sell, transfer, buyback and flush</h2>
+      <p class="label">// 08 log</p>
+      <h2>Every buy, sell, raid, pull and burn</h2>
       <div class="table-wrap"><table id="history"><thead><tr><th>#</th><th>When</th><th>What</th><th>Account</th><th class="num">NEAR</th><th class="num">BAND</th></tr></thead><tbody></tbody></table></div>
     </section>
   </main>
 
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
   <footer class="footer">
-    <p>Read-only view of NEAR testnet, straight from the contracts over RPC. Built at NEAR HACKATHON 2026.
+    <p>Live view of NEAR testnet, straight from the contracts over RPC. Built at NEAR HACKATHON 2026.
       <a href="https://github.com/alibenyezza/warband-near">Source</a></p>
   </footer>
   <script type="module" src="app.js"></script>

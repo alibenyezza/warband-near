@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Builds and deploys the Warband contract, initialised with its launch parameters (all final), then asks the DAO to
+# Builds and deploys the Warband contract, initialised with its launch parameters (all final; raid values from
+# RAIDS.md, picked with sim/raids.py), then asks the DAO to
 # take it as its staking contract (SetStakingContract, approved by the council: a configuration change).
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -16,7 +17,11 @@ init=$(cat <<JSON
   "virtual_near": "30000000000000000000000000",
   "fee_bps": 1000, "dao_share_bps": 5000,
   "floor_drawdown_bps": 2000, "buyback_chunk_bps": 1000, "buyback_daily_cap_bps": 2000,
-  "dao_id": "$DAO"
+  "dao_id": "$DAO",
+  "raid": {
+    "chest_share_bps": 3000, "min_join_balance": "1000000000000000000000000", "min_joiners": 10,
+    "target_bps": 2500, "mint_bps": 10, "fail_burn_bps": 1000, "raid_pulls": 20, "ticket_cost_bps": 40
+  }
 }}
 JSON
 )

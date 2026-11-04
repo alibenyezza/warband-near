@@ -10,6 +10,6 @@ view() {
 # call <signer> <contract> <method> <json> <deposit> [gas]
 call() {
   near contract call-function as-transaction "$2" "$3" json-args "$4" prepaid-gas "${6:-100 Tgas}" \
-    attached-deposit "$5" sign-as "$1" network-config testnet sign-with-legacy-keychain send 2>&1 |
+    attached-deposit "$5" sign-as "$1" network-config "${NET:-testnet}" sign-with-legacy-keychain send 2>&1 |
     grep -E "Transaction ID|succeeded|Error|panicked|Smart contract|Logs \[" | sed 's/\x1b\[[0-9;]*m//g'
 }

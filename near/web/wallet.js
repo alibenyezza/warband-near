@@ -1,8 +1,8 @@
-// Optional wallet layer: buy, sell, DAO registration and weight sync through @hot-labs/near-connect (testnet).
+// Optional wallet layer: raid, loot, buy, sell, DAO registration and weight sync through @hot-labs/near-connect (testnet).
 // The read-only page works without it.
 import { NearConnector } from "https://cdn.jsdelivr.net/npm/@hot-labs/near-connect@0.12.0/+esm";
 
-const TOKEN = new URLSearchParams(location.search).get("token") ?? "warband-band.testnet";
+const TOKEN = new URLSearchParams(location.search).get("token") ?? "warband-raids.testnet";
 const $ = (s) => document.querySelector(s);
 const status = (t) => ($("#tx-status").textContent = t);
 const GAS = "100000000000000"; // 100 Tgas
@@ -61,6 +61,10 @@ $("#sell-form").addEventListener("submit", (e) => {
   e.preventDefault();
   call("sell", { amount: toUnits($("#sell-band").value, 18) }, "1", "Sell");
 });
+$("#join").addEventListener("click", () => call("join_raid", {}, "0", "Join the raid"));
+$("#claim").addEventListener("click", () => call("claim_raid", {}, "0", "Claim"));
+$("#pull").addEventListener("click", () => call("burn_for_pull", {}, "1", "Extra pull"));
+$("#warlord").addEventListener("click", () => call("claim_warlord", {}, "0", "Warlord"));
 $("#dao-register").addEventListener("click", () => call("dao_register", {}, "160000000000000000000", "DAO registration"));
 $("#sync").addEventListener("click", () => call("sync_weight", { account_id: accountId }, "0", "Weight sync"));
 

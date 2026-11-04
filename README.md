@@ -1,11 +1,14 @@
 # WARBAND
 
-A memecoin on NEAR where **holding time is the meme**: every lot of BAND gains a level for each day it is held
-(0 to 10), and your vote over the community treasury is Σ lot × level. A whale who bought five minutes ago weighs
-nothing; a holder who stayed decides. Selling only resets what you sell.
+A memecoin on NEAR where **holding time is the meme** and **every day is a raid**. Every lot of BAND gains a level
+for each day it is held (0 to 10), and your vote over the community treasury is Σ lot × level: a whale who bought
+five minutes ago weighs nothing. Every day the band raids: holders check in with tokens held at least a day. If
+enough of the band shows up, the raiders are minted a share and pull loot from a chest filled by trading fees. If it
+does not, the chest buys back BAND and burns it. Badges are soulbound NFTs that record what an account did.
 
 Built for NEAR HACKATHON 2026 (tracks: **Memecoins With Mechanics**, **Social Money**, **AI Security & Defense**).
-Live on testnet: token `warband-band.testnet`, war chest DAO `dao.warband-hq.testnet`.
+Live on testnet: **Raids** (v2) `warband-raids.testnet` with its DAO `dao-raids.warband-hq.testnet`. The first
+version, without raids (`warband-band.testnet` with `dao.warband-hq.testnet`), stays live and locked.
 
 ## The problem
 
@@ -18,8 +21,9 @@ can also empty everything.
 
 | Mechanic | Where it lives |
 |---|---|
+| Raids: one raid per day, joined with seasoned tokens, won with 10 raiders and 25% of the supply. Winners are minted 0.1% (up to 0.2% on a streak) and share 20 loot pulls from the chest; a lost raid burns 10% of the chest through a buyback. Soulbound NEP-171 badges. Rules and threat model: [`near/RAIDS.md`](near/RAIDS.md). | `near/contracts/warband/src/raids.rs` |
 | Lots and levels: each buy or received transfer opens a lot at level 0; +1 level per "day" held, capped at 10 (rank names Recruit to Warlord). Outflows consume the youngest lots first (LIFO). | `near/contracts/warband` |
-| Built-in market: buy and sell BAND against NEAR on a virtual constant-product curve. 10% fee on every trade: half goes to the DAO war chest, half to a buyback reserve. | same contract |
+| Built-in market: buy and sell BAND against NEAR on a virtual constant-product curve. 10% fee on every trade: 30% of it fills the raid chest, the rest goes half to the DAO war chest, half to a buyback reserve. | same contract |
 | Buyback rule: when the price falls 20% under the recent high (today and yesterday), anyone may call `buyback`; it spends 10% of the reserve per call, at most 20% per day, and burns what it buys. | same contract |
 | Level-weighted vote: the contract is the Sputnik DAO's staking contract and delegates each holder's Σ lot × level. Treasury transfers, bounties and calls are voted with that weight. Selling or sending tokens pulls the weight back in the same transaction. | contract + Sputnik DAO v2 |
 | Bounties: native Sputnik bounties (proposal, claim, done, vote) paid by the war chest. | Sputnik DAO v2 |
@@ -28,10 +32,13 @@ can also empty everything.
 
 What is real and what is not:
 
-- **Real (testnet):** the token, the market, the levels, the buyback and burn, the DAO, the votes, the bounty payout,
-  the agent's key and every refusal in the attack demo. Transaction ids are listed below.
-- **Testnet setting:** one "day" lasts **5 minutes** (`day_seconds = 300`) so levels move during a demo. A launch
-  would use 86400.
+- **Real (testnet):** the token, the market, the levels, the raids, the chest, the loot pulls, the badges, the
+  buyback and burn, the DAO, the votes, the bounty payout, the agent's key and every refusal in the attack demo.
+  Transaction ids are listed below.
+- **Testnet setting:** one "day" lasts **3 minutes** on the Raids contract (`day_seconds = 180`; 5 minutes on v1) so
+  raids and levels move during a demo. A launch would use 86400.
+- **Demo raiders:** the twelve raiders of the recorded run (`*.warband-camp.testnet`) are accounts we created and
+  scripted (`near/scripts/raids/02-play.sh`). Every one of their actions is a real transaction.
 - **Simulated:** the 60-day community behaviour in `near/sim` (invented scenarios, real contract rules) and the
   "brain" of the attacked agent (a naive planner that obeys the injected message; see the security section).
 
@@ -41,42 +48,50 @@ Read-only steps need nothing but Python or `curl`; the others need [near-cli-rs]
 and Rust for the tests.
 
 1. **See the live state.** Serve the page: `cd near/web && python3 -m http.server 8080`, open http://localhost:8080.
-   You see the price and floor, the leaderboard by vote weight (not balance), the war chest and its proposals, and
-   the log of every buy, sell, transfer, buyback and flush. The page reads testnet over RPC; with a testnet wallet
-   connected (`@hot-labs/near-connect`: HOT, Meteor, Intear, MyNearWallet…) you can also buy, sell, register as a
-   DAO voter and push your weight from the "Rank" section.
-2. **See that size does not buy the vote.** Look at proposal 1 on the page (or
+   You see today's raid (target, raiders checked in, countdown, streak, chest), the loot feed, the badge wall, the
+   price and floor, the band by vote weight (not balance), the war chest and its proposals, and the log. The page
+   reads testnet over RPC. With a testnet wallet connected (`@hot-labs/near-connect`: HOT, Meteor, Intear,
+   MyNearWallet…) you can join the raid, claim, burn for a pull, buy, sell and register as a DAO voter from the
+   "You" section. The v1 deployment opens with `?token=warband-band.testnet&dao=dao.warband-hq.testnet`.
+2. **Play a raid.** Buy on `warband-raids.testnet` (as in the "Buy" step below), wait 3 minutes for the lot to
+   season, then
+   `near contract call-function as-transaction warband-raids.testnet join_raid json-args '{}' prepaid-gas '100 Tgas' attached-deposit '0 NEAR' sign-as <you>.testnet network-config testnet sign-with-legacy-keychain send`.
+   Your name appears in today's raid. After the raid ends, `claim_raid` (or your next `join_raid`) pays your mint
+   and loot if the band won.
+3. **See that size does not buy the vote.** Look at proposal 1 on the page (or
    `near contract call-function as-read-only dao.warband-hq.testnet get_proposal json-args '{"id":1}' network-config testnet now`).
    Bob held 168M BAND, 2.7 times Alice's 62M, and proposed to pay himself 1 NEAR. His fresh tokens were level 0, so
    his vote weighed 24M; Alice's older 62M rejected it. Status: `Rejected`.
-3. **See the levels.** `near contract call-function as-read-only warband-band.testnet account json-args '{"account_id":"warband-alice.testnet"}' network-config testnet now`
+4. **See the levels.** `near contract call-function as-read-only warband-band.testnet account json-args '{"account_id":"warband-alice.testnet"}' network-config testnet now`
    shows each lot with its level and rank. Run it again 5 minutes later: the level has gone up.
-4. **Buy and watch your lot age.** Create an account
+5. **Buy and watch your lot age.** Create an account
    (`near account create-account sponsor-by-faucet-service <you>.testnet autogenerate-new-keypair save-to-legacy-keychain network-config testnet create`),
    then `near contract call-function as-transaction warband-band.testnet buy json-args '{}' prepaid-gas '100 Tgas' attached-deposit '0.5 NEAR' sign-as <you>.testnet network-config testnet sign-with-legacy-keychain send`.
    Look yourself up on the page: one lot, level 0, weight 0. Five minutes later: level 1.
-5. **Check that nobody holds the keys.** `near account list-keys warband-band.testnet network-config testnet now`
+6. **Check that nobody holds the keys.** `near account list-keys warband-band.testnet network-config testnet now`
    and the same for `dao.warband-hq.testnet`: no keys. The contract code and parameters can no longer change.
-6. **Run the contract tests.** `cd near/contracts/warband && cargo test`: 18 tests, including a transfer in the
-   middle of a lot, a partial LIFO sale, the floor and the daily cap of the buyback, bounded lots, and the weight
-   pulled back from the DAO on a sale.
-7. **Replay the attack on the agent** with your own keeper (the demo key is not in the repo):
+7. **Run the contract tests.** `cd near/contracts/warband && cargo test`: 39 tests. 18 cover the token: a transfer
+   in the middle of a lot, a partial LIFO sale, the floor and the daily cap of the buyback, bounded lots, the weight
+   pulled back from the DAO on a sale. 21 cover the raids: a split bag earns nothing extra, join-then-sell is not
+   paid, a pump does not make pulls cheaper, loot odds over 2000 pulls, soulbound badges, storage covered.
+8. **Replay the attack on the agent** with your own keeper (the demo key is not in the repo):
    `cd near/agent && npm ci && npm run keygen`, run the printed `near account add-key …` for an account you
    control (replace `keeper.warband-hq.testnet` in `.env` and in the command), then `npm run attack`. Every
    attempt is refused by the chain; the log of our run is `near/agent/attack-log.jsonl`.
-8. **Run the simulation.** `python3 near/sim/simulate.py` (needs matplotlib) rewrites the charts and the table below.
-9. **Redeploy everything yourself** with `near/scripts/01-accounts.sh` to `05-demo.sh` (edit the account names in
+9. **Run the simulation.** `python3 near/sim/simulate.py` (needs matplotlib) rewrites the charts and the table below.
+10. **Redeploy everything yourself** with `near/scripts/01-accounts.sh` to `05-demo.sh` (edit the account names in
    `near/scripts/env.sh`).
 
 ## Memecoins With Mechanics: the mechanic
 
 - **NEP-141 + NEP-145**, implemented in the contract (`ft_transfer`, `ft_transfer_call` with refund,
-  `storage_deposit` with a flat 0.0125 NEAR deposit). NEP-141 events are logged for every mint, burn and transfer.
+  `storage_deposit` with a flat 0.015 NEAR deposit on the Raids contract, 0.0125 on v1). NEP-141 events are logged for every mint, burn and transfer.
 - **Levels**: `level = min(10, floor(time held / day_seconds))`. Same-day buys merge into one lot and keep the
   newer timestamp, so merging never gains age. At most 32 lots per account: past that, the two youngest merge the
   same way.
 - **Weight**: `weight_of(account) = Σ lot × level`. Fresh tokens weigh zero.
-- **Supply**: there is no mint outside the curve. Tokens bought by the buyback reserve are burned.
+- **Supply**: outside the curve, only won raids mint (0.1% of a raider's joined balance, up to 0.2% on a streak).
+  Tokens bought back by the buyback reserve or by a lost raid are burned, and so are tokens spent on extra pulls.
 - **Parameters at launch** (`config` view): fee 10%, DAO share 50% of the fee, floor 20% under the recent high,
   buyback chunk 10% of the reserve, daily cap 20% of the reserve, 1B BAND on the curve, 30 NEAR virtual reserve.
 
@@ -197,12 +212,13 @@ The bounty's deliverable is the set of rank badges in `near/web/ranks/`, drawn f
 
 | Path | What it is |
 |---|---|
-| `near/contracts/warband/` | The NEAR contract (Rust, near-sdk 5.30): token, lots, market, buyback, DAO weight. Tests in `src/tests.rs`. |
+| `near/contracts/warband/` | The NEAR contract (Rust, near-sdk 5.30): token, lots, market, buyback, DAO weight, raids and badges (`src/raids.rs`). Tests in `src/tests.rs` and `src/raid_tests.rs`. |
+| `near/RAIDS.md` | Raid rules, launch parameters and threat model. |
 | `near/dao/policy.json` | The war chest DAO policy (roles, token-weighted votes). |
-| `near/scripts/` | Testnet accounts, DAO deploy, Warband deploy, key deletion, demo walkthrough. |
+| `near/scripts/` | Testnet accounts, DAO deploy, Warband deploy, key deletion, demo walkthrough. `raids/` deploys v2 and plays the recorded raid run. |
 | `near/agent/` | Keeper agent (TypeScript, near-api-js 7.4) and the prompt-injection attack demo. |
-| `near/sim/` | 60-day simulation, charts and results. |
-| `near/web/` | Read-only testnet page (static HTML and JS) and the rank badges. |
+| `near/sim/` | 60-day simulations (token in `simulate.py`, raids in `raids.py`), charts and results. |
+| `near/web/` | Testnet page (static HTML and JS, optional wallet): raid, loot, badges, market, band, DAO, log. Rank badges. |
 | everything else | The pre-hackathon WARCHEST code (Robinhood Chain), see below. |
 
 ## Pre-hackathon code (disclosure)

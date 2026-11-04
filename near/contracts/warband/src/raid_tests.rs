@@ -228,6 +228,22 @@ fn empty_days_leave_no_raid_and_burn_the_chest_slice() {
 }
 
 #[test]
+fn a_long_empty_stretch_never_blocks_the_token() {
+    // every lost day that burns writes two logs; a receipt holds at most 100, so settling must be split
+    let mut c = setup(1);
+    buy(&mut c, "alice.testnet", 10 * NEAR, 0);
+    buy(&mut c, "bob.testnet", 1 * NEAR, 200);
+    let settled = c.raid_status().lost;
+    assert!(settled > 0 && settled < 199, "the buy settled {settled} raids");
+    // anyone moves it on, one call (one receipt) at a time
+    for _ in 0..10 {
+        ctx("anyone.testnet", 0, at(200));
+        c.settle_raids();
+    }
+    assert_eq!(c.raid_status().lost, 199);
+}
+
+#[test]
 fn a_pump_does_not_make_pulls_cheaper() {
     let (mut c, _, _) = two_raiders(2);
     ctx("alice.testnet", 0, at(1));
@@ -254,7 +270,7 @@ fn burning_for_a_pull_costs_tokens_and_pays_from_the_chest() {
     assert_eq!(bal(&c, "alice.testnet"), a - cost);
     assert_eq!(c.ft_total_supply().0, supply - cost);
     assert_eq!(c.raid_status().chest.0, chest - pull.near.0);
-    assert_eq!(c.history(Some(1))[0].kind, "pull");
+    assert!(c.history(Some(1))[0].kind.starts_with("pull_"));
 }
 
 #[test]
@@ -359,4 +375,29 @@ fn the_storage_deposit_covers_a_full_holder() {
     c.badges.flush();
     let used = (env::storage_usage() - before) as u128 + 200; // + the empty holder entry
     assert!(used * env::storage_byte_cost().as_yoctonear() < STORAGE_DEPOSIT, "{used} bytes");
+}
+
+#[test]
+fn the_public_log_shows_joins_and_big_loot() {
+    let (mut c, _, b) = two_raiders(2);
+    let h = c.history(Some(2));
+    assert_eq!((h[0].kind.as_str(), h[0].account.as_str(), h[0].tokens.0), ("raid_join", "bob.testnet", b));
+    assert_eq!(h[1].kind, "raid_join");
+    // many pulls: every epic and legendary is logged with its NEAR, commons and rares are not
+    let mut big = 0;
+    for i in 0..300 {
+        ctx_seed("alice.testnet", 0, at(1), [(i % 251) as u8; 32]);
+        let n = c.history_len;
+        let p = c.pull(&acc("alice.testnet"), &mut vec![]);
+        let logged = c.history_len - n;
+        if p.tier == "epic" || p.tier == "legendary" {
+            big += 1;
+            assert_eq!(logged, 1);
+            let e = &c.history(Some(1))[0];
+            assert_eq!((e.kind.clone(), e.near.0), (format!("loot_{}", p.tier), p.near.0));
+        } else {
+            assert_eq!(logged, 0);
+        }
+    }
+    assert!(big > 0);
 }
