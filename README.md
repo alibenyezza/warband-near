@@ -232,13 +232,13 @@ for governance.
 
 ## Libraries and AI assistance
 
-- Contract: `near-sdk` 5.30.0, `uint` 0.10 (256-bit math). Built with
+- Contract: `near-sdk` 5.30.1, `uint` 0.10 (256-bit math). Built with
   `cargo-near` 0.22.
 - DAO: Sputnik DAO v2, official release binary 3.0.0 (near-daos/sputnik-dao-contract), unmodified.
 - Agent: `near-api-js` 7.4.0, `tsx`, TypeScript.
 - Simulation: Python 3, matplotlib.
 - Page: no framework, `@hot-labs/near-connect` 0.12.0 (jsDelivr) for the optional wallet; fonts Inter and JetBrains Mono (SIL OFL, licenses in `near/web/assets/`).
-- Tools: near-cli-rs 0.30.1.
+- Tools: near-cli-rs 0.31.1 (nearcore 2.14, testnet protocol 88).
 - AI: the code, scripts and README were written with Claude Code (Anthropic) under the author's direction; every
   on-chain step above was run and checked on testnet.
 
