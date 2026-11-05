@@ -219,25 +219,16 @@ The bounty's deliverable is the set of rank badges in `near/web/ranks/`, drawn f
 | `near/agent/` | Keeper agent (TypeScript, near-api-js 7.4) and the prompt-injection attack demo. |
 | `near/sim/` | 60-day simulations (token in `simulate.py`, raids in `raids.py`), charts and results. |
 | `near/web/` | Testnet page (static HTML and JS, optional wallet): raid, loot, badges, market, band, DAO, log. Rank badges. |
-| everything else | The pre-hackathon WARCHEST code (Robinhood Chain), see below. |
 
 ## Pre-hackathon code (disclosure)
 
-WARBAND is a port of **WARCHEST**, an earlier project by the same author on Robinhood Chain (Solidity, Uniswap v4
-hook, off-chain indexer, Hyperliquid keeper; public at github.com/warchest0/warchest). The first commit of this
+WARBAND is a port of **WARCHEST**, an earlier project by the same author on another chain. The first commit of this
 repository, tagged [`pre-hackathon`](https://github.com/alibenyezza/warband-near/tree/pre-hackathon), is a copy of
-that repository at commit `e63e510` (13 Oct 2026, before the hackathon window), without its brand videos. Its
-original README is readable at that tag.
-
-**Everything built for the hackathon is under `near/`**, plus this README and the LICENSE:
-[diff `pre-hackathon...main`](https://github.com/alibenyezza/warband-near/compare/pre-hackathon...main).
+it; that code has since been removed from the tree. **Everything in this repository (`near/`) was built during the
+hackathon:** [diff `pre-hackathon...main`](https://github.com/alibenyezza/warband-near/compare/pre-hackathon...main).
 What carried over is the idea (levels per lot, LIFO, level-weighted governance, a keeper that cannot withdraw), the
-rank names and the visual identity. The NEAR version is a rewrite: on Robinhood Chain the levels were computed by
-an off-chain indexer and published as a Merkle root; here they live in the token contract, and governance is a
-Sputnik DAO instead of a custom contract.
-
-Non-NEAR integrations: none in `near/`. The baseline code outside `near/` targets Robinhood Chain, Uniswap v4,
-Hyperliquid and Across, and is not used by the NEAR version.
+rank names and the visual identity; the code is a rewrite, with the levels inside the token contract and a Sputnik DAO
+for governance.
 
 ## Libraries and AI assistance
 
