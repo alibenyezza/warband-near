@@ -188,6 +188,29 @@ Then its one allowed call, `buyback`, ran because the price was under the floor;
 above the floor, was refused by the contract with "price is above the floor: no buyback". The five refusals happen
 at transaction validation: the transactions are never included in a block, so they have no transaction id.
 
+### The keeper on a gas key (NEP-611, nearcore 2.13)
+
+A plain function-call key stops for good when its allowance is spent, and only the account's full-access key can
+replace it. The Raids deployment's keeper, `gk-keeper.warband-hq.testnet`, has **no full-access key at all**: its
+only key is a **function-call gas key** on `warband-raids.testnet`, limited to the four permissionless upkeep
+methods (`settle_raids`, `buyback`, `flush_to_dao`, `sync_weight`). The key holds its own prepaid gas, which
+`warband-hq.testnet` refills from outside with `TransferToGasKey`, and has 4 nonce lanes, so the four upkeep calls
+go out at once. Script: [`near/agent/src/gas-keeper.ts`](near/agent/src/gas-keeper.ts); log of the run:
+[`near/scripts/gas-keeper.log`](near/scripts/gas-keeper.log).
+
+| Step | Result | Transaction |
+|---|---|---|
+| HQ creates the keeper with one gas key (4 lanes, 0.2 NEAR of gas) in one transaction | account with 1 key, `GasKeyFunctionCall` | `PTDBw2S3MR1Rx3fW5v72f6AEyPH8UU1itday3yEgsgT` |
+| The four upkeep calls at once | `settle_raids` ran; `buyback`, `flush_to_dao` and `sync_weight` were refused by the contract's own rules (price above the floor, less than 0.1 NEAR pending, no holder registered in the v2 DAO); all four lanes moved by one | `ErAsxvysmvopyCVxVe7cTH4q4AfqktuTPVa6Zduqi4rr` (settle) |
+| Send NEAR / `ft_transfer` / a DAO proposal / withdraw its own gas key | `AccessKeyRequiresFullAccessActionError`, `AccessKeyDepositWithFunctionCallActionError` then `AccessKeyMethodNameMismatchActionError`, `AccessKeyReceiverMismatchActionError`, `AccessKeyRequiresFullAccessActionError` | (refused before execution) |
+| HQ refills the key | +0.05 NEAR of gas | `GM4YJoiNKv3jLpGNQYASgGZeAFqyMapSFpco6ztB6eFA` |
+
+What we learned on testnet: a gas key **reserves the full attached gas at the maximum gas price** before each
+transaction (about 0.1 NEAR for 100 Tgas) and refunds the unused part a few blocks later. Our first run, with four
+100 Tgas calls in parallel, was refused with `NotEnoughGasKeyBalanceError` (balance 0.099 NEAR, cost 0.1009 NEAR) for
+three of the four. Size the key's balance to the sum of the gas attached to the parallel calls; at 60 Tgas each the
+four fit.
+
 ## Testnet record
 
 | Step | Transactions |

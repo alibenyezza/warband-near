@@ -1,0 +1,21 @@
+# gas-key keeper 2026-11-05T23:33:57.898Z on warband-raids.testnet, keeper gk-keeper.warband-hq.testnet, funder warband-hq.testnet
+1. The keeper's only key, read from the chain
+   1 key: ed25519:4BLnxGTEq4BKzwMSgk71WzHeF7A37q6pNXrw61VKupsd GasKeyFunctionCall, receiver warband-raids.testnet, methods ["settle_raids","buyback","flush_to_dao","sync_weight"], 4 lanes, gas 0.295917 NEAR
+
+2. The four upkeep calls at once, one per nonce lane
+   settle_raids  ok  tx ErAsxvysmvopyCVxVe7cTH4q4AfqktuTPVa6Zduqi4rr
+   buyback       refused by the contract: price is above the floor: no buyback  tx 8ZQEQGN8XiGVV69MzNfN4MpKaHtPCmFWWQxqhWhjsz1W
+   flush_to_dao  refused by the contract: less than 0.1 NEAR pending  tx 8HfDDhEtiC9WE9pA9wPKeE4Y9xE8CKC8FQ3ct7w7n1H3
+   sync_weight   refused by the contract: account not registered in the dao  tx Du6KApcGUeFPTB7JNCWbwyyDApMWEM1E8EvgrHfyP62K
+   lanes ["276409505000001","276409505000002","276409505000001","276409505000001"] -> ["276409505000002","276409505000003","276409505000002","276409505000002"]
+   gas key 0.295917 -> 0.293118 NEAR
+
+3. What a hijacked keeper would try
+   send 0.01 NEAR to warband-mallory.testnet: refused by the protocol: AccessKeyRequiresFullAccessActionError Access key requires full access
+   ft_transfer BAND to warband-mallory.testnet: refused by the protocol: AccessKeyDepositWithFunctionCallActionError Deposit is not allowed with function call
+   same, without the 1 yocto: refused by the protocol: AccessKeyMethodNameMismatchActionError Access key does not allow method ft_transfer
+   a proposal to the DAO: refused by the protocol: AccessKeyReceiverMismatchActionError Access key receiver warband-raids.testnet does not match transaction receiver dao-raids.warband-hq.testnet
+   withdraw its own gas key: refused by the protocol: AccessKeyRequiresFullAccessActionError Access key requires full access
+
+4. warband-hq.testnet refills the gas key from outside, holding no key on the keeper
+   gas key 0.293118 -> 0.343118 NEAR  tx FVdynMFJWDkjyEEkAUTZJV1JgZXfceRGb9qFWTYDJX8L
