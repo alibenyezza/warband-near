@@ -401,3 +401,31 @@ fn the_public_log_shows_joins_and_big_loot() {
     }
     assert!(big > 0);
 }
+
+#[test]
+fn a_dust_lot_does_not_keep_the_old_odds() {
+    let mut c = setup(1);
+    let a = buy(&mut c, "alice.testnet", NEAR, 0);
+    // ten days later alice sells all but a crumb of the old bag and buys a fresh one
+    ctx("alice.testnet", 1, at(10));
+    c.sell(U128(a - 1), None);
+    buy(&mut c, "alice.testnet", NEAR, 10);
+    // the odds follow the balance-weighted level (about 0), not the crumb's level 10
+    assert_eq!(c.pull_odds(acc("alice.testnet")), vec![8_500, 1_200, 270, 30]);
+}
+
+#[test]
+fn a_pump_after_quiet_days_does_not_make_pulls_cheaper() {
+    let (mut c, _, _) = two_raiders(2);
+    // nobody trades on days 2 to 4; on day 5 the empty days are settled, then a whale pumps the price
+    ctx("alice.testnet", 0, at(5));
+    c.settle_raids();
+    let before = c.raid_status().ticket_tokens.0;
+    let chest = c.raid_status().chest.0;
+    let price = c.market().price.0;
+    buy(&mut c, "whale.testnet", 20 * NEAR, 5);
+    assert!(c.market().price.0 > price * 2);
+    let s = c.raid_status();
+    let expected = crate::math::mul_div(before, s.chest.0, chest);
+    assert!(s.ticket_tokens.0.abs_diff(expected) <= expected / 1_000_000, "{} vs {expected}", s.ticket_tokens.0);
+}

@@ -526,11 +526,13 @@ impl Contract {
         }
     }
 
-    /// Level for the loot odds: the account's top level plus two per badge, capped at 10.
+    /// Level for the loot odds: the balance-weighted level of the account's lots (weight / balance, rounded down)
+    /// plus two per badge, capped at 10. A dust lot kept from an old bag does not keep the old bag's odds.
     fn odds_level(&self, account: &AccountId) -> u32 {
         let Some(h) = self.accounts.get(account) else { return 0 };
-        let top = h.lots.iter().map(|l| self.level(l.since.0)).max().unwrap_or(0) as u32;
-        (top + 2 * h.badges.len() as u32).min(MAX_ODDS_LEVEL)
+        let balance = total(&h.lots);
+        let level = if balance == 0 { 0 } else { (self.weight(&h.lots) / balance) as u32 };
+        (level + 2 * h.badges.len() as u32).min(MAX_ODDS_LEVEL)
     }
 
     /// Balance in lots held at least one day.

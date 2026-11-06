@@ -32,11 +32,12 @@ account keeps a full-access key: v1's is deleted, v2's and v3's are deleted on 1
 | epic | 2.7% | 3% |
 | legendary | 0.3% | 15%, plus the Legendary Pull badge |
 
-Epic and legendary odds are multiplied by (10 + L) / 10, where L is the account's top level plus two per badge,
-capped at 10. The best odds are therefore twice the base odds.
+Epic and legendary odds are multiplied by (10 + L) / 10, where L is the balance-weighted level of the account's lots
+(its vote weight divided by its balance, rounded down) plus two per badge, capped at 10. The best odds are therefore
+twice the base odds. Keeping a crumb of an old bag does not keep its odds: a fresh bag pulls the average down.
 
 **Extra pulls.** `burn_for_pull()` burns tokens worth `ticket_cost_bps` of the chest. They are priced at the lower
-of the spot price and yesterday's high. Even at the best odds, a pull is worth 0.353% of the chest on average. The
+of the spot price and yesterday's high (after days without trades, the last price carries over as yesterday's high). Even at the best odds, a pull is worth 0.353% of the chest on average. The
 ticket costs 0.4%, and `new` refuses any configuration where a pull would be worth more than its ticket. The
 difference is burned.
 

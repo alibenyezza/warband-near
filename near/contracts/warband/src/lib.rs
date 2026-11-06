@@ -741,6 +741,8 @@ impl Contract {
             prev.amount = U128(prev.amount.0 + young.amount.0);
             prev.since = U64(prev.since.0.max(young.since.0));
         }
+        // a merge makes the older lot younger, so the weight can drop on an inflow too
+        self.sync_down(account);
     }
 
     /// Outflows consume the youngest lots first (LIFO).
@@ -823,7 +825,9 @@ impl Contract {
         self.roll_raids();
         let today = self.day_index();
         if today != self.high_day {
-            self.high_prev = if today == self.high_day + 1 { self.high_today } else { 0 };
+            // after days without trades the price has not moved: carry it forward as the previous day's high, so a
+            // pump on the first day of trading again cannot make extra pulls cheap
+            self.high_prev = if today == self.high_day + 1 { self.high_today } else { self.price() };
             self.high_day = today;
             self.high_today = self.price();
         }

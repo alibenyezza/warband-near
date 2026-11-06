@@ -318,3 +318,25 @@ fn flush_requires_a_dao_and_a_minimum() {
     assert_eq!(m.dao_pending.0, 0);
     assert_eq!(m.dao_paid.0, NEAR / 4);
 }
+
+#[test]
+fn a_merge_on_an_inflow_pulls_weight_back() {
+    let mut c = setup(Some("band-dao.sputnik-v2.testnet"));
+    ctx("alice.testnet", NEAR / 10 + STORAGE_DEPOSIT, at(0));
+    c.buy(None);
+    for day in 1..MAX_LOTS as u64 {
+        ctx("alice.testnet", NEAR / 100, at(day));
+        c.buy(None);
+    }
+    assert_eq!(c.account(acc("alice.testnet")).unwrap().lots.len(), MAX_LOTS);
+    ctx("warband.testnet", 0, at(40));
+    c.accounts.get_mut(&acc("alice.testnet")).unwrap().dao_registered = true;
+    ctx("anyone.testnet", 0, at(40));
+    c.sync_weight(acc("alice.testnet"));
+    // one more lot: the two youngest merge, the older one takes the newer date and loses its level
+    ctx("alice.testnet", NEAR / 100, at(40));
+    c.buy(None);
+    let a = c.account(acc("alice.testnet")).unwrap();
+    assert_eq!(a.lots.len(), MAX_LOTS);
+    assert_eq!(a.delegated.0, a.weight.0, "the DAO weight follows the drop");
+}
