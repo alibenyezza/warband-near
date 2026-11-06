@@ -25,6 +25,37 @@ until 18 Nov 2026.
 4. Read the DAO policy: `near contract call-function as-read-only dao-daily.warband-hq.testnet get_policy json-args {} network-config testnet now`.
    See the `council` role with only `config:*` and `vote:*`; every other power belongs to `holders`.
 
+## Track by track: what the prompt asks, and where to check it
+
+### `memecoins`: Memecoins With Mechanics
+
+| The track asks for | In Warband | Check it |
+|---|---|---|
+| A daily check-in; if the community hits the target, everyone who checked in gets a small mint | `join_raid()` once per day with tokens held at least a day. Won when at least 10 raiders join with 25% of the circulating supply: each raider is minted 0.1% of what it joined with (up to 0.2% on a streak) and shares 20 loot pulls from the chest | [`near/RAIDS.md`](near/RAIDS.md); tests `a_won_raid_mints_grows_the_streak_and_pays_loot`, `fresh_tokens_cannot_join`, `one_join_per_raid` |
+| If it misses, a slice of the treasury burns and the streak resets | 10% of the raid chest buys BAND on the curve and burns it; the streak goes back to 0 | test `a_lost_raid_burns_part_of_the_chest_and_resets_the_streak` |
+| The longest streak printed like a high score | `raid_status` returns `streak` and `best_streak`; the page shows "win streak … best N" and the won–lost record | the live page, top of the raid section |
+| An NEP-141 token with the mechanic in the contract, not in a backend | Token, raids, chest, market and buyback are one contract (`near/contracts/warband`); settlement runs on the first action after a raid ends, by anyone | `cd near/contracts/warband && cargo test`: 40 tests |
+| All parameters set at launch and readable by anyone; no admin key that can change them | Every parameter is set in `new` and returned by `config`; the contract has no owner, setter or pause method. v1's accounts have no key; v2 and v3 keys are deleted on 13 Nov (see "Keys, plainly" below) | `config` on `warband-daily.testnet` (values in the table below); `near account list-keys warband-band.testnet network-config testnet now` |
+| Sybil resistance good enough for a demo, with its limits written plainly | Mints and pulls are proportional to the balance joined, so splitting a bag earns nothing extra; a transfer restarts the tokens at level 0, so they cannot join that day. Limit: splitting does help reach the 10-raider minimum, at the cost of ten storage deposits and ten seasoned 1M bags | [`near/RAIDS.md`](near/RAIDS.md) threat model; tests `a_split_bag_cannot_join_twice`, `tokens_sold_after_joining_are_not_paid_for`; "Sybil resistance, and its limits" below |
+| A page with the current streak, today's progress and a log of every mint and burn | The live page: streak and best streak, raiders and seasoned balance against the target, countdown, chest; the log shows every buy, sell, join, raid mint (`raid_claim`), pull, buyback burn and lost-raid burn. The contract keeps the last 100 entries; every mint and burn is also an NEP-141 `ft_mint` / `ft_burn` event in its transaction | <https://alibenyezza.github.io/warband-near/>; test `the_public_log_shows_joins_and_big_loot` |
+| Simulate 60 days under a few scenarios, then pick the parameters | `near/sim/raids.py`: five invented bands (`engaged`, `fading`, `gamblers`, `whale_carry`, `sybil_farm`) under the contract's rules, minted and burned supply over 60 days, and a sweep of `mint_bps` × `target_bps`; `near/sim/simulate.py` does the same for the market and the vote weight. The launch parameters were picked from the sweep | [`near/sim/raids_results.md`](near/sim/raids_results.md), [`near/RAIDS.md`](near/RAIDS.md) "Launch parameters (picked with the simulation)", `python3 near/sim/raids.py` |
+
+Launch parameters of `warband-daily.testnet`, as `config` returns them:
+
+| `day_seconds` | `min_joiners` | `target_bps` | `min_join_balance` | `mint_bps` | `fail_burn_bps` | `chest_share_bps` | `raid_pulls` | `ticket_cost_bps` |
+|---|---|---|---|---|---|---|---|---|
+| 86400 | 10 | 2500 (25% of supply) | 1,000,000 BAND | 10 (0.1%) | 1000 (10% of the chest) | 3000 (30% of the fee) | 20 | 40 |
+
+### `social`: Social Money
+
+| The track asks for | In Warband | Check it |
+|---|---|---|
+| Use the existing Sputnik DAO or Trezu treasury for custody and approvals; no new multisig | Sputnik DAO v2, the official 3.0.0 binary, unmodified. The board holds only petty cash the DAO voted to it, and only the DAO can change its tiers or take the cash back | `near/scripts/02-dao.sh` checks the binary's git blob hash; tests `only_the_dao_changes_the_tiers`, `only_the_dao_takes_the_petty_cash_back` |
+| Reputation tied to named accounts, every point traceable to a finished bounty | `record_of(account)` lists every paid bounty with its tier and approver; trust = +0.05 NEAR per paid bounty, capped at 0.25 | test `trust_is_capped`; the board on the live page |
+| Tiers: small payouts auto-approve for trusted contributors, mid-size ones need one council member, large ones become a DAO proposal | auto (within the contributor's trust), council (up to 0.5 NEAR, one member of the DAO's live `council` role), dao (a normal `Transfer` proposal, voted by level-weighted holders) | tests `a_newcomer_needs_the_council_then_earns_auto_payouts`, `large_payouts_become_a_dao_proposal`, `a_non_member_cannot_approve`, `a_contributor_cannot_approve_their_own_payout`; the testnet run below |
+| A public board: open bounties, claims, payouts, each contributor's record | The bounty board section of the live page, read from `warband-dailyboard.testnet` | <https://alibenyezza.github.io/warband-near/> |
+| Which approval flows already exist, and which ones we added | Existing in Sputnik, used as they are: transfer proposals, bounties, token-weighted roles, the staking hook. Added: the level-weighted weight, its automatic withdrawal on outflows, the fee stream to the DAO, and the trust tiers in front of the treasury | "Social Money: the war chest on Sputnik DAO" below. We read Sputnik's contract; Trezu is not used |
+
 ## Deployments
 
 The same contract, deployed three times on testnet:
