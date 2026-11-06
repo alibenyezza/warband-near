@@ -3,8 +3,10 @@
 //! Members post bounties, contributors claim and finish them, the poster accepts the work, and the payout goes through
 //! one of three tiers, decided by the contributor's record on this board:
 //!
-//! - **auto**: the amount is within the contributor's trust limit (`trust_step` per bounty already paid to them, capped
-//!   at `auto_cap`): paid at once from the petty cash the DAO voted to this contract.
+//! - **auto**: the amount is within the contributor's trust limit (`trust_step` per bounty of at least `trust_step`
+//!   that the council or the DAO approved for them, capped at `auto_cap`): paid at once from the petty cash the DAO
+//!   voted to this contract. Auto payouts do not raise trust, and one contributor receives at most `auto_cap` in auto
+//!   payouts per 24 hours, so a poster and a contributor who collude cannot farm trust or drain the petty cash.
 //! - **council**: up to `council_cap`: paid from the petty cash once one member of the DAO's `council` role approves.
 //!   Membership is read from the DAO's live policy (`get_policy`) at approval time.
 //! - **dao**: above `council_cap`: the contract files a normal `Transfer` proposal in the DAO (the poster pays the
@@ -12,7 +14,8 @@
 //!
 //! Custody and approvals stay in the DAO: the only money here is petty cash that a DAO `Transfer` proposal sent, and
 //! the tiers can only be changed by the DAO itself (`set_tiers` from the DAO account). No owner, no admin method.
-//! Reputation is per named account and every point is a paid bounty listed in `record_of`.
+//! Reputation is per named account (implicit accounts cannot claim) and every point is a paid bounty listed in
+//! `record_of`.
 use near_sdk::json_types::{U128, U64};
 use near_sdk::serde_json::{self, json, Value};
 use near_sdk::store::{LookupMap, Vector};
@@ -23,6 +26,15 @@ const RESERVE: u128 = 50_000_000_000_000_000_000_000; // 0.05 NEAR never paid ou
 const GAS_VIEW: Gas = Gas::from_tgas(10);
 const GAS_CALLBACK: Gas = Gas::from_tgas(20);
 const GAS_PROPOSAL: Gas = Gas::from_tgas(30);
+const DAY_MS: u64 = 86_400_000;
+
+/// Implicit accounts (64 hex characters, or an Ethereum-style 0x address) carry no name, so no reputation.
+fn is_named(account: &AccountId) -> bool {
+    let s = account.as_str();
+    let hex64 = s.len() == 64 && s.bytes().all(|c| c.is_ascii_hexdigit());
+    let eth = s.len() == 42 && s.starts_with("0x") && s[2..].bytes().all(|c| c.is_ascii_hexdigit());
+    !hex64 && !eth
+}
 
 #[near(serializers = [borsh, json])]
 #[derive(Clone, Debug, PartialEq)]
@@ -146,6 +158,7 @@ impl Bounties {
         let b = self.get_mut(id);
         require!(b.status == Status::Open, "Bounty is not open");
         require!(b.poster != who, "The poster cannot claim their own bounty");
+        require!(is_named(&who), "Reputation needs a named account: implicit accounts cannot claim");
         b.status = Status::Claimed;
         b.contributor = Some(who.clone());
         self.log("claim", id.0, json!({ "contributor": who }));
@@ -290,8 +303,11 @@ impl Bounties {
 
     #[private]
     pub fn on_proposal_status(&mut self, id: U64, #[callback_result] proposal: Result<Value, PromiseError>) -> String {
-        let proposal = proposal.unwrap_or_else(|_| env::panic_str("Could not read the DAO proposal"));
-        let status = proposal["status"].as_str().unwrap_or("").to_string();
+        // Sputnik deletes a proposal once it is removed: `get_proposal` then fails, and the bounty is closed as rejected
+        let status = match proposal {
+            Ok(p) => p["status"].as_str().unwrap_or("").to_string(),
+            Err(_) => "Removed".to_string(),
+        };
         require!(self.get(id).status == Status::Proposed, "Bounty has no DAO proposal pending");
         match status.as_str() {
             "Approved" => {
@@ -299,7 +315,8 @@ impl Bounties {
                 let dao = self.dao.clone();
                 self.record(id, Tier::Dao, dao);
             }
-            "Rejected" | "Removed" | "Expired" | "Failed" => {
+            // `Failed` (approved, but the transfer failed) can still be finalized again in the DAO: not final here
+            "Rejected" | "Removed" | "Expired" => {
                 let b = self.get_mut(id);
                 b.status = Status::Rejected;
                 self.log("rejected", id.0, json!({ "dao_status": status }));
@@ -352,13 +369,22 @@ impl Bounties {
 
     // ---- internals ----
 
+    /// Trust comes only from work someone other than the poster checked: a bounty of at least `trust_step` approved
+    /// by a council member or by a DAO vote. Auto payouts are recorded but do not raise it.
     fn trust_limit(&self, account: &AccountId) -> u128 {
-        let n = self.records.get(account).map(|p| p.len()).unwrap_or(0) as u128;
-        (self.tiers.trust_step.0 * n).min(self.tiers.auto_cap.0)
+        let step = self.tiers.trust_step.0;
+        let earned = self.records.get(account).map(|ps| ps.iter().filter(|p| p.tier != Tier::Auto && p.amount.0 >= step).count()).unwrap_or(0) as u128;
+        (step * earned).min(self.tiers.auto_cap.0)
+    }
+
+    /// Auto payouts this contributor received in the last 24 hours.
+    fn auto_paid_today(&self, account: &AccountId) -> u128 {
+        let now = env::block_timestamp_ms();
+        self.records.get(account).map(|ps| ps.iter().filter(|p| p.tier == Tier::Auto && now.saturating_sub(p.at_ms.0) < DAY_MS).map(|p| p.amount.0).sum()).unwrap_or(0)
     }
 
     fn tier_for(&self, contributor: &AccountId, amount: u128) -> Tier {
-        if amount <= self.trust_limit(contributor) {
+        if amount <= self.trust_limit(contributor) && self.auto_paid_today(contributor) + amount <= self.tiers.auto_cap.0 {
             Tier::Auto
         } else if amount <= self.tiers.council_cap.0 {
             Tier::Council

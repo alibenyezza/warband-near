@@ -69,17 +69,94 @@ fn a_newcomer_needs_the_council_then_earns_auto_payouts() {
 #[test]
 fn trust_is_capped() {
     let mut c = board();
+    // eight council-approved bounties above the auto cap: each adds one trust step, up to the cap
     for _ in 0..8 {
-        let id = submitted(&mut c, NEAR / 20);
-        if c.tier_of(acc("dave.testnet"), U128(NEAR / 20)) == Tier::Council {
-            council_pays(&mut c, id);
-        } else {
-            ctx("alice.testnet", 0);
-            c.accept(id);
-        }
+        let id = submitted(&mut c, NEAR * 3 / 10);
+        council_pays(&mut c, id);
     }
     assert_eq!(c.record_of(acc("dave.testnet")).trust_limit.0, NEAR / 4);
     assert_eq!(c.tier_of(acc("dave.testnet"), U128(NEAR / 4 + 1)), Tier::Council);
+}
+
+/// alice and dave collude: after one council approval, alice posts tiny bounties for dave and accepts them herself
+#[test]
+fn auto_payouts_earn_no_trust_and_cannot_be_farmed() {
+    let mut c = board();
+    let first = submitted(&mut c, NEAR / 20);
+    council_pays(&mut c, first);
+    for _ in 0..10 {
+        let id = submitted(&mut c, 1);
+        ctx("alice.testnet", 0);
+        c.accept(id);
+        assert_eq!(c.bounty(id).unwrap().tier, Some(Tier::Auto));
+    }
+    let r = c.record_of(acc("dave.testnet"));
+    assert_eq!((r.finished, r.trust_limit.0), (11, NEAR / 20), "ten auto payouts, still one trust step");
+}
+
+#[test]
+fn a_bounty_under_one_trust_step_earns_no_trust_even_with_the_council() {
+    let mut c = board();
+    let id = submitted(&mut c, 1);
+    council_pays(&mut c, id);
+    assert_eq!(c.record_of(acc("dave.testnet")).trust_limit.0, 0);
+}
+
+#[test]
+fn auto_payouts_to_one_contributor_are_capped_per_day() {
+    let mut c = board();
+    for _ in 0..5 {
+        let id = submitted(&mut c, NEAR * 3 / 10);
+        council_pays(&mut c, id);
+    }
+    assert_eq!(c.record_of(acc("dave.testnet")).trust_limit.0, NEAR / 4);
+    let a = submitted(&mut c, NEAR / 5);
+    ctx("alice.testnet", 0);
+    c.accept(a);
+    assert_eq!(c.bounty(a).unwrap().tier, Some(Tier::Auto));
+    // 0.2 already today: another 0.1 would pass the 0.25 daily cap, so it waits for the council
+    assert_eq!(c.tier_of(acc("dave.testnet"), U128(NEAR / 10)), Tier::Council);
+    // the next day, auto again
+    let later = near_sdk::env::block_timestamp() + (DAY_MS + 1) * 1_000_000;
+    testing_env!(VMContextBuilder::new()
+        .current_account_id(acc("board.testnet"))
+        .predecessor_account_id(acc("alice.testnet"))
+        .block_timestamp(later)
+        .account_balance(NearToken::from_near(5))
+        .build());
+    assert_eq!(c.tier_of(acc("dave.testnet"), U128(NEAR / 10)), Tier::Auto);
+}
+
+#[test]
+#[should_panic(expected = "implicit accounts cannot claim")]
+fn an_implicit_account_cannot_claim() {
+    let mut c = board();
+    ctx("alice.testnet", POST_DEPOSIT);
+    let id = c.post("Draw".into(), U128(NEAR / 20));
+    ctx("98793cd91a3f870fb126f66285808c7e094afcfc4eda8a970f6648cdf0dbd6de", 0);
+    c.claim(id);
+}
+
+#[test]
+fn a_removed_proposal_closes_the_bounty_and_a_failed_one_stays_pending() {
+    let mut c = board();
+    let id = submitted(&mut c, NEAR);
+    ctx("alice.testnet", NEAR / 10);
+    c.accept(id);
+    ctx("board.testnet", 0);
+    c.on_proposed(id, acc("alice.testnet"), U128(NEAR / 10), Ok(9));
+    let failed = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let mut c2 = board();
+        let id = submitted(&mut c2, NEAR);
+        ctx("alice.testnet", NEAR / 10);
+        c2.accept(id);
+        ctx("board.testnet", 0);
+        c2.on_proposed(id, acc("alice.testnet"), U128(NEAR / 10), Ok(9));
+        c2.on_proposal_status(id, Ok(json!({ "status": "Failed" })));
+    }));
+    assert!(failed.is_err(), "Failed can be finalized again in the DAO");
+    assert_eq!(c.on_proposal_status(id, Err(PromiseError::Failed)), "Removed");
+    assert_eq!(c.bounty(id).unwrap().status, Status::Rejected);
 }
 
 #[test]
