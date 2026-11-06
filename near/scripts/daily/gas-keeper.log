@@ -1,0 +1,22 @@
+# gas-key keeper 2026-11-06T10:20:06.769Z on warband-daily.testnet, keeper gk-daily.warband-hq.testnet, funder warband-hq.testnet
+0. warband-hq.testnet creates gk-daily.warband-hq.testnet with one gas key (4 lanes, 0.2 NEAR of gas) in one transaction: tx GmkpZTcX62UjNXMhbwvjTCBN2dTidwExWhjkrwYk75yW
+1. The keeper's only key, read from the chain
+   1 key: ed25519:Bv37NEW5RE6NyniJBNLAnwbpifo8Qm5kX3VXeKZbFyKU GasKeyFunctionCall, receiver warband-daily.testnet, methods ["settle_raids","buyback","flush_to_dao","sync_weight"], 4 lanes, gas 0.2 NEAR
+
+2. The four upkeep calls at once, one per nonce lane
+   settle_raids  ok  tx BVNakSx1B7wyg9VgGd1kFJaTt8NjDwcxy2FiXVDfmaVp
+   buyback       refused by the protocol: NotEnoughGasKeyBalanceError Not enough gas key balance for gk-daily.warband-hq.testnet (balance: 17242864318476500000000, cost: 60918928488749500000000)
+   flush_to_dao  refused by the contract: less than 0.1 NEAR pending  tx HB86Xpjw74WGZZ3VSvb1VBbNhCutdAJiPJaSfkhHdHxM
+   sync_weight   refused by the contract: panicked at src/lib.rs:442:53:  tx BC56fAzJuHhcGRDftiC6DkGML4sbvH4ffKaDRshEZDMx
+   lanes ["276474435000000","276474435000000","276474435000000","276474435000000"] -> ["276474435000001","276474435000000","276474435000001","276474435000001"]
+   gas key 0.2 -> 0.199485 NEAR
+
+3. What a hijacked keeper would try
+   send 0.01 NEAR to warband-scammer.testnet: refused by the protocol: AccessKeyRequiresFullAccessActionError Access key requires full access
+   ft_transfer BAND to warband-scammer.testnet: refused by the protocol: AccessKeyDepositWithFunctionCallActionError Deposit is not allowed with function call
+   same, without the 1 yocto: refused by the protocol: AccessKeyMethodNameMismatchActionError Access key does not allow method ft_transfer
+   a proposal to the DAO: refused by the protocol: AccessKeyReceiverMismatchActionError Access key receiver warband-daily.testnet does not match transaction receiver dao-daily.warband-hq.testnet
+   withdraw its own gas key: refused by the protocol: AccessKeyRequiresFullAccessActionError Access key requires full access
+
+4. warband-hq.testnet refills the gas key from outside, holding no key on the keeper
+   gas key 0.199485 -> 0.249485 NEAR  tx 8CNbQUCC5L7X2FSuYobspXABiiYzR7zGv1V6Wa9QPAje

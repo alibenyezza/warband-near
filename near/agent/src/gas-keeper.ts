@@ -6,7 +6,7 @@
 // upkeep methods (settle_raids, buyback, flush_to_dao, sync_weight). The key holds its own prepaid gas, which the HQ
 // tops up from outside with TransferToGasKey, so the keeper never locks itself out and HQ holds no key on it. Four
 // nonce lanes let the four upkeep calls go out at once. The new private key is written to the keychain file only.
-// Log: near/scripts/gas-keeper.log
+// Log: near/scripts/gas-keeper.log (GAS_KEEPER_LOG to change it; the daily deployment logs to scripts/daily/gas-keeper.log)
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { Account, KeyPair, KeyPairSigner, PublicKey, actions, teraToGas, type KeyPairString } from "near-api-js";
@@ -21,7 +21,7 @@ const DAO = process.env.DAO ?? "dao-raids.warband-hq.testnet";
 const METHODS = ["settle_raids", "buyback", "flush_to_dao", "sync_weight"];
 const NEAR = 10n ** 24n;
 const near = (y: bigint | string) => (Number(BigInt(y) / 10n ** 18n) / 1e6).toString();
-const LOG = new URL("../../scripts/gas-keeper.log", import.meta.url);
+const LOG = process.env.GAS_KEEPER_LOG ?? new URL("../../scripts/gas-keeper.log", import.meta.url);
 writeFileSync(LOG, `# gas-key keeper ${new Date().toISOString()} on ${TOKEN}, keeper ${KEEPER}, funder ${HQ}\n`);
 const say = (s = "") => { console.log(s); appendFileSync(LOG, s + "\n"); };
 

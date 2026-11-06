@@ -1,0 +1,86 @@
+-- archer.warband-camp.testnet buys 0.45 NEAR
+│    Transaction ID: 5NmaMDdk1hDuwB52dGr8tUpGa5YRrrQKUuksNi1tALAE
+The "buy" call to <warband-daily.testnet> on behalf of <archer.warband-camp.testnet> succeeded.
+-- bard.warband-camp.testnet buys 0.30 NEAR
+│    Transaction ID: DgRpRQLdsmGyu7RzVZm2auwUDEoGZK4VyBMbnqcrU4mK
+The "buy" call to <warband-daily.testnet> on behalf of <bard.warband-camp.testnet> succeeded.
+-- drummer.warband-camp.testnet buys 0.35 NEAR
+│    Transaction ID: H58BpBmENgCnMfxR94DQfBSxCa996o3CKNiYeBRJW4L1
+The "buy" call to <warband-daily.testnet> on behalf of <drummer.warband-camp.testnet> succeeded.
+-- hunter.warband-camp.testnet buys 0.40 NEAR
+   0: Error: Account <hunter.warband-camp.testnet> does not have enough balance (0.354722093416310462488119 NEAR) to cover TX cost (0.51591890047152754 NEAR).
+-- mason.warband-camp.testnet buys 0.30 NEAR
+   0: Error: Account <mason.warband-camp.testnet> does not have enough balance (0.392186649202282641491883 NEAR) to cover TX cost (0.4159189004715275 NEAR).
+-- monk.warband-camp.testnet buys 0.35 NEAR
+│    Transaction ID: E1r6AQwbFPEt4tBGuABVEhBTLCcDwL1j8LZtAz7JRNnt
+The "buy" call to <warband-daily.testnet> on behalf of <monk.warband-camp.testnet> succeeded.
+-- piper.warband-camp.testnet buys 0.30 NEAR
+│    Transaction ID: 5CqDHk1MPAmHMEEN9i6Ex7CjaCezfN6LEfc8vKDjK3Ue
+The "buy" call to <warband-daily.testnet> on behalf of <piper.warband-camp.testnet> succeeded.
+-- rider.warband-camp.testnet buys 0.45 NEAR
+│    Transaction ID: 384CdPkVyupxzE1eDRvjyJ7D3AFgf8WaJiKUmdp78YaY
+The "buy" call to <warband-daily.testnet> on behalf of <rider.warband-camp.testnet> succeeded.
+-- scout.warband-camp.testnet buys 0.40 NEAR
+│    Transaction ID: H2S2GAU92xEZGw91Vpj88RQdLK4KrnLxxujtDk1Yukh3
+The "buy" call to <warband-daily.testnet> on behalf of <scout.warband-camp.testnet> succeeded.
+-- smith.warband-camp.testnet buys 0.35 NEAR
+│    Transaction ID: EF3puuq1yuadiy6GzD2cA69GCZ4A84VWwMnGGmA6ojZm
+The "buy" call to <warband-daily.testnet> on behalf of <smith.warband-camp.testnet> succeeded.
+-- tanner.warband-camp.testnet buys 0.30 NEAR
+│    Transaction ID: DebHz6s74j7eDvjnGTyip27cEWFxgawnLYrpU6mAYWnc
+The "buy" call to <warband-daily.testnet> on behalf of <tanner.warband-camp.testnet> succeeded.
+-- warden.warband-camp.testnet buys 0.40 NEAR
+│    Transaction ID: 5NZKrZ4efA3QttCZjEwc36uwm7BYa4UG4RvVv47bTCTz
+The "buy" call to <warband-daily.testnet> on behalf of <warden.warband-camp.testnet> succeeded.
+-- alice sells a quarter of her v2 BAND
+│    Transaction ID: 29cbZzVV3FEb5HfHzECfSmY7YgyuWkuWgdtC6fekm9K7
+The "sell" call to <warband-raids.testnet> on behalf of <warband-alice.testnet> succeeded.
+-- alice buys 2 NEAR
+│    Transaction ID: 8KW7h6HBXzJFU1BUTwPoPNKbowxafkQBHdsYhhqoRZLL
+The "buy" call to <warband-daily.testnet> on behalf of <warband-alice.testnet> succeeded.
+-- bob buys 1 NEAR
+│    Transaction ID: 5PhtGtKqDnhntYTezus6takrm9p6qWG4hHAWgT6SZbTq
+The "buy" call to <warband-daily.testnet> on behalf of <warband-bob.testnet> succeeded.
+-- archer.warband-camp.testnet registers as a DAO voter
+│    Transaction ID: 6sR98Tt4d8A4ixYyM84dLcKgqwhrG1tjhifhMm23WrZz
+The "dao_register" call to <warband-daily.testnet> on behalf of <archer.warband-camp.testnet> succeeded.
+-- bard.warband-camp.testnet registers as a DAO voter
+│    Transaction ID: 7fghaxho3akGs1HdV2n7NwXW2Em9oY7KmKDHCWc1zP5J
+The "dao_register" call to <warband-daily.testnet> on behalf of <bard.warband-camp.testnet> succeeded.
+-- drummer.warband-camp.testnet registers as a DAO voter
+│    Transaction ID: FnaRPkV3TvTwqhsrcRVCE7wb3fEjXwexeEZY4iak8qBj
+The "dao_register" call to <warband-daily.testnet> on behalf of <drummer.warband-camp.testnet> succeeded.
+-- hunter.warband-camp.testnet registers as a DAO voter
+│    Transaction ID: BM4q62gAxY4gpsK6NiVRXiEpFLkaay6yqmdUvyP2yqse
+The "dao_register" call to <warband-daily.testnet> on behalf of <hunter.warband-camp.testnet> succeeded.
+-- mason.warband-camp.testnet registers as a DAO voter
+│    Transaction ID: h4qw5hcQhobsiy3N3Eou8Tu6Nz2zrTQZNg1jnatpAUk
+The "dao_register" call to <warband-daily.testnet> on behalf of <mason.warband-camp.testnet> succeeded.
+-- monk.warband-camp.testnet registers as a DAO voter
+│    Transaction ID: 631knBddQqf28GwwrpgHnKBrUhVCNXDMKMTVCtMRZbQ6
+The "dao_register" call to <warband-daily.testnet> on behalf of <monk.warband-camp.testnet> succeeded.
+-- piper.warband-camp.testnet registers as a DAO voter
+│    Transaction ID: 8puBLDYtXa4kPWVg13G7GjTxSJzYZpyoDGUFQLyK3hmH
+The "dao_register" call to <warband-daily.testnet> on behalf of <piper.warband-camp.testnet> succeeded.
+-- rider.warband-camp.testnet registers as a DAO voter
+│    Transaction ID: aBd26mWFMNDUkNiTxfEw9XXoEJh2WCJ2LgDStqgqHEo
+The "dao_register" call to <warband-daily.testnet> on behalf of <rider.warband-camp.testnet> succeeded.
+-- scout.warband-camp.testnet registers as a DAO voter
+│    Transaction ID: 4zKQn9FCz4ABoFDLXQT5DmR7ogKEpqfBVvxt5WBoDFp5
+The "dao_register" call to <warband-daily.testnet> on behalf of <scout.warband-camp.testnet> succeeded.
+-- smith.warband-camp.testnet registers as a DAO voter
+│    Transaction ID: DafoYYwkuCxD3LV9E9wMVZKzLMNoCW5THjp3sLY7RvMA
+The "dao_register" call to <warband-daily.testnet> on behalf of <smith.warband-camp.testnet> succeeded.
+-- tanner.warband-camp.testnet registers as a DAO voter
+│    Transaction ID: 5rD2tESNn8GNTpcvHnATtPAVvQuQygX74t7eNY4sgNv4
+The "dao_register" call to <warband-daily.testnet> on behalf of <tanner.warband-camp.testnet> succeeded.
+-- warden.warband-camp.testnet registers as a DAO voter
+│    Transaction ID: GJE344R9iAvy1M6hgBJqUzmr2GYAV1XmzvYoi1ARR2z7
+The "dao_register" call to <warband-daily.testnet> on behalf of <warden.warband-camp.testnet> succeeded.
+-- warband-alice.testnet registers as a DAO voter
+│    Transaction ID: AA8rB4n2QgLjbmaJfB2RREMka54AQzcExrq1XuF9oTA9
+The "dao_register" call to <warband-daily.testnet> on behalf of <warband-alice.testnet> succeeded.
+-- warband-bob.testnet registers as a DAO voter
+│    Transaction ID: 67Xn5t5e2BMjFQYd3iMTJHgwqk1uuMgkV68HjUhXHR1U
+The "dao_register" call to <warband-daily.testnet> on behalf of <warband-bob.testnet> succeeded.
+{"day_index":"0","price":"44688607500000000","reference_high":"44688607500000000","floor_price":"35750886000000000","buyback_open":false,"near_reserve":"36615000000000000108000000","token_reserve":"819336337566571075010560584","real_near":"6615000000000000108000000","circulating":"180663662433428924989439416","burned":"0","buyback_reserve":"257250000000000004200000","buyback_spent_today":"0","buyback_cap_today":"51450000000000000840000","dao_pending":"257250000000000004200000","dao_paid":"0","holders":14}

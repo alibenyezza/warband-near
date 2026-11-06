@@ -1,0 +1,8 @@
+
+== 0. deploy the board on warband-dailyboard.testnet, tiers: +0.05 NEAR of trust per paid bounty, auto up to 0.25, council up to 0.5, above: DAO vote
+│    Transaction ID: 7LLAQN2GMj1oUDrV8a8UcjiVCJtyFGUSMAyC6BkW9sU1
+The "new" call to <warband-dailyboard.testnet> on behalf of <warband-dailyboard.testnet> succeeded.
+   faucet surplus sent to warband-hq.testnet: 7.933045 NEAR
+│    Transaction ID: 47TtbH2vew3ARwTtjJjwuNhbHHdgsNBmvFYDBVQEz95B
+<warband-dailyboard.testnet> has transferred 7.933045 NEAR to <warband-hq.testnet> successfully.
+{"dao":"dao-daily.warband-hq.testnet","tiers":{"trust_step":"50000000000000000000000","auto_cap":"250000000000000000000000","council_cap":"500000000000000000000000"},"petty_cash":"0"}

@@ -1,0 +1,21 @@
+﻿
+== 2026-11-06 11:26:55Z run (task)
+   day 0, keeper gk-daily.warband-hq.testnet on warband-daily.testnet
+   keeper settle_raids: ok  tx 232wQ7vrnwho1HyYxGfM8o1V5c1tMvLszcZ7pjccMUWE
+   keeper flush_to_dao: ok  tx 4ZtusE83SoxNcUjWjsfJXKs6qeh27aVb4f49uFvfP2vK
+   keeper sync_weight archer.warband-camp.testnet: ok  tx EYh1Nqkhj4icBGf5uuXGYy2pRqErTWoYBLnkTg4o2cNU
+   keeper sync_weight bard.warband-camp.testnet: ok  tx 2uVB8G5ZTTjJYU4iDmDx7ggcXVnP1FFx6G9vLsD3cPcp
+   keeper sync_weight drummer.warband-camp.testnet: ok  tx 6f1cEzAdRggbSfeyicCK1QDPVaU1T2B4VeW5aoG2v6Po
+   keeper sync_weight hunter.warband-camp.testnet: ok  tx 3byrsG3LJ7Vcfh4EZhCo4Lz3jdRUP1ggwPsb9DxZ4Uvi
+   keeper sync_weight mason.warband-camp.testnet: ok  tx FMHwmVfPN7xHaVoq6Syh9AC1cHJcQAvwQ3SZZPyZx4KZ
+   keeper sync_weight monk.warband-camp.testnet: ok  tx EnsLv9VkESx8XG1RaSj4zP7Z3sW9U64A8XFTCsAcWSAu
+   keeper sync_weight piper.warband-camp.testnet: ok  tx n5uBfaf8BiVPtHcE5HkJ19HSLHpVfdThYS6bZLC5a2N
+   keeper sync_weight rider.warband-camp.testnet: ok  tx HkPdE3huSRWRFs9NyUPJ3M7KAGrzSoU26x2LCCXCi5Yt
+   keeper sync_weight scout.warband-camp.testnet: ok  tx E8pno3YEmJPP7fh6F7LahfJJrx4xvsuuyf68RgDr6Wiw
+   keeper sync_weight smith.warband-camp.testnet: ok  tx Bb57ujZqNAEosfBstJc26t71LT5YiF33GsqYJLVoAC1y
+   keeper sync_weight tanner.warband-camp.testnet: ok  tx 4zwvKrg8xacngzHVHvprHUXcR1p4Rou7otsCvz1sGSSC
+   keeper sync_weight warden.warband-camp.testnet: ok  tx 5zb54apxnAMZBhRCYi2yRnQ4wrpAw5hfp26zgDHL4Wti
+   keeper sync_weight warband-alice.testnet: ok  tx 8Qd2y8F8oyvFjtRLoPTQY2BAS5HKGebLymv2z4pVJLSU
+   keeper sync_weight warband-bob.testnet: ok  tx G5x7GGnNySrHVkZJ994fYJCZved7y4nDwja3AqQ83E2X
+== 2026-11-06 10:28:03 UTC, day 0 of warband-daily.testnet
+   launch day: lots season for one day, the first raid is day 1

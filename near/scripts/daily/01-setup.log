@@ -1,0 +1,38 @@
+== DAO dao-daily.warband-hq.testnet (5.8 NEAR of storage, paid by warband-hq.testnet)
+│    Transaction ID: GYugArYkxuz6y9V3FVppfsqQGAURSy9eqjKexFAfuEnS
+New account <dao-daily.warband-hq.testnet> has been successfully created.
+│    Transaction ID: 7GXcQ27Z8YeBPaeRai1Vc4y4Qd293BJUj1zrJz4jWo7s
+Contract code has been successfully deployed.
+The "new" call to <dao-daily.warband-hq.testnet> on behalf of <dao-daily.warband-hq.testnet> succeeded.
+== Warband on warband-daily.testnet, launch parameters, day_seconds 86400
+│    Transaction ID: A62sn9a9C7ULeFV4tT3tpfyQgTCaNXtjzmQk6oRMWoKi
+Contract code has been successfully deployed.
+The "new" call to <warband-daily.testnet> on behalf of <warband-daily.testnet> succeeded.
+== the council points the DAO at warband-daily.testnet (SetStakingContract, can only be set once)
+│    Transaction ID: 3ViaLiYM4tf9SdJrqXCEt99zzepTzm8mp6DgjaNrPbns
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+The "add_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <warband-hq.testnet> succeeded.
+│    Transaction ID: 5ioeTJUZ2gph4gEBQwaNxyq8i7NDMdSKSgomEaAUdTau
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <warband-hq.testnet> succeeded.
+== the council hands governance to the holders (ChangePolicy to dao/policy-daily.json)
+│    Transaction ID: 8NG9d6YDTqNWcnyRKryM3HxBrLY2epJZPotMz3caxeE
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+The "add_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <warband-hq.testnet> succeeded.
+│    Transaction ID: BADdoBBX1QLKXVBXbKV85swZwTaQtC7zdn9SgSvEXU68
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <warband-hq.testnet> succeeded.
+== state
+"warband-daily.testnet"
+   everyone ['*:AddProposal']
+   council ['config:*', 'vote:*']
+   holders ['policy_update_default_vote_policy:*', 'transfer:*', 'policy_remove_role:*', 'policy_add_or_update_role:*', 'factory_info_update:*', 'add_member_to_role:*', 'upgrade_remote:*', 'set_vote_token:*', 'policy_update_parameters:*', 'add_bounty:*', 'policy:*', 'call:*', 'bounty_done:*', 'upgrade_self:*', 'remove_member_from_role:*']
+   day 0

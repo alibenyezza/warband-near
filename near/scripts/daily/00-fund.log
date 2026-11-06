@@ -1,0 +1,34 @@
+-- archer.warband-camp.testnet sells half of its v2 BAND
+│    Transaction ID: EQVxmiCsxdJMeuL5tgP1KGnYoKGnp93FbA8kPghE7KsL
+The "sell" call to <warband-raids.testnet> on behalf of <archer.warband-camp.testnet> succeeded.
+-- bard.warband-camp.testnet sells half of its v2 BAND
+│    Transaction ID: 2nAwQ9T8GhQhCihcTQgJELQTeocTikaDZ4AkqbuDuKyq
+The "sell" call to <warband-raids.testnet> on behalf of <bard.warband-camp.testnet> succeeded.
+-- drummer.warband-camp.testnet sells half of its v2 BAND
+│    Transaction ID: HPwt5Srmp482uxn1uDVNPNmRVq4HiF17drWFE6MaaGHE
+The "sell" call to <warband-raids.testnet> on behalf of <drummer.warband-camp.testnet> succeeded.
+-- hunter.warband-camp.testnet sells half of its v2 BAND
+│    Transaction ID: G1nVtHNoUvR1idDXVBtkdPhm7Mn6qGuEfpWx7eVJDy3o
+The "sell" call to <warband-raids.testnet> on behalf of <hunter.warband-camp.testnet> succeeded.
+-- mason.warband-camp.testnet sells half of its v2 BAND
+│    Transaction ID: 4bhaEGEH3hTQg4RcV3Rx3x1hk2cvKeMmQVCEjxBekmY2
+The "sell" call to <warband-raids.testnet> on behalf of <mason.warband-camp.testnet> succeeded.
+-- monk.warband-camp.testnet sells half of its v2 BAND
+│    Transaction ID: Cc4qzY53pEuktVBTrVjWWcxVcyoMET8311hMzALBgCva
+The "sell" call to <warband-raids.testnet> on behalf of <monk.warband-camp.testnet> succeeded.
+-- piper.warband-camp.testnet sells half of its v2 BAND
+gave up: piper.warband-camp.testnet sell
+-- rider.warband-camp.testnet sells half of its v2 BAND
+│    Transaction ID: 5NnZuk97bsCFmT7YxzsG7Fxyi3SANEerjbYeCbDvQJHt
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: not enough tokens")
+-- scout.warband-camp.testnet sells half of its v2 BAND
+│    Transaction ID: 3bKqoxNZw2vdzB22dVuC588pcmJRPvyikpdHHP3t34XW
+The "sell" call to <warband-raids.testnet> on behalf of <scout.warband-camp.testnet> succeeded.
+-- smith.warband-camp.testnet sells half of its v2 BAND
+│    Transaction ID: 8DUZNAo1zd9MHDQv9UTtiLRHxawoa7m4Cz7tBnH8qTRF
+The "sell" call to <warband-raids.testnet> on behalf of <smith.warband-camp.testnet> succeeded.
+-- tanner.warband-camp.testnet sells half of its v2 BAND
+gave up: tanner.warband-camp.testnet sell
+-- warden.warband-camp.testnet sells half of its v2 BAND
+gave up: warden.warband-camp.testnet sell

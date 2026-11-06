@@ -7,7 +7,9 @@ cd "$(dirname "$0")/../.."
 source scripts/lib.sh
 export NET=testnet-fastnear
 BOARD=${BOARD:-warband-bountyboard.testnet}
-DAO=dao.warband-hq.testnet           # the v1 war chest: Sputnik v2, council warband-hq, holders vote by level weight
+DAO=${DAO:-dao.warband-hq.testnet}   # the war chest: Sputnik v2, council warband-hq, holders vote by level weight
+                                    # (the daily deployment runs this with DAO=dao-daily.warband-hq.testnet)
+VOTERS=${VOTERS:-warband-alice.testnet}   # holders who vote, in order, until a DAO proposal passes
 HQ=warband-hq.testnet                # the council
 CAROL=warband-carol.testnet DAVE=warband-dave.testnet
 WASM=${BOUNTIES_WASM:-$HOME/build/bounties/near/warband_bounties.wasm}
@@ -19,6 +21,8 @@ bounty() { view $BOARD bounty "{\"id\":\"$1\"}" | python3 -c 'import sys,json;b=
 record() { view $BOARD record_of "{\"account_id\":\"$1\"}" | python3 -c 'import sys,json;r=json.load(sys.stdin);print("   record",r["account_id"],"finished",r["finished"],"paid",int(r["total_paid"])/1e24,"trust limit",int(r["trust_limit"])/1e24,[(p["bounty"],p["tier"],p["approved_by"]) for p in r["points"]])'; }
 next_id() { view $BOARD bounties '{"limit":100}' | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))'; }
 refused() { call "$@" || true; }   # a refusal we expect: the script goes on
+pstatus() { view $DAO get_proposal "{\"id\":$1}" | python3 -c 'import sys,json;print(json.load(sys.stdin)["status"])'; }
+vote() { for v in $VOTERS; do [ "$(pstatus $1)" = InProgress ] || break; echo "   $v votes for proposal $1"; call $v $DAO act_proposal "{\"id\":$1,\"action\":\"VoteApprove\"}" '0 NEAR' '150 Tgas'; done; }
 
 if [ "${DEPLOY:-1}" = 1 ]; then
   step "0. deploy the board on $BOARD, tiers: +0.05 NEAR of trust per paid bounty, auto up to 0.25, council up to 0.5, above: DAO vote"
@@ -34,6 +38,7 @@ if [ "${DEPLOY:-1}" = 1 ]; then
     grep -E "Transaction ID|transferred|Error" | sed 's/\x1b\[[0-9;]*m//g'
   view $BOARD config
 fi
+[ "${ONLY_DEPLOY:-0}" = 1 ] && exit 0   # the daily deployment deploys on launch day and runs the tiers from day 1
 
 if [ "${FROM:-0}" -le 1 ]; then
 free() { curl -s -X POST "$RPC" -H 'content-type: application/json' -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"query\",\"params\":{\"request_type\":\"view_account\",\"finality\":\"final\",\"account_id\":\"$DAO\"}}" | python3 -c 'import sys,json;r=json.load(sys.stdin)["result"];print(f"{(int(r["amount"])-r["storage_usage"]*10**19)/1e24:.3f}")'; }
@@ -45,7 +50,7 @@ fi
 
 step "1. petty cash comes from the treasury: alice proposes a 1 NEAR Transfer from the DAO to the board, holders vote"
 call $ALICE $DAO add_proposal "{\"proposal\":{\"description\":\"Petty cash for the bounty board $BOARD\",\"kind\":{\"Transfer\":{\"token_id\":\"\",\"receiver_id\":\"$BOARD\",\"amount\":\"1$N\"}}}}" '0.1 NEAR'
-id=$(last); call $ALICE $DAO act_proposal "{\"id\":$id,\"action\":\"VoteApprove\"}" '0 NEAR' '150 Tgas'; status $id
+id=$(last); vote $id; status $id
 view $BOARD config
 fi
 
@@ -82,7 +87,7 @@ call $ALICE $BOARD accept "{\"id\":\"$b\"}" '0.1 NEAR' '150 Tgas'; bounty $b
 pid=$(view $BOARD bounty "{\"id\":\"$b\"}" | python3 -c 'import sys,json;print(json.load(sys.stdin)["dao_proposal"])')
 echo "   settling before the vote is refused:"
 refused $CAROL $BOARD settle_dao "{\"id\":\"$b\"}" '0 NEAR'
-call $ALICE $DAO act_proposal "{\"id\":$pid,\"action\":\"VoteApprove\"}" '0 NEAR' '150 Tgas'; status $pid
+vote $pid; status $pid
 call $CAROL $BOARD settle_dao "{\"id\":\"$b\"}" '0 NEAR'; bounty $b; record $CAROL
 
 step "5. the board"
