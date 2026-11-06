@@ -2,7 +2,7 @@
 // The read-only page works without it.
 import { NearConnector } from "https://cdn.jsdelivr.net/npm/@hot-labs/near-connect@0.12.0/+esm";
 
-const TOKEN = new URLSearchParams(location.search).get("token") ?? "warband-raids.testnet";
+const TOKEN = new URLSearchParams(location.search).get("token") ?? "warband-daily.testnet";
 const $ = (s) => document.querySelector(s);
 const status = (t) => ($("#tx-status").textContent = t);
 const GAS = "100000000000000"; // 100 Tgas

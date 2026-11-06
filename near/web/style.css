@@ -210,3 +210,14 @@ td.mini .seal { margin-right: 3px; vertical-align: middle; }
 }
 @media (prefers-reduced-motion: reduce) { .feed li.new, .toast { animation: none; } .meter-bar i { transition: none; } }
 .feed li.muted { display: block; }
+
+/* scoreboard: the three numbers a visitor checks first */
+.scoreboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; margin-top: 36px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.scoreboard > div { background: var(--surface); padding: 20px 22px; }
+.scoreboard span { display: block; font-family: var(--mono); font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.12em; }
+.scoreboard strong { display: block; margin: 6px 0 4px; font-size: clamp(34px, 5vw, 52px); font-weight: 500; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: var(--bone); }
+.scoreboard > div:first-child strong { color: var(--wax-hi); }
+.scoreboard em { font-style: normal; font-size: 12px; color: var(--muted); }
+.deployments { font-family: var(--mono); font-size: 12px; color: var(--dim); margin-top: 18px; }
+.deployments a { color: var(--muted); }
+.deployments b { color: var(--text); font-weight: 500; }

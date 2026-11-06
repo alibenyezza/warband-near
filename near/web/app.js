@@ -2,8 +2,15 @@
 const params = new URLSearchParams(location.search);
 // public RPCs rate-limit: on an error or a slow answer, the next one in the list is tried
 const RPCS = [...new Set([params.get("rpc") ?? "https://test.rpc.fastnear.com", "https://near-testnet.drpc.org", "https://rpc.testnet.fastnear.com"])];
-const TOKEN = params.get("token") ?? "warband-raids.testnet";
-const DAO = params.get("dao") ?? "dao-raids.warband-hq.testnet";
+// Three deployments of the same contract (README, "Deployments"): v3 is the live one, with launch parameters.
+const DEPLOYMENTS = {
+  "warband-daily.testnet": { dao: "dao-daily.warband-hq.testnet", board: "warband-dailyboard.testnet", name: "v3 · daily raids" },
+  "warband-raids.testnet": { dao: "dao-raids.warband-hq.testnet", board: "warband-bountyboard.testnet", name: "v2 · 3-minute days" },
+  "warband-band.testnet": { dao: "dao.warband-hq.testnet", board: "warband-bountyboard.testnet", name: "v1 · levels only" },
+};
+const TOKEN = params.get("token") ?? "warband-daily.testnet";
+const DEPLOY = DEPLOYMENTS[TOKEN] ?? { dao: "dao-daily.warband-hq.testnet", board: "warband-dailyboard.testnet", name: "custom" };
+const DAO = params.get("dao") ?? DEPLOY.dao;
 const REFRESH_MS = Number(params.get("refresh") ?? 4000);
 const RANKS = ["Recruit", "Soldier", "Corporal", "Sergeant", "Lieutenant", "Captain", "Commander", "Colonel", "General", "Marshal", "Warlord"];
 const TIERS = [
@@ -115,7 +122,7 @@ async function market() {
   const m = await view(TOKEN, "market");
   cfg ??= await view(TOKEN, "config");
   $("#facts").innerHTML = [
-    `<span class="chip">1 day = <b>${cfg.day_seconds / 60} min</b> on testnet</span>`,
+    `<span class="chip">1 day = <b>${cfg.day_seconds >= 86400 ? cfg.day_seconds / 3600 + " h" : cfg.day_seconds / 60 + " min"}</b>${cfg.day_seconds >= 86400 ? " (launch setting)" : " on testnet"}</span>`,
     `<span class="chip">fee <b>${cfg.fee_bps / 100}%</b>, ${cfg.raid ? cfg.raid.chest_share_bps / 100 + "% of it to the raid chest" : cfg.dao_share_bps / 100 + "% to the DAO"}</span>`,
     `<span class="chip">day <b>${m.day_index}</b></span>`,
     `<span class="chip">holders <b>${m.holders}</b></span>`,
@@ -159,6 +166,11 @@ async function raidStatus() {
     cell("Minted by raids", band(r.minted), "BAND"),
     cell("Burned by raids", "", ""),
   ].join("");
+  $("#scoreboard").innerHTML = [
+    `<div><span>win streak</span><strong>${r.streak}</strong><em>best ${r.best_streak} · record ${r.won}–${r.lost}</em></div>`,
+    `<div><span>raid chest</span><strong>${near(r.chest, 3)}</strong><em>NEAR, shared by the next won raid</em></div>`,
+    `<div><span>raid #${r.raid} ends in</span><strong id="score-clock">–</strong><em>${r.joiners} / ${r.min_joiners} raiders in</em></div>`,
+  ].join("");
   const last = r.last;
   const banner = $("#raid-last");
   if (last && last.joiners > 0) {
@@ -181,7 +193,10 @@ async function raidStatus() {
 function tickClock() {
   if (!raid) return;
   const s = Math.max(0, Math.floor((Number(big(raid.ends_at) / 1_000_000n) - Date.now()) / 1000));
-  $("#raid-clock").textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  const hms = s >= 3600 ? `${Math.floor(s / 3600)}:${String(Math.floor(s / 60) % 60).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}` : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  $("#raid-clock").textContent = hms;
+  const sc = $("#score-clock");
+  if (sc) sc.textContent = s === 0 ? "settling" : hms;
   $("#raid-clock").classList.toggle("hot", s <= 30);
   if (s === 0) $("#raid-clock").textContent = "settling";
 }
@@ -192,7 +207,7 @@ const feedLine = (e) => {
   const k = e.kind;
   if (k === "raid_join") return { cls: "join", text: `${who(e.account)} joined the raid with <b>${band(e.tokens)}</b> BAND` };
   if (k === "raid_won") return { cls: "won", text: `<b>Raid won.</b> The band showed up.` };
-  if (k === "raid_lost") return { cls: "lost", text: `<b>Raid lost.</b> The chest bought back and burned <b>${band(e.tokens)}</b> BAND.` };
+  if (k === "raid_lost") return { cls: "lost", text: e.count ? `<b>${e.count} raids lost in a row.</b> Nobody showed up; the chest bought back and burned <b>${band(e.tokens)}</b> BAND.` : `<b>Raid lost.</b> The chest bought back and burned <b>${band(e.tokens)}</b> BAND.` };
   if (k === "raid_claim") return { cls: "claim", text: `${who(e.account)} claimed <b>+${band(e.tokens)}</b> BAND and <b>${near(e.near, 4)}</b> NEAR of loot` };
   if (k.startsWith("loot_")) {
     const t = k.slice(5);
@@ -216,13 +231,28 @@ function toast(html, cls) {
   toast.timer = setTimeout(() => (t.hidden = true), 6000);
 }
 
+// Runs of lost raids settled one after the other (nobody showed up for days) fold into one row.
+function fold(h) {
+  const out = [];
+  for (const e of h) {
+    const prev = out[out.length - 1];
+    if (e.kind === "raid_lost" && prev?.kind === "raid_lost") {
+      prev.count = (prev.count ?? 1) + 1;
+      prev.tokens = (big(prev.tokens) + big(e.tokens)).toString();
+      prev.first = e.n;
+    } else out.push({ ...e });
+  }
+  return out;
+}
+
 async function history() {
   const h = await view(TOKEN, "history", { limit: 100 });
-  $("#history tbody").innerHTML = h
+  const folded = fold(h);
+  $("#history tbody").innerHTML = folded
     .slice(0, 30)
-    .map((e) => `<tr><td>${e.n}</td><td>${ago(e.at)}</td><td><span class="tag ${esc(e.kind)}">${esc(e.kind)}</span></td><td>${esc(e.account)}</td><td class="num">${big(e.near) ? near(e.near, 4) : ""}</td><td class="num">${big(e.tokens) ? band(e.tokens) : ""}</td></tr>`)
+    .map((e) => `<tr><td>${e.n}</td><td>${ago(e.at)}</td><td><span class="tag ${esc(e.kind)}">${esc(e.kind)}</span>${e.count ? ` <span class="muted">x${e.count} in a row</span>` : ""}</td><td>${esc(e.account)}</td><td class="num">${big(e.near) ? near(e.near, 4) : ""}</td><td class="num">${big(e.tokens) ? band(e.tokens) : ""}</td></tr>`)
     .join("");
-  const lines = h.map((e) => ({ e, l: feedLine(e) })).filter((x) => x.l);
+  const lines = folded.map((e) => ({ e, l: feedLine(e) })).filter((x) => x.l);
   const newest = h.length ? Number(h[0].n) : -1;
   $("#feed").innerHTML = lines.length
     ? lines
@@ -340,7 +370,7 @@ async function dao() {
 }
 
 // The bounty board: payouts from the war chest, tiered by each contributor's record (near/contracts/bounties).
-const BOARD = params.get("board") ?? "warband-bountyboard.testnet";
+const BOARD = params.get("board") ?? DEPLOY.board;
 async function board() {
   const [cfg, list] = await Promise.all([view(BOARD, "config"), view(BOARD, "bounties", { limit: 100 })]);
   const t = cfg.tiers;
@@ -377,6 +407,9 @@ async function refresh() {
 }
 
 $("#token-id").textContent = TOKEN;
+$("#deployments").innerHTML = Object.entries(DEPLOYMENTS)
+  .map(([id, d]) => (id === TOKEN ? `<b>${esc(d.name)}</b>` : `<a href="?token=${id}">${esc(d.name)}</a>`))
+  .join(" · ");
 $("#lookup").addEventListener("submit", (e) => {
   e.preventDefault();
   account($("#account").value.trim());

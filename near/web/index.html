@@ -27,13 +27,15 @@
 
   <main id="top">
     <section class="hero">
-      <p class="prompt">$ near view <span id="token-id">warband-raids.testnet</span> raid_status<span class="cursor"></span></p>
+      <p class="prompt">$ near view <span id="token-id">warband-daily.testnet</span> raid_status<span class="cursor"></span></p>
       <h1>Hold. Show up. Loot.</h1>
       <p class="lede">Every day the band raids. Holders check in with tokens held for at least a day. If enough of the
         band shows up, the raiders are minted a share and pull loot from the chest. If it does not, part of the chest is
         bought back and burned. Lots still level up the longer you hold, and the level still weighs your DAO vote.
         Everything runs in the contract; nobody holds its keys.</p>
+      <div class="scoreboard" id="scoreboard" aria-live="polite"></div>
       <div class="facts" id="facts"></div>
+      <p class="deployments">Deployment: <span id="deployments"></span>. Read straight from NEAR testnet, no wallet needed.</p>
     </section>
 
     <section id="raid" class="panel">
