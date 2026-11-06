@@ -6,8 +6,9 @@ chest buys tokens and burns them, and the streak goes back to zero. Badges are s
 account did and improve its loot odds.
 
 It replaces the yield logic with a game loop. Levels, LIFO lots and the level-weighted DAO vote stay the same.
-Everything runs in the contract (`contracts/warband/src/raids.rs`), with no backend. There is no admin and no
-upgrade, and every parameter is fixed at launch and readable through `config`.
+Everything runs in the contract (`contracts/warband/src/raids.rs`), with no backend. The contract has no admin
+method and every parameter is fixed at launch and readable through `config`. Upgrades are possible only while the
+account keeps a full-access key: v1's is deleted, v2's and v3's are deleted on 13 Nov 2026 (README, "Keys").
 
 ## One raid
 
@@ -87,7 +88,7 @@ carried by a single whale. A band that plays prints a little, and a band that qu
 
 | Part | Status |
 |---|---|
-| Raids, chest, pulls, badges, mints and burns | in the contract, 20 unit tests (`raid_tests.rs`), plus the 18 Warband tests |
+| Raids, chest, pulls, badges, mints and burns | in the contract, 22 unit tests (`raid_tests.rs`), plus the 18 token tests (40 in all) |
 | Community behaviour in the simulation | invented (see the scenarios in `sim/raids.py`). The simulation shows what the rules do with it, not a forecast. |
 | Loot | NEAR from the chest only. No outside NFT is deposited into the pool. |
 

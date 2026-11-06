@@ -144,7 +144,7 @@ async function raidStatus() {
   const r = raid;
   const target = big(r.target);
   const joined = big(r.joined);
-  $("#raid-title").textContent = `Raid #${r.raid}`;
+  $("#raid-title").textContent = r.raid === "0" ? "Launch day: lots season, raid #1 opens tomorrow" : `Raid #${r.raid}`;
   // the bar spans 160% of the target so the goal mark sits in view, and overflows to full when it is passed
   const span = target > 0n ? (target * 16n) / 10n : 1n;
   const pct = target > 0n ? Math.min(100, Number((joined * 1000n) / span) / 10) : 0;
@@ -169,7 +169,7 @@ async function raidStatus() {
   $("#scoreboard").innerHTML = [
     `<div><span>win streak</span><strong>${r.streak}</strong><em>best ${r.best_streak} · record ${r.won}–${r.lost}</em></div>`,
     `<div><span>raid chest</span><strong>${near(r.chest, 3)}</strong><em>NEAR, shared by the next won raid</em></div>`,
-    `<div><span>raid #${r.raid} ends in</span><strong id="score-clock">–</strong><em>${r.joiners} / ${r.min_joiners} raiders in</em></div>`,
+    `<div><span>${r.raid === "0" ? "launch day · first raid opens in" : `raid #${r.raid} ends in`}</span><strong id="score-clock">–</strong><em>${r.joiners} / ${r.min_joiners} raiders in</em></div>`,
   ].join("");
   const last = r.last;
   const banner = $("#raid-last");

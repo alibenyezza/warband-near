@@ -6,9 +6,49 @@ five minutes ago weighs nothing. Every day the band raids: holders check in with
 enough of the band shows up, the raiders are minted a share and pull loot from a chest filled by trading fees. If it
 does not, the chest buys back BAND and burns it. Badges are soulbound NFTs that record what an account did.
 
-Built for NEAR HACKATHON 2026 (tracks: **Memecoins With Mechanics**, **Social Money**, **AI Security & Defense**).
-Live on testnet: **Raids** (v2) `warband-raids.testnet` with its DAO `dao-raids.warband-hq.testnet`. The first
-version, without raids (`warband-band.testnet` with `dao.warband-hq.testnet`), stays live and locked.
+Built for NEAR HACKATHON 2026, tracks **Memecoins With Mechanics** (`memecoins`) and **Social Money** (`social`).
+
+**Live page: https://alibenyezza.github.io/warband-near/** (reads NEAR testnet from your browser, no wallet needed).
+It opens on the daily deployment, `warband-daily.testnet`, where the twelve-raider camp joins one raid per real day
+until 18 Nov 2026.
+
+## Check it in 30 seconds, without a wallet
+
+1. Open the live page. See the win streak, the raid chest and the countdown to the end of today's raid, then the
+   raiders checked in today, the loot feed, the band ranked by vote weight (not balance), the war chest DAO and its
+   proposals, the bounty board with each contributor's record, and the log.
+2. Read the raid from a terminal:
+   `curl -s https://rpc.testnet.fastnear.com -H 'content-type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"query","params":{"request_type":"call_function","finality":"final","account_id":"warband-daily.testnet","method_name":"raid_status","args_base64":"e30="}}' | python3 -c 'import sys,json;print(bytes(json.load(sys.stdin)["result"]["result"]).decode())'`
+   See `raid`, `joiners`, `streak`, `won`, `lost` and `chest`.
+3. Check who holds keys: `near account list-keys <account> network-config testnet now` for the accounts in the
+   table below. See the v1 token and DAO with no keys, and each keeper with a single function-call gas key.
+4. Read the DAO policy: `near contract call-function as-read-only dao-daily.warband-hq.testnet get_policy json-args {} network-config testnet now`.
+   See the `council` role with only `config:*` and `vote:*`; every other power belongs to `holders`.
+
+## Deployments
+
+The same contract, deployed three times on testnet:
+
+| | Token contract | War chest DAO | Bounty board | Day length | Status |
+|---|---|---|---|---|---|
+| **v3, daily** (live) | `warband-daily.testnet` | `dao-daily.warband-hq.testnet` | `warband-dailyboard.testnet` | 24 h (launch setting) | launched 6 Nov 2026; the camp plays once a day until 18 Nov ([`near/scripts/daily/`](near/scripts/daily)) |
+| v2, raids | `warband-raids.testnet` | `dao-raids.warband-hq.testnet` | `warband-bountyboard.testnet` (on the v1 DAO) | 3 min | the recorded raid run of the demo video; its raids are lost now that nobody plays them |
+| v1, levels | `warband-band.testnet` | `dao.warband-hq.testnet` | | 5 min | locked: no keys on token or DAO |
+
+The page shows v3; `?token=warband-raids.testnet` or `?token=warband-band.testnet` shows the others.
+
+**Keys, plainly.** v1's token and DAO have no access keys (deleted 31 Oct 2026). The v2 and v3 token, DAO and board
+accounts still have the deployer's full-access key: whoever holds it could redeploy the code. Those keys are deleted
+on 13 Nov 2026, before submission, with `near/scripts/04-lock.sh`; until then, treat v2 and v3 as upgradeable by the
+author. The contracts themselves have no owner method: no pause, no parameter setter, no mint outside the rules.
+
+**Council powers, exactly.** On the v3 DAO the council (`warband-hq.testnet`) can only change the DAO's name,
+purpose and metadata (`config`) and vote on signalling proposals (`vote`). Policy, roles, the vote token and
+upgrades need two thirds of the holders' level-weighted weight; transfers, bounties and calls need half
+([`near/dao/policy-daily.json`](near/dao/policy-daily.json)). The council set the staking contract once (Sputnik
+allows it only once), then handed those powers to the holders with a `ChangePolicy` (proposals 0 and 1). On v1 and v2
+the council still holds the policy powers of [`near/dao/policy.json`](near/dao/policy.json): it could rewrite those
+DAOs' policy alone.
 
 ## The problem
 
@@ -27,7 +67,7 @@ can also empty everything.
 | Buyback rule: when the price falls 20% under the recent high (today and yesterday), anyone may call `buyback`; it spends 10% of the reserve per call, at most 20% per day, and burns what it buys. | same contract |
 | Level-weighted vote: the contract is the Sputnik DAO's staking contract and delegates each holder's Σ lot × level. Treasury transfers, bounties and calls are voted with that weight. Selling or sending tokens pulls the weight back in the same transaction. | contract + Sputnik DAO v2 |
 | Bounty board with earned trust: members post bounties, contributors claim and finish them, payouts come from the war chest. A contributor's record of paid bounties decides the approval: small payouts on the poster's word alone, mid-size ones with one council member, large ones as a normal DAO vote. | `near/contracts/bounties` + Sputnik DAO v2 |
-| No admin: every parameter is set at `new` and readable with `config`; the contract has no owner method, and the full-access keys of the token and DAO accounts are deleted. | `near/scripts/04-lock.sh` |
+| No admin: every parameter is set at `new` and readable with `config`; the contract has no owner method. The full-access keys of the token and DAO accounts are deleted (v1 already, v2 and v3 on 13 Nov: see Keys above). | `near/scripts/04-lock.sh` |
 | Keeper agent: runs buybacks, weight syncs and DAO flushes with a function-call key that can call only `buyback`, `sync_weight` and `flush_to_dao`, with no deposit, under a 0.25 NEAR gas allowance. | `near/agent` |
 
 What is real and what is not:
@@ -35,10 +75,11 @@ What is real and what is not:
 - **Real (testnet):** the token, the market, the levels, the raids, the chest, the loot pulls, the badges, the
   buyback and burn, the DAO, the votes, the bounty payout, the agent's key and every refusal in the attack demo.
   Transaction ids are listed below.
-- **Testnet setting:** one "day" lasts **3 minutes** on the Raids contract (`day_seconds = 180`; 5 minutes on v1) so
-  raids and levels move during a demo. A launch would use 86400.
-- **Demo raiders:** the twelve raiders of the recorded run (`*.warband-camp.testnet`) are accounts we created and
-  scripted (`near/scripts/raids/02-play.sh`). Every one of their actions is a real transaction.
+- **Day length:** v3 uses the launch setting, one raid per real day (`day_seconds = 86400`). v2 uses 3 minutes and
+  v1 5 minutes, so the recorded runs move during a video.
+- **Demo raiders:** the twelve raiders (`*.warband-camp.testnet`), Alice and Bob are accounts we created and
+  scripted (`near/scripts/raids/02-play.sh` for v2; `near/scripts/daily/play-today.sh` for v3, run by a scheduled
+  task twice a day, log in `near/scripts/daily/daily.log`). Every one of their actions is a real transaction.
 - **Simulated:** the 60-day community behaviour in `near/sim` (invented scenarios, real contract rules) and the
   "brain" of the attacked agent (a naive planner that obeys the injected message; see the security section).
 
@@ -47,17 +88,20 @@ What is real and what is not:
 Read-only steps need nothing but Python or `curl`; the others need [near-cli-rs](https://github.com/near/near-cli-rs)
 and Rust for the tests.
 
-1. **See the live state.** Serve the page: `cd near/web && python3 -m http.server 8080`, open http://localhost:8080.
+1. **See the live state.** Open https://alibenyezza.github.io/warband-near/ (or serve it yourself:
+   `cd near/web && python3 -m http.server 8080`, open http://localhost:8080).
    You see today's raid (target, raiders checked in, countdown, streak, chest), the loot feed, the badge wall, the
    price and floor, the band by vote weight (not balance), the war chest and its proposals, the bounty board with each contributor's record, and the log. The page
    reads testnet over RPC. With a testnet wallet connected (`@hot-labs/near-connect`: HOT, Meteor, Intear,
    MyNearWallet…) you can join the raid, claim, burn for a pull, buy, sell and register as a DAO voter from the
-   "You" section. The v1 deployment opens with `?token=warband-band.testnet&dao=dao.warband-hq.testnet`.
-2. **Play a raid.** Buy on `warband-raids.testnet` (as in the "Buy" step below), wait 3 minutes for the lot to
-   season, then
-   `near contract call-function as-transaction warband-raids.testnet join_raid json-args '{}' prepaid-gas '100 Tgas' attached-deposit '0 NEAR' sign-as <you>.testnet network-config testnet sign-with-legacy-keychain send`.
-   Your name appears in today's raid. After the raid ends, `claim_raid` (or your next `join_raid`) pays your mint
-   and loot if the band won.
+   "You" section. `?token=warband-raids.testnet` shows v2, `?token=warband-band.testnet` v1.
+2. **Raid with the band.** Buy on `warband-daily.testnet` (the "Buy" step below, with that contract), wait one day
+   for the lot to season, then
+   `near contract call-function as-transaction warband-daily.testnet join_raid json-args '{}' prepaid-gas '100 Tgas' attached-deposit '0 NEAR' sign-as <you>.testnet network-config testnet sign-with-legacy-keychain send`.
+   Your name appears next to the camp's in today's raid. A raid needs 10 raiders, which you cannot reach alone: the
+   camp joins every day, so you raid with it. After the raid ends, `claim_raid` (or your next `join_raid`) pays your
+   mint and loot if the band won. To see raids move in minutes instead, use v2 (`warband-raids.testnet`, 3-minute
+   days) and replay the camp with `near/scripts/raids/03-resume.sh`.
 3. **See that size does not buy the vote.** Look at proposal 1 on the page (or
    `near contract call-function as-read-only dao.warband-hq.testnet get_proposal json-args '{"id":1}' network-config testnet now`).
    Bob held 168M BAND, 2.7 times Alice's 62M, and proposed to pay himself 1 NEAR. His fresh tokens were level 0, so
@@ -68,9 +112,11 @@ and Rust for the tests.
    (`near account create-account sponsor-by-faucet-service <you>.testnet autogenerate-new-keypair save-to-legacy-keychain network-config testnet create`),
    then `near contract call-function as-transaction warband-band.testnet buy json-args '{}' prepaid-gas '100 Tgas' attached-deposit '0.5 NEAR' sign-as <you>.testnet network-config testnet sign-with-legacy-keychain send`.
    Look yourself up on the page: one lot, level 0, weight 0. Five minutes later: level 1.
-6. **Check that nobody holds the keys.** `near account list-keys warband-band.testnet network-config testnet now`
-   and the same for `dao.warband-hq.testnet`: no keys. The contract code and parameters can no longer change.
-7. **Run the contract tests.** `cd near/contracts/warband && cargo test`: 40 tests, and `cd near/contracts/bounties && cargo test`: 13. 18 cover the token: a transfer
+6. **Check the keys.** `near account list-keys warband-band.testnet network-config testnet now` and the same for
+   `dao.warband-hq.testnet`: no keys, so v1's code and parameters can no longer change. v2 and v3 show one
+   full-access key until 13 Nov (see Keys above).
+7. **Run the contract tests.** `cd near/contracts/warband && cargo test`: 40 tests (18 token, 22 raids), and
+   `cd near/contracts/bounties && cargo test`: 13. The token tests cover a transfer
    in the middle of a lot, a partial LIFO sale, the floor and the daily cap of the buyback, bounded lots, the weight
    pulled back from the DAO on a sale. 22 cover the raids: a split bag earns nothing extra, join-then-sell is not
    paid, a pump does not make pulls cheaper, loot odds over 2000 pulls, soulbound badges, storage covered.
@@ -153,8 +199,9 @@ Limits, plainly:
 
 ### Bounty board with earned trust
 
-`warband-bountyboard.testnet` ([`near/contracts/bounties`](near/contracts/bounties/src/lib.rs), 13 tests) sits on
-top of the war chest `dao.warband-hq.testnet`. It is not a multisig and holds no treasury: its only money is petty
+The live board, `warband-dailyboard.testnet`, sits on the v3 war chest `dao-daily.warband-hq.testnet`; the recorded
+run below used `warband-bountyboard.testnet` on the v1 war chest `dao.warband-hq.testnet`. Same contract
+([`near/contracts/bounties`](near/contracts/bounties/src/lib.rs), 13 tests), same script. It is not a multisig and holds no treasury: its only money is petty
 cash that a DAO `Transfer` proposal voted to it, and only the DAO can change its tiers (`set_tiers`) or take the
 cash back (`return_petty_cash`). No owner method.
 
@@ -170,8 +217,10 @@ cannot claim their own bounty and a contributor cannot approve their own payout.
 and a contributor who collude can farm trust, but only after a first council or DAO approval, only up to 0.25 NEAR
 per bounty, and only from the petty cash the DAO chose to vote.
 
-Run on testnet ([`near/scripts/bounties/run.sh`](near/scripts/bounties/run.sh), log
-[`run.log`](near/scripts/bounties/run.log)):
+Recorded run on testnet ([`near/scripts/bounties/run.sh`](near/scripts/bounties/run.sh), log
+[`run.log`](near/scripts/bounties/run.log)). On v3, holders' lots carry weight only from day 1, so the daily task
+plays the same run there once on 7 Nov, with Alice, Bob and the camp voting (log
+[`near/scripts/daily/board-run.log`](near/scripts/daily)):
 
 | Step | Result | Transaction |
 |---|---|---|
@@ -192,7 +241,7 @@ chest's free balance first and HQ topped it up. Two earlier boards (`warband-bou
 
 ![The bounty board on the Warband page](near/docs/bounty-board.jpg)
 
-## AI Security & Defense: an agent with money and no keys
+## Security note: a keeper with money and no keys
 
 The keeper agent (`near/agent/src/guardian.ts`) has one job: call `buyback` when the contract says the price is under
 the floor, push vote weights that changed, and flush the DAO's share of fees. Its key on
@@ -250,7 +299,24 @@ transaction (about 0.1 NEAR for 100 Tgas) and refunds the unused part a few bloc
 three of the four. Size the key's balance to the sum of the gas attached to the parallel calls; at 60 Tgas each the
 four fit.
 
-## Testnet record
+## The daily deployment (v3)
+
+Same contract and launch parameters as the README tables, with real days. Scripts in
+[`near/scripts/daily/`](near/scripts/daily): `01-setup.sh` (token, DAO, policy hand-over), `02-launch.sh` (launch-day
+buys and DAO registration), `play-today.sh` (one day of play, safe to rerun), `run-daily.ps1` (the scheduled task:
+the gas-key keeper's upkeep, then the camp). Logs next to them; `daily.log` grows with every run.
+
+| Step | Transaction |
+|---|---|
+| DAO account and Sputnik 3.0.0 init | `GYugArYkxuz6y9V3FVppfsqQGAURSy9eqjKexFAfuEnS`, `7GXcQ27Z8YeBPaeRai1Vc4y4Qd293BJUj1zrJz4jWo7s` |
+| Warband deploy and init, `day_seconds = 86400` | `A62sn9a9C7ULeFV4tT3tpfyQgTCaNXtjzmQk6oRMWoKi` |
+| Council sets the staking contract (proposal 0) | `3ViaLiYM4tf9SdJrqXCEt99zzepTzm8mp6DgjaNrPbns`, `5ioeTJUZ2gph4gEBQwaNxyq8i7NDMdSKSgomEaAUdTau` |
+| Council hands policy, roles, vote token and upgrades to the holders (proposal 1, `ChangePolicy`) | `8NG9d6YDTqNWcnyRKryM3HxBrLY2epJZPotMz3caxeE`, `BADdoBBX1QLKXVBXbKV85swZwTaQtC7zdn9SgSvEXU68` |
+| Gas-key keeper `gk-daily.warband-hq.testnet` created by HQ (one gas key, 4 lanes) | `GmkpZTcX62UjNXMhbwvjTCBN2dTidwExWhjkrwYk75yW` ([log](near/scripts/daily/gas-keeper.log)) |
+| Bounty board `warband-dailyboard.testnet` on the v3 DAO; faucet surplus sent to HQ | `7LLAQN2GMj1oUDrV8a8UcjiVCJtyFGUSMAyC6BkW9sU1`, `47TtbH2vew3ARwTtjJjwuNhbHHdgsNBmvFYDBVQEz95B` |
+| Launch day: the twelve raiders, Alice and Bob buy and register as DAO voters | [`02-launch.log`](near/scripts/daily/02-launch.log) |
+
+## Testnet record (v1)
 
 | Step | Transactions |
 |---|---|
@@ -279,7 +345,8 @@ The bounty's deliverable is the set of rank badges in `near/web/ranks/`, drawn f
 | `near/scripts/bounties/` | Deploys the board and plays the three tiers on testnet (`run.sh`, log in `run.log`). |
 | `near/RAIDS.md` | Raid rules, launch parameters and threat model. |
 | `near/dao/policy.json` | The war chest DAO policy (roles, token-weighted votes). |
-| `near/scripts/` | Testnet accounts, DAO deploy, Warband deploy, key deletion, demo walkthrough. `raids/` deploys v2 and plays the recorded raid run. |
+| `near/scripts/` | Testnet accounts, DAO deploy, Warband deploy, key deletion, demo walkthrough. `raids/` deploys v2 and plays the recorded raid run; `daily/` deploys v3 and plays one day (`play-today.sh`, scheduled by `run-daily.ps1`). |
+| `near/dao/policy-daily.json` | The v3 DAO policy: governance belongs to the holders. |
 | `near/agent/` | Keeper agent (TypeScript, near-api-js 7.4) and the prompt-injection attack demo. |
 | `near/sim/` | 60-day simulations (token in `simulate.py`, raids in `raids.py`), charts and results. |
 | `near/web/` | Testnet page (static HTML and JS, optional wallet): raid, loot, badges, market, band, DAO, log. Rank badges. |
