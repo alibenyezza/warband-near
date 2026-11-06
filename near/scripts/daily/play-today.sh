@@ -17,7 +17,11 @@ echo "== $(date -u '+%F %T') UTC, day $D of $TOKEN"
 if [ "$D" -lt 1 ]; then echo "   launch day: lots season for one day, the first raid is day 1"; exit 0; fi
 
 joined_today() { q "$TOKEN" raid_of "{\"account_id\":\"$1\"}" | python3 -c "import sys,json;j=json.load(sys.stdin);print('yes' if j and int(j['raid'])==$D else 'no')" 2>/dev/null; }
-for r in $ALL $ALICE; do
+RAIDING="$ALL $ALICE"
+# day 5 is a bad day on purpose: only six of the camp show up (the raid needs ten), so the record also shows a lost
+# raid, its buyback and burn, and the streak starting again from zero
+if [ "$D" -eq 5 ]; then RAIDING=$(for r in $RAIDERS; do echo "$(raider "$r")"; done | head -6 | tr '\n' ' '); fi
+for r in $RAIDING; do
   [ "$(joined_today "$r")" = yes ] && continue
   echo "-- $r joins"; tx "$r" join_raid '{}' '0 NEAR'
 done

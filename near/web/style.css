@@ -221,3 +221,7 @@ td.mini .seal { margin-right: 3px; vertical-align: middle; }
 .deployments { font-family: var(--mono); font-size: 12px; color: var(--dim); margin-top: 18px; }
 .deployments a { color: var(--muted); }
 .deployments b { color: var(--text); font-weight: 500; }
+
+/* raid record */
+#raids .won { color: var(--ok); font-weight: 600; }
+#raids .lost, #raids td.lost { color: var(--wax-hi); font-weight: 600; }

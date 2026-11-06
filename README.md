@@ -21,7 +21,8 @@ until 18 Nov 2026.
    `curl -s https://rpc.testnet.fastnear.com -H 'content-type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"query","params":{"request_type":"call_function","finality":"final","account_id":"warband-daily.testnet","method_name":"raid_status","args_base64":"e30="}}' | python3 -c 'import sys,json;print(bytes(json.load(sys.stdin)["result"]["result"]).decode())'`
    See `raid`, `joiners`, `streak`, `won`, `lost` and `chest`.
 3. Check who holds keys: `near account list-keys <account> network-config testnet now` for the accounts in the
-   table below. See the v1 token and DAO with no keys, and each keeper with a single function-call gas key.
+   table below. See the v1 token and DAO with no keys, and each gas-key keeper (`gk-keeper`, `gk-daily`) with a
+   single function-call gas key. `bash near/scripts/04-lock.sh --check` lists the keys of all eight contract accounts.
 4. Read the DAO policy: `near contract call-function as-read-only dao-daily.warband-hq.testnet get_policy json-args {} network-config testnet now`.
    See the `council` role with only `config:*` and `vote:*`; every other power belongs to `holders`.
 
@@ -31,10 +32,10 @@ until 18 Nov 2026.
 
 | The track asks for | In Warband | Check it |
 |---|---|---|
-| A daily check-in; if the community hits the target, everyone who checked in gets a small mint | `join_raid()` once per day with tokens held at least a day. Won when at least 10 raiders join with 25% of the circulating supply: each raider is minted 0.1% of what it joined with (up to 0.2% on a streak) and shares 20 loot pulls from the chest | [`near/RAIDS.md`](near/RAIDS.md); tests `a_won_raid_mints_grows_the_streak_and_pays_loot`, `fresh_tokens_cannot_join`, `one_join_per_raid` |
+| A daily check-in; if the community hits the target, everyone who checked in gets a small mint | `join_raid()` once per day with tokens held at least a day. Won when at least 10 raiders join with 25% of the circulating supply: each raider is minted 0.1% of what it joined with times the streak bonus (0.11% on a first win, up to 0.2% on a 10-raid streak) and shares 20 loot pulls from the chest | [`near/RAIDS.md`](near/RAIDS.md); tests `a_won_raid_mints_grows_the_streak_and_pays_loot`, `fresh_tokens_cannot_join`, `one_join_per_raid` |
 | If it misses, a slice of the treasury burns and the streak resets | 10% of the raid chest buys BAND on the curve and burns it; the streak goes back to 0 | test `a_lost_raid_burns_part_of_the_chest_and_resets_the_streak` |
 | The longest streak printed like a high score | `raid_status` returns `streak` and `best_streak`; the page shows "win streak … best N" and the won–lost record | the live page, top of the raid section |
-| An NEP-141 token with the mechanic in the contract, not in a backend | Token, raids, chest, market and buyback are one contract (`near/contracts/warband`); settlement runs on the first action after a raid ends, by anyone | `cd near/contracts/warband && cargo test`: 40 tests |
+| An NEP-141 token with the mechanic in the contract, not in a backend | Token, raids, chest, market and buyback are one contract (`near/contracts/warband`); settlement runs on the first action after a raid ends, by anyone | `cd near/contracts/warband && cargo test`: 43 tests |
 | All parameters set at launch and readable by anyone; no admin key that can change them | Every parameter is set in `new` and returned by `config`; the contract has no owner, setter or pause method. v1's accounts have no key; v2 and v3 keys are deleted on 13 Nov (see "Keys, plainly" below) | `config` on `warband-daily.testnet` (values in the table below); `near account list-keys warband-band.testnet network-config testnet now` |
 | Sybil resistance good enough for a demo, with its limits written plainly | Mints and pulls are proportional to the balance joined, so splitting a bag earns nothing extra; a transfer restarts the tokens at level 0, so they cannot join that day. Limit: splitting does help reach the 10-raider minimum, at the cost of ten storage deposits and ten seasoned 1M bags | [`near/RAIDS.md`](near/RAIDS.md) threat model; tests `a_split_bag_cannot_join_twice`, `tokens_sold_after_joining_are_not_paid_for`; "Sybil resistance, and its limits" below |
 | A page with the current streak, today's progress and a log of every mint and burn | The live page: streak and best streak, raiders and seasoned balance against the target, countdown, chest; the log shows every buy, sell, join, raid mint (`raid_claim`), pull, buyback burn and lost-raid burn. The contract keeps the last 100 entries; every mint and burn is also an NEP-141 `ft_mint` / `ft_burn` event in its transaction | <https://alibenyezza.github.io/warband-near/>; test `the_public_log_shows_joins_and_big_loot` |
@@ -51,8 +52,8 @@ Launch parameters of `warband-daily.testnet`, as `config` returns them:
 | The track asks for | In Warband | Check it |
 |---|---|---|
 | Use the existing Sputnik DAO or Trezu treasury for custody and approvals; no new multisig | Sputnik DAO v2, the official 3.0.0 binary, unmodified. The board holds only petty cash the DAO voted to it, and only the DAO can change its tiers or take the cash back | `near/scripts/02-dao.sh` checks the binary's git blob hash; tests `only_the_dao_changes_the_tiers`, `only_the_dao_takes_the_petty_cash_back` |
-| Reputation tied to named accounts, every point traceable to a finished bounty | `record_of(account)` lists every paid bounty with its tier and approver; trust = +0.05 NEAR per paid bounty, capped at 0.25 | test `trust_is_capped`; the board on the live page |
-| Tiers: small payouts auto-approve for trusted contributors, mid-size ones need one council member, large ones become a DAO proposal | auto (within the contributor's trust), council (up to 0.5 NEAR, one member of the DAO's live `council` role), dao (a normal `Transfer` proposal, voted by level-weighted holders) | tests `a_newcomer_needs_the_council_then_earns_auto_payouts`, `large_payouts_become_a_dao_proposal`, `a_non_member_cannot_approve`, `a_contributor_cannot_approve_their_own_payout`; the testnet run below |
+| Reputation tied to named accounts, every point traceable to a finished bounty | `record_of(account)` lists every paid bounty with its tier and approver; trust = +0.05 NEAR per bounty of at least 0.05 that the council or the DAO approved, capped at 0.25 (auto payouts earn none); implicit accounts cannot claim | tests `trust_is_capped`, `auto_payouts_earn_no_trust_and_cannot_be_farmed`, `an_implicit_account_cannot_claim`; the board on the live page |
+| Tiers: small payouts auto-approve for trusted contributors, mid-size ones need one council member, large ones become a DAO proposal | auto (within the contributor's trust), council (up to 0.5 NEAR, one member of the DAO's live `council` role), dao (a normal `Transfer` proposal, voted by level-weighted holders) | tests `a_newcomer_needs_the_council_then_earns_auto_payouts`, `auto_payouts_to_one_contributor_are_capped_per_day`, `large_payouts_become_a_dao_proposal`, `a_removed_proposal_closes_the_bounty_and_a_failed_one_stays_pending`, `a_non_member_cannot_approve`, `a_contributor_cannot_approve_their_own_payout`; the testnet run below |
 | A public board: open bounties, claims, payouts, each contributor's record | The bounty board section of the live page, read from `warband-dailyboard.testnet` | <https://alibenyezza.github.io/warband-near/> |
 | Which approval flows already exist, and which ones we added | Existing in Sputnik, used as they are: transfer proposals, bounties, token-weighted roles, the staking hook. Added: the level-weighted weight, its automatic withdrawal on outflows, the fee stream to the DAO, and the trust tiers in front of the treasury | "Social Money: the war chest on Sputnik DAO" below. We read Sputnik's contract; Trezu is not used |
 
@@ -70,7 +71,8 @@ The page shows v3; `?token=warband-raids.testnet` or `?token=warband-band.testne
 
 **Keys, plainly.** v1's token and DAO have no access keys (deleted 31 Oct 2026). The v2 and v3 token, DAO and board
 accounts still have the deployer's full-access key: whoever holds it could redeploy the code. Those keys are deleted
-on 13 Nov 2026, before submission, with `near/scripts/04-lock.sh`; until then, treat v2 and v3 as upgradeable by the
+on 13 Nov 2026, before submission, with `near/scripts/04-lock.sh` (all six accounts; `--check` lists the keys
+without changing anything); until then, treat v2 and v3 as upgradeable by the
 author. The contracts themselves have no owner method: no pause, no parameter setter, no mint outside the rules.
 
 **Council powers, exactly.** On the v3 DAO the council (`warband-hq.testnet`) can only change the DAO's name,
@@ -92,12 +94,12 @@ can also empty everything.
 
 | Mechanic | Where it lives |
 |---|---|
-| Raids: one raid per day, joined with seasoned tokens, won with 10 raiders and 25% of the supply. Winners are minted 0.1% (up to 0.2% on a streak) and share 20 loot pulls from the chest; a lost raid burns 10% of the chest through a buyback. Soulbound NEP-171 badges. Rules and threat model: [`near/RAIDS.md`](near/RAIDS.md). | `near/contracts/warband/src/raids.rs` |
+| Raids: one raid per day, joined with seasoned tokens, won with 10 raiders and 25% of the supply. Winners are minted 0.1% times the streak bonus (0.11% to 0.2%) and share 20 loot pulls from the chest; a lost raid burns 10% of the chest through a buyback. Soulbound NEP-171 badges. Rules and threat model: [`near/RAIDS.md`](near/RAIDS.md). | `near/contracts/warband/src/raids.rs` |
 | Lots and levels: each buy or received transfer opens a lot at level 0; +1 level per "day" held, capped at 10 (rank names Recruit to Warlord). Outflows consume the youngest lots first (LIFO). | `near/contracts/warband` |
 | Built-in market: buy and sell BAND against NEAR on a virtual constant-product curve. 10% fee on every trade: 30% of it fills the raid chest, the rest goes half to the DAO war chest, half to a buyback reserve. | same contract |
 | Buyback rule: when the price falls 20% under the recent high (today and yesterday), anyone may call `buyback`; it spends 10% of the reserve per call, at most 20% per day, and burns what it buys. | same contract |
 | Level-weighted vote: the contract is the Sputnik DAO's staking contract and delegates each holder's Σ lot × level. Treasury transfers, bounties and calls are voted with that weight. Selling or sending tokens pulls the weight back in the same transaction. | contract + Sputnik DAO v2 |
-| Bounty board with earned trust: members post bounties, contributors claim and finish them, payouts come from the war chest. A contributor's record of paid bounties decides the approval: small payouts on the poster's word alone, mid-size ones with one council member, large ones as a normal DAO vote. | `near/contracts/bounties` + Sputnik DAO v2 |
+| Bounty board with earned trust: members post bounties, contributors claim and finish them, payouts come from the war chest. A contributor's record of council- or DAO-approved bounties decides the approval: small payouts on the poster's word alone (capped per day), mid-size ones with one council member, large ones as a normal DAO vote. | `near/contracts/bounties` + Sputnik DAO v2 |
 | No admin: every parameter is set at `new` and readable with `config`; the contract has no owner method. The full-access keys of the token and DAO accounts are deleted (v1 already, v2 and v3 on 13 Nov: see Keys above). | `near/scripts/04-lock.sh` |
 | Keeper agent: runs buybacks, weight syncs and DAO flushes with a function-call key that can call only `buyback`, `sync_weight` and `flush_to_dao`, with no deposit, under a 0.25 NEAR gas allowance. | `near/agent` |
 
@@ -111,6 +113,10 @@ What is real and what is not:
 - **Demo raiders:** the twelve raiders (`*.warband-camp.testnet`), Alice and Bob are accounts we created and
   scripted (`near/scripts/raids/02-play.sh` for v2; `near/scripts/daily/play-today.sh` for v3, run by a scheduled
   task twice a day, log in `near/scripts/daily/daily.log`). Every one of their actions is a real transaction.
+  On v3 they are **all** the holders: the camp holds 64% of the supply, Alice and Bob the rest. So v3's raids show
+  the rules running on real days, but they are won whenever the camp plays, which proves nothing about a real
+  community. Day 5 is a scripted bad day (only six raiders show up) so the record also shows a lost raid, its burn
+  and the streak reset. v2's record has the raids that nobody played since the recorded run, all lost and burned.
 - **Simulated:** the 60-day community behaviour in `near/sim` (invented scenarios, real contract rules) and the
   "brain" of the attacked agent (a naive planner that obeys the injected message; see the security section).
 
@@ -133,12 +139,14 @@ and Rust for the tests.
    camp joins every day, so you raid with it. After the raid ends, `claim_raid` (or your next `join_raid`) pays your
    mint and loot if the band won. To see raids move in minutes instead, use v2 (`warband-raids.testnet`, 3-minute
    days) and replay the camp with `near/scripts/raids/03-resume.sh`.
-3. **See that size does not buy the vote.** Look at proposal 1 on the page (or
+3. **See that size does not buy the vote.** Look at proposal 1 on the v1 page
+   (<https://alibenyezza.github.io/warband-near/?token=warband-band.testnet>, or
    `near contract call-function as-read-only dao.warband-hq.testnet get_proposal json-args '{"id":1}' network-config testnet now`).
    Bob held 168M BAND, 2.7 times Alice's 62M, and proposed to pay himself 1 NEAR. His fresh tokens were level 0, so
    his vote weighed 24M; Alice's older 62M rejected it. Status: `Rejected`.
 4. **See the levels.** `near contract call-function as-read-only warband-band.testnet account json-args '{"account_id":"warband-alice.testnet"}' network-config testnet now`
-   shows each lot with its level and rank. Run it again 5 minutes later: the level has gone up.
+   shows each lot with its level and rank. Alice's lots are old, so they sit at the cap (level 10); for a lot that
+   is still climbing, use your own account in step 5.
 5. **Buy and watch your lot age.** Create an account
    (`near account create-account sponsor-by-faucet-service <you>.testnet autogenerate-new-keypair save-to-legacy-keychain network-config testnet create`),
    then `near contract call-function as-transaction warband-band.testnet buy json-args '{}' prepaid-gas '100 Tgas' attached-deposit '0.5 NEAR' sign-as <you>.testnet network-config testnet sign-with-legacy-keychain send`.
@@ -146,8 +154,8 @@ and Rust for the tests.
 6. **Check the keys.** `near account list-keys warband-band.testnet network-config testnet now` and the same for
    `dao.warband-hq.testnet`: no keys, so v1's code and parameters can no longer change. v2 and v3 show one
    full-access key until 13 Nov (see Keys above).
-7. **Run the contract tests.** `cd near/contracts/warband && cargo test`: 40 tests (18 token, 22 raids), and
-   `cd near/contracts/bounties && cargo test`: 13. The token tests cover a transfer
+7. **Run the contract tests.** `cd near/contracts/warband && cargo test`: 43 tests (19 token, 24 raids), and
+   `cd near/contracts/bounties && cargo test`: 18. The token tests cover a transfer
    in the middle of a lot, a partial LIFO sale, the floor and the daily cap of the buyback, bounded lots, the weight
    pulled back from the DAO on a sale. 22 cover the raids: a split bag earns nothing extra, join-then-sell is not
    paid, a pump does not make pulls cheaper, loot odds over 2000 pulls, soulbound badges, storage covered.
@@ -167,7 +175,7 @@ and Rust for the tests.
   newer timestamp, so merging never gains age. At most 32 lots per account: past that, the two youngest merge the
   same way.
 - **Weight**: `weight_of(account) = Σ lot × level`. Fresh tokens weigh zero.
-- **Supply**: outside the curve, only won raids mint (0.1% of a raider's joined balance, up to 0.2% on a streak).
+- **Supply**: outside the curve, only won raids mint (0.1% of a raider's joined balance times the streak bonus: 0.11% on a first win, up to 0.2%).
   Tokens bought back by the buyback reserve or by a lost raid are burned, and so are tokens spent on extra pulls.
 - **Parameters at launch** (`config` view): fee 10%, DAO share 50% of the fee, floor 20% under the recent high,
   buyback chunk 10% of the reserve, daily cap 20% of the reserve, 1B BAND on the curve, 30 NEAR virtual reserve.
@@ -210,10 +218,12 @@ Limits, plainly:
 
 ## Social Money: the war chest on Sputnik DAO
 
-- **Custody and approvals stay in Sputnik DAO v2**; we did not write a multisig. Policy (`near/dao/policy.json`):
-  the council (`warband-hq.testnet`) can only change configuration; `transfer`, `add_bounty`, `bounty_done` and
-  `call` proposals are voted by the `holders` role (`Member: 1`) with `TokenWeight`, threshold 1/2 of all
-  delegated weight.
+- **Custody and approvals stay in Sputnik DAO v2**; we did not write a multisig. On v1 and v2
+  (`near/dao/policy.json`) `transfer`, `add_bounty`, `bounty_done` and `call` proposals are voted by the `holders`
+  role (`Member: 1`) with `TokenWeight`, threshold 1/2 of all delegated weight, while the council
+  (`warband-hq.testnet`) keeps the policy powers (`policy`, roles, vote token): it could rewrite those DAOs' policy
+  alone. On v3 (`near/dao/policy-daily.json`) the council handed those powers to the holders and keeps only
+  `config` and `vote` (see "Council powers, exactly" above).
 - **The Warband contract is the DAO's `staking_id`**: it calls `register_delegation`, `delegate` and `undelegate` on
   the DAO (checked against `sputnikdao2/src/delegation.rs`). `sync_weight(account)` pushes a holder's current
   weight (anyone can call it); any sale or transfer pulls back weight the account no longer has, in the same
@@ -232,21 +242,26 @@ Limits, plainly:
 
 The live board, `warband-dailyboard.testnet`, sits on the v3 war chest `dao-daily.warband-hq.testnet`; the recorded
 run below used `warband-bountyboard.testnet` on the v1 war chest `dao.warband-hq.testnet`. Same contract
-([`near/contracts/bounties`](near/contracts/bounties/src/lib.rs), 13 tests), same script. It is not a multisig and holds no treasury: its only money is petty
+([`near/contracts/bounties`](near/contracts/bounties/src/lib.rs), 18 tests), same script. It is not a multisig and holds no treasury: its only money is petty
 cash that a DAO `Transfer` proposal voted to it, and only the DAO can change its tiers (`set_tiers`) or take the
 cash back (`return_petty_cash`). No owner method.
 
 | Tier | When | Who approves |
 |---|---|---|
-| auto | the amount is within the contributor's trust limit: +0.05 NEAR per bounty already paid to them, up to 0.25 | the poster, by accepting the work; paid at once from petty cash |
+| auto | the amount is within the contributor's trust limit: +0.05 NEAR per bounty of at least 0.05 NEAR that the council or the DAO approved for them, up to 0.25; and at most 0.25 NEAR of auto payouts to that contributor in 24 hours | the poster, by accepting the work; paid at once from petty cash. Auto payouts earn no trust |
 | council | up to 0.5 NEAR | one member of the DAO's `council` role, read from the DAO's live policy (`get_policy`) when they approve |
 | dao | above 0.5 NEAR | the board files a normal `Transfer` proposal (the poster pays the bond); the holders vote; the DAO pays the contributor; `settle_dao` reads the outcome and passes the bond, which Sputnik returns to the proposer, back to the poster |
 
-Reputation belongs to named accounts and every point is a paid bounty: `record_of(account)` lists each one with its
-tier and approver. A newcomer starts at 0, so their first payout always needs the council or the DAO. A poster
-cannot claim their own bounty and a contributor cannot approve their own payout. Limits, written plainly: a poster
-and a contributor who collude can farm trust, but only after a first council or DAO approval, only up to 0.25 NEAR
-per bounty, and only from the petty cash the DAO chose to vote.
+Reputation belongs to named accounts (an implicit 64-hex account cannot claim) and every point is a paid bounty:
+`record_of(account)` lists each one with its tier and approver. A newcomer starts at 0, so their first payout always
+needs the council or the DAO. A poster cannot claim their own bounty and a contributor cannot approve their own
+payout. **Trust comes only from work someone else checked:** a point counts toward the trust limit only if a
+council member or a DAO vote approved it, for at least one trust step (0.05 NEAR). Auto payouts are recorded but
+never raise trust, so a poster and a contributor who collude cannot farm it with tiny bounties
+(`auto_payouts_earn_no_trust_and_cannot_be_farmed`). Limits, written plainly: such a pair can still take up to the
+contributor's earned trust limit in auto payouts, at most 0.25 NEAR per 24 hours
+(`auto_payouts_to_one_contributor_are_capped_per_day`), and only from the petty cash the DAO chose to vote; anyone
+can post a bounty, so the poster's word is what an auto payout trusts.
 
 Recorded run on testnet ([`near/scripts/bounties/run.sh`](near/scripts/bounties/run.sh), log
 [`run.log`](near/scripts/bounties/run.log)). On v3, holders' lots carry weight only from day 1, so the daily task
@@ -322,7 +337,7 @@ go out at once. Script: [`near/agent/src/gas-keeper.ts`](near/agent/src/gas-keep
 | HQ creates the keeper with one gas key (4 lanes, 0.2 NEAR of gas) in one transaction | account with 1 key, `GasKeyFunctionCall` | `PTDBw2S3MR1Rx3fW5v72f6AEyPH8UU1itday3yEgsgT` |
 | The four upkeep calls at once | `settle_raids` ran; `buyback`, `flush_to_dao` and `sync_weight` were refused by the contract's own rules (price above the floor, less than 0.1 NEAR pending, no holder registered in the v2 DAO); all four lanes moved by one | `ErAsxvysmvopyCVxVe7cTH4q4AfqktuTPVa6Zduqi4rr` (settle) |
 | Send NEAR / `ft_transfer` / a DAO proposal / withdraw its own gas key | `AccessKeyRequiresFullAccessActionError`, `AccessKeyDepositWithFunctionCallActionError` then `AccessKeyMethodNameMismatchActionError`, `AccessKeyReceiverMismatchActionError`, `AccessKeyRequiresFullAccessActionError` | (refused before execution) |
-| HQ refills the key | +0.05 NEAR of gas | `GM4YJoiNKv3jLpGNQYASgGZeAFqyMapSFpco6ztB6eFA` |
+| HQ refills the key | 0.293118 → 0.343118 NEAR of gas | `FVdynMFJWDkjyEEkAUTZJV1JgZXfceRGb9qFWTYDJX8L` |
 
 What we learned on testnet: a gas key **reserves the full attached gas at the maximum gas price** before each
 transaction (about 0.1 NEAR for 100 Tgas) and refunds the unused part a few blocks later. Our first run, with four
@@ -346,6 +361,7 @@ the gas-key keeper's upkeep, then the camp). Logs next to them; `daily.log` grow
 | Gas-key keeper `gk-daily.warband-hq.testnet` created by HQ (one gas key, 4 lanes) | `GmkpZTcX62UjNXMhbwvjTCBN2dTidwExWhjkrwYk75yW` ([log](near/scripts/daily/gas-keeper.log)) |
 | Bounty board `warband-dailyboard.testnet` on the v3 DAO; faucet surplus sent to HQ | `7LLAQN2GMj1oUDrV8a8UcjiVCJtyFGUSMAyC6BkW9sU1`, `47TtbH2vew3ARwTtjJjwuNhbHHdgsNBmvFYDBVQEz95B` |
 | Launch day: the twelve raiders, Alice and Bob buy and register as DAO voters | [`02-launch.log`](near/scripts/daily/02-launch.log) |
+| 7 Nov, before day 1, after an outside review: contract upgraded (same state) for the odds level, the ticket price after quiet days and the DAO weight after a lot merge; board upgraded for the trust rules. v2 and its board got the same code | `nsDtKFEqQv6eyhcqvtxB3C7RHkDgyoacNx7QBbHeas8`, `CpWvo4jYfjGv3p54LP3UwUnNLWTMj2hNSd2EMq1FU9mq`; v2 `AY8gC8WnLTd6daygdPkGGnyM94VrwkV7gWUohzmxfJKQ`, `4UgwssSUF9e7psicQUw7qsHRw9EoE13KS7vhXgDKkCao` |
 
 ## Testnet record (v1)
 

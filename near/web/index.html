@@ -32,7 +32,8 @@
       <p class="lede">Every day the band raids. Holders check in with tokens held for at least a day. If enough of the
         band shows up, the raiders are minted a share and pull loot from the chest. If it does not, part of the chest is
         bought back and burned. Lots still level up the longer you hold, and the level still weighs your DAO vote.
-        Everything runs in the contract: no admin method, no pause, no parameter that can change after launch.</p>
+        Everything runs in the contract: no admin method, no pause, no parameter setter. The deployer's last keys on
+        this deployment are deleted on 13 Nov 2026; after that, nobody can change the code either.</p>
       <div class="scoreboard" id="scoreboard" aria-live="polite"></div>
       <div class="facts" id="facts"></div>
       <p class="deployments">Deployment: <span id="deployments"></span>. Read straight from NEAR testnet, no wallet needed.</p>
@@ -52,8 +53,11 @@
       <div class="pips" id="raid-pips" aria-label="Raiders checked in"></div>
       <div class="grid six" id="raid-grid"></div>
       <div class="joined" id="raid-joiners"></div>
+      <h3>Raid record</h3>
+      <div class="table-wrap"><table id="raids"><thead><tr><th>Raid</th><th>Result</th><th class="num">Raiders</th><th class="num">Joined (BAND)</th><th class="num">Streak after</th><th class="num">Burned (BAND)</th></tr></thead><tbody></tbody></table></div>
       <p class="note">A raid is won when the raiders' seasoned balance reaches 25% of the supply and at least 10 accounts
-        join. Each raider is minted 0.1% of what it joined with, up to 0.2% on a 10-raid streak, and the raid's 20
+        join. Each raider is minted 0.1% of what it joined with times the streak bonus (0.11% on the first win, up to
+        0.2% on a 10-raid streak), and the raid's 20
         loot pulls are shared by joined balance, so splitting a bag across accounts earns nothing extra.</p>
     </section>
 
@@ -124,7 +128,9 @@
 
     <section id="log" class="panel">
       <p class="label">// 09 log</p>
-      <h2>Every buy, sell, raid, pull and burn</h2>
+      <h2>The last 100 buys, sells, joins, mints, pulls and burns</h2>
+      <p class="note">The contract keeps the last 100 entries; the raid record above keeps every raid. Every mint and
+        burn is also an NEP-141 <code>ft_mint</code> / <code>ft_burn</code> event in its transaction, forever.</p>
       <div class="table-wrap"><table id="history"><thead><tr><th>#</th><th>When</th><th>What</th><th>Account</th><th class="num">NEAR</th><th class="num">BAND</th></tr></thead><tbody></tbody></table></div>
     </section>
   </main>

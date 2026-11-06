@@ -164,7 +164,7 @@ async function raidStatus() {
     cell("Chest", near(r.chest, 4), "NEAR, 30% of every fee"),
     cell("Extra pull", band(r.ticket_tokens), "BAND burned per pull"),
     cell("Minted by raids", band(r.minted), "BAND"),
-    cell("Burned by raids", "", ""),
+    cell("Burned by lost raids", recordBurned === null ? "–" : band(recordBurned.toString()), `BAND, last ${RECORD} raids`),
   ].join("");
   $("#scoreboard").innerHTML = [
     `<div><span>win streak</span><strong>${r.streak}</strong><em>best ${r.best_streak} · record ${r.won}–${r.lost}</em></div>`,
@@ -278,10 +278,30 @@ async function history() {
     }
   }
   seen = newest;
-  // raid burns: the lost-raid lines in the log window
-  const burned = h.filter((e) => e.kind === "raid_lost").reduce((a, e) => a + big(e.tokens), 0n);
+}
+
+// Every raid is kept by the contract (`raid(id)`): the record of the last 14, and what lost raids burned.
+const RECORD = 14;
+let recordBurned = null;
+async function raidRecord() {
+  if (!raid) return;
+  const current = Number(raid.raid);
+  const ids = [];
+  for (let id = current - 1; id >= 1 && ids.length < RECORD; id--) ids.push(id);
+  const rows = await Promise.all(ids.map((id) => view(TOKEN, "raid", { raid: String(id) }).then((r) => [id, r]).catch(() => [id, undefined])));
+  $("#raids tbody").innerHTML = rows.length
+    ? rows
+        .map(([id, r]) => {
+          if (r === undefined) return `<tr><td>#${id}</td><td class="muted" colspan="5">could not be read</td></tr>`;
+          if (r === null) return `<tr><td>#${id}</td><td class="lost">lost</td><td class="num">0</td><td class="num"></td><td class="num">0</td><td class="num muted">nobody showed up</td></tr>`;
+          const result = r.won === true ? '<span class="won">won</span>' : r.won === false ? '<span class="lost">lost</span>' : '<span class="muted">not settled yet</span>';
+          return `<tr><td>#${id}</td><td>${result}</td><td class="num">${r.joiners}</td><td class="num">${band(r.joined)}</td><td class="num">${r.streak}</td><td class="num">${big(r.burned) ? band(r.burned) : ""}</td></tr>`;
+        })
+        .join("")
+    : `<tr><td class="muted" colspan="6">The first raid opens on day 1.</td></tr>`;
+  recordBurned = rows.reduce((a, [, r]) => a + (r ? big(r.burned) : 0n), 0n);
   const cells = document.querySelectorAll("#raid-grid .cell");
-  if (cells[5]) cells[5].innerHTML = `<span>Burned by lost raids</span><strong>${band(burned.toString())}</strong><em>BAND, recent log</em>`;
+  if (cells[5]) cells[5].innerHTML = `<span>Burned by lost raids</span><strong>${band(recordBurned.toString())}</strong><em>BAND, last ${RECORD} raids</em>`;
 }
 
 function renderTiers(odds) {
@@ -402,7 +422,8 @@ async function board() {
 let tick = 0;
 async function refresh() {
   const slow = tick++ % 5 === 0;
-  await Promise.allSettled([market(), raidStatus().then(history), ...(slow ? [loadBadges().then(holders), dao(), board()] : [])]);
+  const status = raidStatus();
+  await Promise.allSettled([market(), status.then(history), ...(slow ? [loadBadges().then(holders), dao(), board(), status.then(raidRecord)] : [])]);
   if (slow) await account($("#account").value.trim()).catch(() => {});
 }
 
