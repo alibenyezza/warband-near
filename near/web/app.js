@@ -339,12 +339,40 @@ async function dao() {
     .join("");
 }
 
-// The raid, the market and the log refresh every tick; badges, the band, the DAO and the account every fifth one,
-// to stay under public RPC rate limits.
+// The bounty board: payouts from the war chest, tiered by each contributor's record (near/contracts/bounties).
+const BOARD = params.get("board") ?? "warband-bountyboard.testnet";
+async function board() {
+  const [cfg, list] = await Promise.all([view(BOARD, "config"), view(BOARD, "bounties", { limit: 100 })]);
+  const t = cfg.tiers;
+  $("#board-rules").textContent =
+    `Each paid bounty adds ${near(t.trust_step, 2)} NEAR to what a contributor can be paid on the poster's word alone (up to ${near(t.auto_cap, 2)}). ` +
+    `Above that and up to ${near(t.council_cap, 2)} NEAR, one member of the council of ${cfg.dao} approves. Above, the board files a normal DAO proposal.`;
+  const people = [...new Set(list.map((b) => b.contributor).filter(Boolean))];
+  const records = await Promise.all(people.map((a) => view(BOARD, "record_of", { account_id: a })));
+  const paid = list.filter((b) => b.status === "Paid");
+  $("#board-grid").innerHTML = [
+    cell("Board", esc(BOARD), `treasury: ${esc(cfg.dao)}`),
+    cell("Petty cash", near(cfg.petty_cash, 3), "NEAR voted by the DAO"),
+    cell("Open", String(list.filter((b) => ["Open", "Claimed", "Submitted", "AwaitingCouncil", "Proposed"].includes(b.status)).length), "bounties in progress"),
+    cell("Paid", near(paid.reduce((s, b) => s + big(b.amount), 0n), 3), `NEAR over ${paid.length} bounties`),
+  ].join("");
+  $("#board tbody").innerHTML = list
+    .slice()
+    .reverse()
+    .map((b) => `<tr><td>${b.id}</td><td class="desc">${esc(b.title)}<br><span class="muted">by ${esc(b.poster)}${b.dao_proposal ? ` · DAO proposal ${b.dao_proposal}` : ""}</span></td><td class="num">${near(b.amount, 3)}</td><td><span class="tag ${esc(b.status)}">${esc(b.status)}</span></td><td>${esc(b.tier ?? "–")}</td><td>${esc(b.contributor ?? "–")}</td><td>${esc(b.approved_by ?? "–")}</td></tr>`)
+    .join("");
+  $("#records tbody").innerHTML = records
+    .sort((a, b) => b.finished - a.finished)
+    .map((r) => `<tr><td>${esc(r.account_id)}</td><td class="num">${r.finished}</td><td class="num">${near(r.total_paid, 3)}</td><td class="num">${near(r.trust_limit, 3)}</td><td class="desc">${r.points.map((p) => `#${p.bounty} ${esc(p.tier)} (${esc(p.approved_by.split(".")[0])})`).join(", ")}</td></tr>`)
+    .join("");
+}
+
+// The raid, the market and the log refresh every tick; badges, the band, the DAO, the bounty board and the account
+// every fifth one, to stay under public RPC rate limits.
 let tick = 0;
 async function refresh() {
   const slow = tick++ % 5 === 0;
-  await Promise.allSettled([market(), raidStatus().then(history), ...(slow ? [loadBadges().then(holders), dao()] : [])]);
+  await Promise.allSettled([market(), raidStatus().then(history), ...(slow ? [loadBadges().then(holders), dao(), board()] : [])]);
   if (slow) await account($("#account").value.trim()).catch(() => {});
 }
 

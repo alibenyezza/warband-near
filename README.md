@@ -26,7 +26,7 @@ can also empty everything.
 | Built-in market: buy and sell BAND against NEAR on a virtual constant-product curve. 10% fee on every trade: 30% of it fills the raid chest, the rest goes half to the DAO war chest, half to a buyback reserve. | same contract |
 | Buyback rule: when the price falls 20% under the recent high (today and yesterday), anyone may call `buyback`; it spends 10% of the reserve per call, at most 20% per day, and burns what it buys. | same contract |
 | Level-weighted vote: the contract is the Sputnik DAO's staking contract and delegates each holder's Σ lot × level. Treasury transfers, bounties and calls are voted with that weight. Selling or sending tokens pulls the weight back in the same transaction. | contract + Sputnik DAO v2 |
-| Bounties: native Sputnik bounties (proposal, claim, done, vote) paid by the war chest. | Sputnik DAO v2 |
+| Bounty board with earned trust: members post bounties, contributors claim and finish them, payouts come from the war chest. A contributor's record of paid bounties decides the approval: small payouts on the poster's word alone, mid-size ones with one council member, large ones as a normal DAO vote. | `near/contracts/bounties` + Sputnik DAO v2 |
 | No admin: every parameter is set at `new` and readable with `config`; the contract has no owner method, and the full-access keys of the token and DAO accounts are deleted. | `near/scripts/04-lock.sh` |
 | Keeper agent: runs buybacks, weight syncs and DAO flushes with a function-call key that can call only `buyback`, `sync_weight` and `flush_to_dao`, with no deposit, under a 0.25 NEAR gas allowance. | `near/agent` |
 
@@ -49,7 +49,7 @@ and Rust for the tests.
 
 1. **See the live state.** Serve the page: `cd near/web && python3 -m http.server 8080`, open http://localhost:8080.
    You see today's raid (target, raiders checked in, countdown, streak, chest), the loot feed, the badge wall, the
-   price and floor, the band by vote weight (not balance), the war chest and its proposals, and the log. The page
+   price and floor, the band by vote weight (not balance), the war chest and its proposals, the bounty board with each contributor's record, and the log. The page
    reads testnet over RPC. With a testnet wallet connected (`@hot-labs/near-connect`: HOT, Meteor, Intear,
    MyNearWallet…) you can join the raid, claim, burn for a pull, buy, sell and register as a DAO voter from the
    "You" section. The v1 deployment opens with `?token=warband-band.testnet&dao=dao.warband-hq.testnet`.
@@ -70,9 +70,9 @@ and Rust for the tests.
    Look yourself up on the page: one lot, level 0, weight 0. Five minutes later: level 1.
 6. **Check that nobody holds the keys.** `near account list-keys warband-band.testnet network-config testnet now`
    and the same for `dao.warband-hq.testnet`: no keys. The contract code and parameters can no longer change.
-7. **Run the contract tests.** `cd near/contracts/warband && cargo test`: 39 tests. 18 cover the token: a transfer
+7. **Run the contract tests.** `cd near/contracts/warband && cargo test`: 40 tests, and `cd near/contracts/bounties && cargo test`: 13. 18 cover the token: a transfer
    in the middle of a lot, a partial LIFO sale, the floor and the daily cap of the buyback, bounded lots, the weight
-   pulled back from the DAO on a sale. 21 cover the raids: a split bag earns nothing extra, join-then-sell is not
+   pulled back from the DAO on a sale. 22 cover the raids: a split bag earns nothing extra, join-then-sell is not
    paid, a pump does not make pulls cheaper, loot odds over 2000 pulls, soulbound badges, storage covered.
 8. **Replay the attack on the agent** with your own keeper (the demo key is not in the repo):
    `cd near/agent && npm ci && npm run keygen`, run the printed `near account add-key …` for an account you
@@ -150,8 +150,47 @@ Limits, plainly:
 - **Flows that already exist in Sputnik** and that we use as they are: transfer proposals, bounties (add, claim,
   done, give up), token-weighted roles, the staking contract hook. **What we added**: the level-weighted weight
   itself, its automatic withdrawal on outflows, and a stream of fees into the DAO (`flush_to_dao`, permissionless).
-- Not built: the earned-trust tiers (small payouts auto-approved for contributors with a track record, mid-size
-  ones with one council member). They would need a guild contract holding a budget voted by the DAO.
+
+### Bounty board with earned trust
+
+`warband-bountyboard.testnet` ([`near/contracts/bounties`](near/contracts/bounties/src/lib.rs), 13 tests) sits on
+top of the war chest `dao.warband-hq.testnet`. It is not a multisig and holds no treasury: its only money is petty
+cash that a DAO `Transfer` proposal voted to it, and only the DAO can change its tiers (`set_tiers`) or take the
+cash back (`return_petty_cash`). No owner method.
+
+| Tier | When | Who approves |
+|---|---|---|
+| auto | the amount is within the contributor's trust limit: +0.05 NEAR per bounty already paid to them, up to 0.25 | the poster, by accepting the work; paid at once from petty cash |
+| council | up to 0.5 NEAR | one member of the DAO's `council` role, read from the DAO's live policy (`get_policy`) when they approve |
+| dao | above 0.5 NEAR | the board files a normal `Transfer` proposal (the poster pays the bond); the holders vote; the DAO pays the contributor; `settle_dao` reads the outcome and passes the bond, which Sputnik returns to the proposer, back to the poster |
+
+Reputation belongs to named accounts and every point is a paid bounty: `record_of(account)` lists each one with its
+tier and approver. A newcomer starts at 0, so their first payout always needs the council or the DAO. A poster
+cannot claim their own bounty and a contributor cannot approve their own payout. Limits, written plainly: a poster
+and a contributor who collude can farm trust, but only after a first council or DAO approval, only up to 0.25 NEAR
+per bounty, and only from the petty cash the DAO chose to vote.
+
+Run on testnet ([`near/scripts/bounties/run.sh`](near/scripts/bounties/run.sh), log
+[`run.log`](near/scripts/bounties/run.log)):
+
+| Step | Result | Transaction |
+|---|---|---|
+| The holders vote 1 NEAR of petty cash from the war chest to the board | DAO proposal 7 `Approved` | `7txRYZ94UhZ4G6ycZK4718eA2HbKQc32nC6bZ6PRJUJL` |
+| Dave (no record) finishes Alice's 0.05 NEAR bounty; Alice accepts | `AwaitingCouncil` | `AZzY3TwRfeJAqyg5LKD4d3ZkytmUiueBibdqYgNNT7DY` |
+| Carol, not on the council, approves | refused: `Not a member of the DAO council` | `BxJUPTMc7ABjAVnkBdoVHvbiaMWRhk9ATwCuArBLBFCC` |
+| Dave approves his own payout | refused: `The contributor cannot approve their own payout` | `7ygJRHeHbhAN7Yw4TasCAaK8D1QLgioa5Q58zhYfvqKD` |
+| `warband-hq` (council) approves | paid, tier `Council`; Dave's trust limit is now 0.05 NEAR | `5sMoRTNzLEzSjS1e8XxhGpny1h9oat1zEt32WBVzxZQ9` |
+| Dave finishes Bob's 0.04 NEAR bounty; Bob accepts | paid at once, tier `Auto` | `Dt7FegSE9GZPQfxS5hcgjEDRuaGYrcuNL85L2YngiZms` |
+| Carol finishes Alice's 1 NEAR bounty; Alice accepts with the bond | DAO proposal 8 filed by the board | `EGZEfC28PMst8FZCPmenCMJQQU7o8WvnVpMgGoU4UWq3` |
+| Settling before the vote | refused: `The DAO has not decided yet (InProgress)` | `4rfCymj5EicN4YmeHD2LLQ5Tx4JBYHAFUuzNdLaQrXVT` |
+| The holders approve; anyone settles | the DAO pays Carol 1 NEAR; tier `Dao`, the bond back to Alice | `C1eTq2U6x7ks26rPgTAzHJ68zf5DusWWvc7rRmaLpSd3`, `4jWoofKCD1MQjQtVweHNQuqeBU1X6g5sAuGKdEzd7HKG` |
+
+What we learned: the DAO account held 5.5 NEAR but 5.4 of it was locked by its own storage, so its first attempt to
+pay 1 NEAR failed (`the remaining balance will not be enough to cover storage`); the script now checks the war
+chest's free balance first and HQ topped it up. Two earlier boards (`warband-bounties.testnet`,
+`warband-board.testnet`) were test deployments: they paid the DAO's petty cash back and are not used.
+
+![The bounty board on the Warband page](near/docs/bounty-board.jpg)
 
 ## AI Security & Defense: an agent with money and no keys
 
@@ -236,6 +275,8 @@ The bounty's deliverable is the set of rank badges in `near/web/ranks/`, drawn f
 | Path | What it is |
 |---|---|
 | `near/contracts/warband/` | The NEAR contract (Rust, near-sdk 5.30): token, lots, market, buyback, DAO weight, raids and badges (`src/raids.rs`). Tests in `src/tests.rs` and `src/raid_tests.rs`. |
+| `near/contracts/bounties/` | The bounty board with earned trust (Rust, near-sdk 5.30): tiers, records, petty cash voted by the DAO. Tests in `src/tests.rs`. |
+| `near/scripts/bounties/` | Deploys the board and plays the three tiers on testnet (`run.sh`, log in `run.log`). |
 | `near/RAIDS.md` | Raid rules, launch parameters and threat model. |
 | `near/dao/policy.json` | The war chest DAO policy (roles, token-weighted votes). |
 | `near/scripts/` | Testnet accounts, DAO deploy, Warband deploy, key deletion, demo walkthrough. `raids/` deploys v2 and plays the recorded raid run. |

@@ -19,6 +19,7 @@
       <a href="#market">Market</a>
       <a href="#band">Band</a>
       <a href="#chest">War chest</a>
+      <a href="#bounties">Bounties</a>
     </nav>
     <span class="net" id="net">testnet</span>
     <button class="connect" id="connect" type="button">Connect wallet</button>
@@ -109,8 +110,18 @@
       <div class="table-wrap"><table id="proposals"><thead><tr><th>#</th><th>Kind</th><th>Description</th><th>Status</th><th class="num">Approve</th><th class="num">Reject</th></tr></thead><tbody></tbody></table></div>
     </section>
 
+    <section id="bounties" class="panel">
+      <p class="label">// 08 bounty board</p>
+      <h2>Earned trust: the better your record, the less approval you need</h2>
+      <p class="muted" id="board-rules"></p>
+      <div class="grid" id="board-grid"></div>
+      <div class="table-wrap"><table id="board"><thead><tr><th>#</th><th>Bounty</th><th class="num">NEAR</th><th>Status</th><th>Tier</th><th>Contributor</th><th>Approved by</th></tr></thead><tbody></tbody></table></div>
+      <h3>Contributors</h3>
+      <div class="table-wrap"><table id="records"><thead><tr><th>Account</th><th class="num">Paid bounties</th><th class="num">Total paid</th><th class="num">Auto-approve up to</th><th>Every point</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
     <section id="log" class="panel">
-      <p class="label">// 08 log</p>
+      <p class="label">// 09 log</p>
       <h2>Every buy, sell, raid, pull and burn</h2>
       <div class="table-wrap"><table id="history"><thead><tr><th>#</th><th>When</th><th>What</th><th>Account</th><th class="num">NEAR</th><th class="num">BAND</th></tr></thead><tbody></tbody></table></div>
     </section>
