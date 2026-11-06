@@ -375,8 +375,9 @@ for governance.
 
 ## Other project by the same author
 
-The author also submits **Sirius NEAR** (github.com/alibenyezza/sirius-near), an independent project: a
-confidential data marketplace. The two projects share no code.
+The author also submits **Sirius NEAR** (github.com/alibenyezza/sirius-near), an independent project:
+dataset NFTs that own a keyless vault, with datasets sealed to the training runner's key and a privacy audit sent
+end-to-end encrypted to a NEAR AI Cloud TEE that is attested first. The two projects share no code.
 
 ## License
 
