@@ -10,7 +10,7 @@ Built for NEAR HACKATHON 2026, tracks **Memecoins With Mechanics** (`memecoins`)
 
 **Live page: https://alibenyezza.github.io/warband-near/** (reads NEAR testnet from your browser, no wallet needed).
 It opens on the daily deployment, `warband-daily.testnet`, where the twelve-raider camp joins one raid per real day
-until 18 Nov 2026.
+until 25 Nov 2026.
 
 ## Check it in 30 seconds, without a wallet
 
@@ -63,7 +63,7 @@ The same contract, deployed three times on testnet:
 
 | | Token contract | War chest DAO | Bounty board | Day length | Status |
 |---|---|---|---|---|---|
-| **v3, daily** (live) | `warband-daily.testnet` | `dao-daily.warband-hq.testnet` | `warband-dailyboard.testnet` | 24 h (launch setting) | launched 6 Nov 2026; the camp plays once a day until 18 Nov ([`near/scripts/daily/`](near/scripts/daily)) |
+| **v3, daily** (live) | `warband-daily.testnet` | `dao-daily.warband-hq.testnet` | `warband-dailyboard.testnet` | 24 h (launch setting) | launched 6 Nov 2026; the camp plays once a day until 25 Nov ([`near/scripts/daily/`](near/scripts/daily)) |
 | v2, raids | `warband-raids.testnet` | `dao-raids.warband-hq.testnet` | `warband-bountyboard.testnet` (on the v1 DAO) | 3 min | the recorded raid run of the demo video; its raids are lost now that nobody plays them |
 | v1, levels | `warband-band.testnet` | `dao.warband-hq.testnet` | | 5 min | locked: no keys on token or DAO |
 

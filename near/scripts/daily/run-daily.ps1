@@ -1,4 +1,4 @@
-# Scheduled task "Warband daily raid" (current user, 12:00 and 23:00 and at logon, until 2026-11-19): the gas-key
+# Scheduled task "Warband daily raid" (current user, 12:00 and 23:00 and at logon, until 2026-11-26): the gas-key
 # keeper's upkeep, then the camp joins today's raid. Everything is appended to near/scripts/daily/daily.log.
 # Keys stay in the WSL legacy keychain (~/.near-credentials/testnet); nothing secret is written to the log.
 $ErrorActionPreference = "Continue"
