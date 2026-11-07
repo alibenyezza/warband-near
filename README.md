@@ -35,7 +35,7 @@ until 18 Nov 2026.
 | A daily check-in; if the community hits the target, everyone who checked in gets a small mint | `join_raid()` once per day with tokens held at least a day. Won when at least 10 raiders join with 25% of the circulating supply: each raider is minted 0.1% of what it joined with times the streak bonus (0.11% on a first win, up to 0.2% on a 10-raid streak) and shares 20 loot pulls from the chest | [`near/RAIDS.md`](near/RAIDS.md); tests `a_won_raid_mints_grows_the_streak_and_pays_loot`, `fresh_tokens_cannot_join`, `one_join_per_raid` |
 | If it misses, a slice of the treasury burns and the streak resets | 10% of the raid chest buys BAND on the curve and burns it; the streak goes back to 0 | test `a_lost_raid_burns_part_of_the_chest_and_resets_the_streak` |
 | The longest streak printed like a high score | `raid_status` returns `streak` and `best_streak`; the page shows "win streak … best N" and the won–lost record | the live page, top of the raid section |
-| An NEP-141 token with the mechanic in the contract, not in a backend | Token, raids, chest, market and buyback are one contract (`near/contracts/warband`); settlement runs on the first action after a raid ends, by anyone | `cd near/contracts/warband && cargo test`: 43 tests |
+| An NEP-141 token with the mechanic in the contract, not in a backend | Token, raids, chest, market and buyback are one contract (`near/contracts/warband`); settlement runs on the first action after a raid ends, by anyone | `cd near/contracts/warband && cargo test`: 44 tests |
 | All parameters set at launch and readable by anyone; no admin key that can change them | Every parameter is set in `new` and returned by `config`; the contract has no owner, setter or pause method. v1's accounts have no key; v2 and v3 keys are deleted on 13 Nov (see "Keys, plainly" below) | `config` on `warband-daily.testnet` (values in the table below); `near account list-keys warband-band.testnet network-config testnet now` |
 | Sybil resistance good enough for a demo, with its limits written plainly | Mints and pulls are proportional to the balance joined, so splitting a bag earns nothing extra; a transfer restarts the tokens at level 0, so they cannot join that day. Limit: splitting does help reach the 10-raider minimum, at the cost of ten storage deposits and ten seasoned 1M bags | [`near/RAIDS.md`](near/RAIDS.md) threat model; tests `a_split_bag_cannot_join_twice`, `tokens_sold_after_joining_are_not_paid_for`; "Sybil resistance, and its limits" below |
 | A page with the current streak, today's progress and a log of every mint and burn | The live page: streak and best streak, raiders and seasoned balance against the target, countdown, chest; the log shows every buy, sell, join, raid mint (`raid_claim`), pull, buyback burn and lost-raid burn. The contract keeps the last 100 entries; every mint and burn is also an NEP-141 `ft_mint` / `ft_burn` event in its transaction | <https://alibenyezza.github.io/warband-near/>; test `the_public_log_shows_joins_and_big_loot` |
@@ -89,8 +89,9 @@ which deletes a proposal at once; with it, any holder could have deleted every t
 list the actions instead (`AddProposal`, `VoteApprove`, `VoteReject`, `VoteRemove`, `Finalize`), so a proposal leaves
 only by a vote ([`near/scripts/dao-policy-fix.sh`](near/scripts/dao-policy-fix.sh), log
 [`dao-policy-fix.log`](near/scripts/dao-policy-fix.log)). v1 and v2: the council passed it on 7 Nov (proposals 9 and
-1). v3: the holders pass it by two thirds of their weight, so the daily task files and votes it once on day 1
-(log `near/scripts/daily/policy-fix.log`).
+1). v3: the holders passed it on day 1 by two thirds of their level-weighted weight (proposal 4, filed by Alice in
+`6XgowGCyLjKLUCgDeiLgeDW4XpNwEM3Ynhs9sz524m54`, then Alice, Bob and the camp voted; log
+[`near/scripts/daily/policy-fix.log`](near/scripts/daily/policy-fix.log)).
 
 ## The problem
 
@@ -164,7 +165,7 @@ and Rust for the tests.
 6. **Check the keys.** `near account list-keys warband-band.testnet network-config testnet now` and the same for
    `dao.warband-hq.testnet`: no keys, so v1's code and parameters can no longer change. v2 and v3 show one
    full-access key until 13 Nov (see Keys above).
-7. **Run the contract tests.** `cd near/contracts/warband && cargo test`: 43 tests (19 token, 24 raids), and
+7. **Run the contract tests.** `cd near/contracts/warband && cargo test`: 44 tests (20 token, 24 raids), and
    `cd near/contracts/bounties && cargo test`: 20. The token tests cover a transfer
    in the middle of a lot, a partial LIFO sale, the floor and the daily cap of the buyback, bounded lots, the weight
    pulled back from the DAO on a sale. 24 cover the raids: a split bag earns nothing extra, join-then-sell is not
@@ -277,10 +278,24 @@ posted (`a_council_member_cannot_approve_a_bounty_they_posted`). For a DAO-tier 
 cannot attach more and have the difference refunded out of petty cash later
 (`the_dao_bond_is_read_from_the_dao_and_a_short_bond_is_given_back`).
 
-Recorded run on testnet ([`near/scripts/bounties/run.sh`](near/scripts/bounties/run.sh), log
-[`run.log`](near/scripts/bounties/run.log)). On v3, holders' lots carry weight only from day 1, so the daily task
-plays the same run there once on 7 Nov, with Alice, Bob and the camp voting (log
-[`near/scripts/daily/board-run.log`](near/scripts/daily)):
+**On the live deployment (v3), 7 Nov, day 1**: the daily task played the same script on `warband-dailyboard.testnet`
+and the v3 war chest, with the current rules and Alice, Bob and the camp voting by level weight (log
+[`near/scripts/daily/board-run.log`](near/scripts/daily/board-run.log)):
+
+| Step | Result | Transaction |
+|---|---|---|
+| The holders vote 1 NEAR of petty cash from the war chest to the board | DAO proposal 2 `Approved` | `CQoD4otgGqTcYNG27wDSadxepQHAtApwFF7QYPeBuhSw` (proposal), `9Ws3ghyedcmHMgKNTZFg7aQnbF9obDzk3U8NgPNHUY3K` (deciding vote) |
+| Dave (no record) finishes Alice's 0.05 NEAR bounty; Alice accepts | `AwaitingCouncil` | `6xYC9e4qwnYrXQCnxpy2jNuYQeDL5iM5V2cfA1AzPp9i` |
+| Carol, not on the council, approves | refused: `Not a member of the DAO council` | `Fa9PSPGN6sqZa5Gq5L8fpQ2xiCcnGUuGCYEecAka1rfW` |
+| Dave approves his own payout | refused: `The contributor cannot approve their own payout` | `FZURxopyebspdLjHe5cT2xx58f9j7H5XZhGsAzckGG3H` |
+| `warband-hq` (council) approves | paid, tier `Council`; Dave's trust limit 0.05 NEAR | `F3umfU11s8t1FVKNzJBczSiPBkozrVySeVtd45AKteYx` |
+| Dave finishes Bob's 0.04 NEAR bounty; Bob accepts | paid at once, tier `Auto`; Dave's trust stays 0.05 (auto payouts earn none) | `GcKAAfxP4f3bWixQHj1DhHQ7dQe2eDML9DvJYQNHN6Xy` |
+| Carol finishes Alice's 1 NEAR bounty; Alice accepts with the bond | the board reads the DAO's bond and files DAO proposal 3 | `2eqhQPDi7FQcCuRJRW8MkFvhhXC7SKCBw3YCMiwounot` |
+| Settling before the vote | refused: `The DAO has not decided yet (InProgress)` | `Hc61PWN1SxNCfSQD71nMMsLw7ZefM1wp23xzd9skgPRc` |
+| The holders approve; anyone settles | the DAO pays Carol 1 NEAR; tier `Dao`, the bond back to Alice | `GCuLiyb2GchVoB35c8yqKqkk3cWYKQRh3vihmXcDXnd9`, `EMGpEXjxMN1Kw4zBTXMFCWBmpG92UPZC6ZEPo5bcwuFP` |
+
+The first recorded run, on v1 (`warband-bountyboard.testnet` and `dao.warband-hq.testnet`, before the 7 Nov rules;
+[`near/scripts/bounties/run.sh`](near/scripts/bounties/run.sh), log [`run.log`](near/scripts/bounties/run.log)):
 
 | Step | Result | Transaction |
 |---|---|---|
@@ -376,6 +391,7 @@ the gas-key keeper's upkeep, then the camp). Logs next to them; `daily.log` grow
 | Bounty board `warband-dailyboard.testnet` on the v3 DAO; faucet surplus sent to HQ | `7LLAQN2GMj1oUDrV8a8UcjiVCJtyFGUSMAyC6BkW9sU1`, `47TtbH2vew3ARwTtjJjwuNhbHHdgsNBmvFYDBVQEz95B` |
 | Launch day: the twelve raiders, Alice and Bob buy and register as DAO voters | [`02-launch.log`](near/scripts/daily/02-launch.log) |
 | 7 Nov, before day 1, after an outside review: contract upgraded (same state) for the odds level, the ticket price after quiet days and the DAO weight after a lot merge; board upgraded for the trust rules, then again for the DAO bond and the poster rule (HQ added 0.04 NEAR to the board, below its 0.05 NEAR storage reserve, so petty cash stayed 0). v2 and its board got the same code | `nsDtKFEqQv6eyhcqvtxB3C7RHkDgyoacNx7QBbHeas8`, `CpWvo4jYfjGv3p54LP3UwUnNLWTMj2hNSd2EMq1FU9mq`, `6ujS1KqCcaPAPkdT42y3vdLKqpgCGipcrKMb3qgbgjoL`; v2 `AY8gC8WnLTd6daygdPkGGnyM94VrwkV7gWUohzmxfJKQ`, `4UgwssSUF9e7psicQUw7qsHRw9EoE13KS7vhXgDKkCao`, `718R5YrbPTBMrWNStQLRcJVbQGSm8Tbf7JnZrmkYyn73` |
+| 7 Nov, after day 1's run: contract upgraded (same state) so a failed DAO call undoes only its own change to the delegated weight (`a_failed_dao_call_undoes_only_its_own_change`) | `DAau59BBkN9pGUWfYDWjy49bKYXgpLHRmCejSDiWg9B2`; v2 `5GFzGbojW9nzNorEDqTyra1kLx189iUh6REpkzVVdxS2` |
 
 ## Testnet record (v1)
 

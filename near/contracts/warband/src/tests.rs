@@ -340,3 +340,31 @@ fn a_merge_on_an_inflow_pulls_weight_back() {
     assert_eq!(a.lots.len(), MAX_LOTS);
     assert_eq!(a.delegated.0, a.weight.0, "the DAO weight follows the drop");
 }
+
+#[test]
+fn a_failed_dao_call_undoes_only_its_own_change() {
+    use near_sdk::test_utils::get_created_receipts;
+    use near_sdk::{PromiseResult, RuntimeFeesConfig};
+    let mut c = setup(Some("band-dao.sputnik-v2.testnet"));
+    ctx("alice.testnet", NEAR + STORAGE_DEPOSIT, at(0));
+    let out = c.buy(None).0;
+    ctx("warband.testnet", 0, at(4));
+    c.accounts.get_mut(&acc("alice.testnet")).unwrap().dao_registered = true;
+    // push 1: 0 -> 4 x out; push 2, a day later: 4 x out -> 5 x out; both in flight, push 2 succeeds, push 1 fails
+    ctx("anyone.testnet", 0, at(4));
+    c.sync_weight(acc("alice.testnet"));
+    ctx("anyone.testnet", 0, at(5));
+    c.sync_weight(acc("alice.testnet"));
+    let _ = get_created_receipts();
+    assert_eq!(c.account(acc("alice.testnet")).unwrap().delegated.0, out * 5);
+    testing_env!(
+        VMContextBuilder::new().current_account_id(acc("warband.testnet")).predecessor_account_id(acc("warband.testnet")).block_timestamp(at(5)).build(),
+        near_sdk::test_vm_config(),
+        RuntimeFeesConfig::test(),
+        Default::default(),
+        vec![PromiseResult::Failed]
+    );
+    c.on_delegation(acc("alice.testnet"), U128(0), Some(U128(out * 4)));
+    // the DAO holds only push 2's delta (out): the record says the same, not 0 as a plain rollback would
+    assert_eq!(c.account(acc("alice.testnet")).unwrap().delegated.0, out);
+}

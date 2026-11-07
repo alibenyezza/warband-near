@@ -89,7 +89,7 @@ carried by a single whale. A band that plays prints a little, and a band that qu
 
 | Part | Status |
 |---|---|
-| Raids, chest, pulls, badges, mints and burns | in the contract, 24 unit tests (`raid_tests.rs`), plus 19 token and math tests (43 in all) |
+| Raids, chest, pulls, badges, mints and burns | in the contract, 24 unit tests (`raid_tests.rs`), plus 20 token and math tests (44 in all) |
 | Community behaviour in the simulation | invented (see the scenarios in `sim/raids.py`). The simulation shows what the rules do with it, not a forecast. |
 | Loot | NEAR from the chest only. No outside NFT is deposited into the pool. |
 

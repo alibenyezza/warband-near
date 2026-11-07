@@ -2,6 +2,8 @@
 # keeper's upkeep, then the camp joins today's raid. Everything is appended to near/scripts/daily/daily.log.
 # Keys stay in the WSL legacy keychain (~/.near-credentials/testnet); nothing secret is written to the log.
 $ErrorActionPreference = "Continue"
+# WSL writes UTF-8: read it as UTF-8, or box characters from near-cli turn into mojibake in the log
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $log = Join-Path $here "daily.log"
 $keychain = "\\wsl.localhost\Ubuntu-26.04\home\byezz\.near-credentials\testnet"

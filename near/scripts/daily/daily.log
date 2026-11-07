@@ -19,3 +19,114 @@
    keeper sync_weight warband-bob.testnet: ok  tx G5x7GGnNySrHVkZJ994fYJCZved7y4nDwja3AqQ83E2X
 == 2026-11-06 10:28:03 UTC, day 0 of warband-daily.testnet
    launch day: lots season for one day, the first raid is day 1
+
+== 2026-11-06 11:00:03 UTC, run-daily.ps1
+   day 0, keeper gk-daily.warband-hq.testnet on warband-daily.testnet
+   keeper settle_raids: ok  tx DKfuDsXV8GEiLGhRWtqSUzdA9CotWYadvEwQGEddmEVK
+   keeper sync_weight archer.warband-camp.testnet: ok  tx FfSx23E5YUVLcjQbFFUa8JdybBEce94dQhnqdx2HDM6x
+   keeper sync_weight bard.warband-camp.testnet: ok  tx 4t9bQiCuhe6YLSguqBwech253CDRYtfj46ywySZEnCF1
+   keeper sync_weight drummer.warband-camp.testnet: ok  tx EnNA3kTtwJ2H5WEDC72fjfJqu8heT6txEo8PQVKxBU8J
+   keeper sync_weight hunter.warband-camp.testnet: ok  tx 45Gejfb34VUiuz3coEhY4rqBgQpAWdbcj4LPJpVZWRRu
+   keeper sync_weight mason.warband-camp.testnet: ok  tx 8Amb7EDbdepLkpWjJrVu8UJsKGj5jQo5uUi4bt2gYKZK
+   keeper sync_weight monk.warband-camp.testnet: ok  tx Gy3oJ1q3YKAHkSR9zWEKw9mUFHxbjH75X6m7E9goZf3x
+   keeper sync_weight piper.warband-camp.testnet: ok  tx 2r3chSFWA4Sov2CmbXw537kXLw5NRGRKytPWLemXhfUa
+   keeper sync_weight rider.warband-camp.testnet: ok  tx 5vhJXRMWFnDDEKwAJYTjGvDond5e3B1pWyJdaSUEoZsh
+   keeper sync_weight scout.warband-camp.testnet: ok  tx 5G7hd3MNT1RL23HiRurHD8zXmtu9WTytQu6bNbVvH5z5
+   keeper sync_weight smith.warband-camp.testnet: ok  tx GvtqdRRmaBp9LVj46iF4haFmim5bFBVVvYoYprhFQ3M3
+   keeper sync_weight tanner.warband-camp.testnet: ok  tx BfQDJGFrJAouc4k5L8fFD3dufsR8Uaf7BB6cGdWjApEh
+   keeper sync_weight warden.warband-camp.testnet: ok  tx AgLSA1PPH9GcApuXbQNrmEMZD9SdfbWbGcbjiT1cACVW
+   keeper sync_weight warband-alice.testnet: ok  tx GmWpAvuEkreqn9iGh4W5LTxWPCKPYKWanYF5fY42LisD
+   keeper sync_weight warband-bob.testnet: ok  tx GLUe39RNFeyx7Ah2w6AA3a7GeSdUfLvUivBBD1fbSu6u
+== 2026-11-06 11:01:14 UTC, day 0 of warband-daily.testnet
+   launch day: lots season for one day, the first raid is day 1
+
+== 2026-11-06 22:00:01 UTC, run-daily.ps1
+   day 0, keeper gk-daily.warband-hq.testnet on warband-daily.testnet
+   keeper settle_raids: ok  tx 78WbF8eKUhzvGTKopLhvs41uiiFAcpiZE6zM5wHiPf6Y
+   keeper sync_weight archer.warband-camp.testnet: ok  tx BTLCTePmPwAirmrWk7H6U1HR6AC9tQJzbaXmqdA4CWj9
+   keeper sync_weight bard.warband-camp.testnet: ok  tx 4EhbxQhDt6Dt2bBbBo5KuY1HasUa6CZ1sxvuUM8jGCqt
+   keeper sync_weight drummer.warband-camp.testnet: ok  tx 6Xm4je7qt7LWa6LtSjgoto6RRuY9izXjdcEYWsUVZiSJ
+   keeper sync_weight hunter.warband-camp.testnet: ok  tx 3A7LUsi7kVdDjm1ok5XnVS2xMiJztUhxQRdtSxsrWrZJ
+   keeper sync_weight mason.warband-camp.testnet: ok  tx 9TJXojTdY11TWZputLQdwbqBoZqam1D6t8cMLaxV9Tuj
+   keeper sync_weight monk.warband-camp.testnet: ok  tx FuiLmPJX3DDn3V81mkkgNeyGMjvuZnnmFnjbkFMPn5gA
+   keeper sync_weight piper.warband-camp.testnet: ok  tx 71zggR3juVseRU5zyT7H8b8437RvU5QFaF7UZwr6emUA
+   keeper sync_weight rider.warband-camp.testnet: ok  tx DTKbrDHwZ3SHe51CrLbn3CPDRJ9hCymuE1NUSGN22SF
+   keeper sync_weight scout.warband-camp.testnet: ok  tx bdPyvBdJSCgQvNTLJgDjysg649uTSFfc53DUuzmBryo
+   keeper sync_weight smith.warband-camp.testnet: ok  tx 7EuVbRsxSwNuDum5GzpVEEP5z9TC3GdSBUyjRA758jSL
+   keeper sync_weight tanner.warband-camp.testnet: ok  tx GVZKwUqAp6GZzekrK1VHFXWzAPbiJM2B4FyTaio7EcJd
+   keeper sync_weight warden.warband-camp.testnet: ok  tx 6GqUyupxMxg7UT8r4RpUy8xn8gGL4rhCZSKFMg4pyTGi
+   keeper sync_weight warband-alice.testnet: ok  tx ARx7nyK1RLQNfHDFKLb97roKysK4by9a2svmAQQ1sDmC
+   keeper sync_weight warband-bob.testnet: ok  tx 5pc9Vp7ZGzpbgBaHmNonav6Kq7xAQD8yYdwJUzHgh76q
+== 2026-11-06 22:01:01 UTC, day 0 of warband-daily.testnet
+   launch day: lots season for one day, the first raid is day 1
+
+== 2026-11-07 11:00:02 UTC, run-daily.ps1
+   day 1, keeper gk-daily.warband-hq.testnet on warband-daily.testnet
+   keeper settle_raids: ok  tx 7uwzg4roJVety6FDaivbAGvi6qYj7uUFw1EUpqXwaxfs
+   keeper sync_weight archer.warband-camp.testnet: ok  tx 9tN2pXU7sqj1AwihU6MpWgvWzUXhXodw3PXpnd8HBRVV
+   keeper sync_weight bard.warband-camp.testnet: ok  tx F7giZwPGeBbZ2jdxvRzeb92Pm3gF66Lh2MyxnUoEFECE
+   keeper sync_weight drummer.warband-camp.testnet: ok  tx AMVs64tG3kLCFzha2aScm1UwhJHJ9XULrkgF8juoQi8j
+   keeper sync_weight hunter.warband-camp.testnet: ok  tx CMnimaXJNeLyPMeMo1FvCGgG2f4foRESs6orUPKtqUzE
+   keeper sync_weight mason.warband-camp.testnet: ok  tx CLcVNqERxZTfxhrbGdGNWTd2wF4q3CdgtebkjHB8x2BN
+   keeper sync_weight monk.warband-camp.testnet: ok  tx FBKuAFxe4EUSoVddvbnhoZJDci67iWoHDubX49WBjjzD
+   keeper sync_weight piper.warband-camp.testnet: ok  tx 5drDGQirwZAWoD3kXSt4VNBTYekM29NxzDRZ5qGFxrUM
+   keeper sync_weight rider.warband-camp.testnet: ok  tx 5t7MASLV7id2iCSeWuFVzHQwhWDFQfak8XVjauxRZnKB
+   keeper sync_weight scout.warband-camp.testnet: ok  tx ERCCfNAEFNr3NX66379J9w3wFxAyFJDcfd3wbZcCQY7e
+   keeper sync_weight smith.warband-camp.testnet: ok  tx 5yJGiWNQzezSQaPxChB8EGRLxQfxLH7SdqRDeuueHDq2
+   keeper sync_weight tanner.warband-camp.testnet: ok  tx EN4HGndAPDtXnvFuiXbDjk97Pf99A1tx4sZ8ZXAiv8Wf
+   keeper sync_weight warden.warband-camp.testnet: ok  tx J6Pj13c1aLmmj53SrmmS7f9eusiZi7Z3ZMoQgMVd6Hhq
+   keeper sync_weight warband-alice.testnet: ok  tx EMMv3HcN9X6whEG7DCgoqykgaTDhD1whjZMCNTHnTQfL
+   keeper sync_weight warband-bob.testnet: ok  tx 25yXBNd5PqTAgkep7fucEvi32yoRFZ4a1WhYn5J7iEKn
+== 2026-11-07 11:01:26 UTC, day 1 of warband-daily.testnet
+-- archer.warband-camp.testnet joins
+│    Transaction ID: 6v3TQWZaJ3vHzeVp8i1LNNr9rGJg2DmeUXRF9TP4eRAP
+The "join_raid" call to <warband-daily.testnet> on behalf of <archer.warband-camp.testnet> succeeded.
+-- bard.warband-camp.testnet joins
+│    Transaction ID: ANMaT9z8qtyxkJ8GJe8qJhFd4NgzjAVNY64uidyUaKe8
+The "join_raid" call to <warband-daily.testnet> on behalf of <bard.warband-camp.testnet> succeeded.
+-- drummer.warband-camp.testnet joins
+│    Transaction ID: DCFWazqxn1PQN6ZJbFHprmzsKytgThUgeXNAqw7o5RVF
+The "join_raid" call to <warband-daily.testnet> on behalf of <drummer.warband-camp.testnet> succeeded.
+-- hunter.warband-camp.testnet joins
+│    Transaction ID: 5uE3VnwhzKexixhrqvVRvwzjQ9uL9uwq6kAHXMRpPArq
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: already in today's raid")
+-- mason.warband-camp.testnet joins
+│    Transaction ID: 9gWQrymrgiRWCRw52nBWS2eGcmtepkz86BfUREYXg3N7
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: already in today's raid")
+-- monk.warband-camp.testnet joins
+│    Transaction ID: GB4DpoozBFKPkndXDbCRKzh6MpKx6ASopUqnZuuvoPc1
+The "join_raid" call to <warband-daily.testnet> on behalf of <monk.warband-camp.testnet> succeeded.
+-- piper.warband-camp.testnet joins
+│    Transaction ID: EopPRpjani2xztx64VGfvRxqCsWuTghYXED52b3XPXdQ
+The "join_raid" call to <warband-daily.testnet> on behalf of <piper.warband-camp.testnet> succeeded.
+-- rider.warband-camp.testnet joins
+│    Transaction ID: 7yLKAG4Qzwk11ZGzJ1TA2qQroJoCHArgvNmzPDwx2i9b
+The "join_raid" call to <warband-daily.testnet> on behalf of <rider.warband-camp.testnet> succeeded.
+-- scout.warband-camp.testnet joins
+│    Transaction ID: 3DJ62hk37L6DJACV58RqWV7mjoQNX7EvfrfAHsVNsfj1
+The "join_raid" call to <warband-daily.testnet> on behalf of <scout.warband-camp.testnet> succeeded.
+-- smith.warband-camp.testnet joins
+│    Transaction ID: FArq9axrD3bnQqn1fvqq6zZLdFkcsTFB8AD8pPBgkcqB
+The "join_raid" call to <warband-daily.testnet> on behalf of <smith.warband-camp.testnet> succeeded.
+-- tanner.warband-camp.testnet joins
+│    Transaction ID: EErbm4mZUV15Pts5tY9mUjzyMmmpRHDq4fWzRg3bGwHx
+The "join_raid" call to <warband-daily.testnet> on behalf of <tanner.warband-camp.testnet> succeeded.
+-- warden.warband-camp.testnet joins
+│    Transaction ID: 3zivhbeu3rFemrggyZkzHunEJ4V2A1NngaYvEKD1GqCh
+The "join_raid" call to <warband-daily.testnet> on behalf of <warden.warband-camp.testnet> succeeded.
+-- warband-alice.testnet joins
+│    Transaction ID: EcQiXzGPSoCTnxY9T5Q28LM9QRa8g8WKjzpKHcTgc5d9
+The "join_raid" call to <warband-daily.testnet> on behalf of <warband-alice.testnet> succeeded.
+   raid 1 joiners 13 streak 0 chest 0.22050000000000003 NEAR
+-- bounty board run (log: board-run.log)
+
+== 5. the board
+   0 Paid             Council  0.049999999999999996 NEAR warband-dave.testnet <- warband-alice.testnet | Draw the rank badges of the band page
+   1 Paid             Auto     0.04 NEAR  warband-dave.testnet <- warband-bob.testnet | Translate the raid rules to French
+   2 Paid             Dao      1.0 NEAR   warband-carol.testnet <- warband-alice.testnet | Review the raid contract before mainnet
+{"dao":"dao-daily.warband-hq.testnet","tiers":{"trust_step":"50000000000000000000000","auto_cap":"250000000000000000000000","council_cap":"500000000000000000000000"},"petty_cash":"911521625106908800000000"}
+-- DAO policy fix (log: policy-fix.log)
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <monk.warband-camp.testnet> succeeded.
+   proposal 4: Approved; kind:* permissions left: 0

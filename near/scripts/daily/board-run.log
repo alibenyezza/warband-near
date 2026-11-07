@@ -1,0 +1,204 @@
+
+== 0b. the war chest's free balance (its balance minus what its own storage locks): 0.643 NEAR
+   below the 2.2 NEAR this run pays out: warband-hq.testnet sends 2 NEAR to the war chest
+│    Transaction ID: CXfZARpgFyDFBu4rLqQU9c4i4yB4LmQhrWkReoAdftBJ
+<warband-hq.testnet> has transferred 2 NEAR to <dao-daily.warband-hq.testnet> successfully.
+
+== 1. petty cash comes from the treasury: alice proposes a 1 NEAR Transfer from the DAO to the board, holders vote
+│    Transaction ID: CQoD4otgGqTcYNG27wDSadxepQHAtApwFF7QYPeBuhSw
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-alice.testnet]:   No logs
+The "add_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <warband-alice.testnet> succeeded.
+   warband-alice.testnet votes for proposal 2
+│    Transaction ID: 6BKLMTJhzWSsRktNGJL65FVrJ4C3LoYTyPiRUuxR7yZU
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-alice.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <warband-alice.testnet> succeeded.
+   warband-bob.testnet votes for proposal 2
+│    Transaction ID: 8K5r8585oTNv7PXjLVkytrJ7WFfHKoQLN5NbbgH9ttHS
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-bob.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <warband-bob.testnet> succeeded.
+   archer.warband-camp.testnet votes for proposal 2
+│    Transaction ID: EBHQKFWPi5zmHyUyakryDv3wxQXyEjfTyMLGfb4jE3jh
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [archer.warband-camp.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <archer.warband-camp.testnet> succeeded.
+   bard.warband-camp.testnet votes for proposal 2
+│    Transaction ID: 7h87wxHYW5mVQJaqBm5gnnfSoUQCrJQh6LTTDEWmPrxu
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [bard.warband-camp.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <bard.warband-camp.testnet> succeeded.
+   drummer.warband-camp.testnet votes for proposal 2
+│    Transaction ID: 9Ws3ghyedcmHMgKNTZFg7aQnbF9obDzk3U8NgPNHUY3K
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-dailyboard.testnet]:   No logs
+│    Logs [drummer.warband-camp.testnet]:   No logs
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-alice.testnet]:   No logs
+│    Logs [drummer.warband-camp.testnet]:   No logs
+│    Logs [drummer.warband-camp.testnet]:   No logs
+│    Logs [drummer.warband-camp.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <drummer.warband-camp.testnet> succeeded.
+   DAO proposal 2 Transfer Approved
+{"dao":"dao-daily.warband-hq.testnet","tiers":{"trust_step":"50000000000000000000000","auto_cap":"250000000000000000000000","council_cap":"500000000000000000000000"},"petty_cash":"983301625106908800000000"}
+
+== 2. dave has no record: alice's 0.05 NEAR bounty needs one council member
+│    Transaction ID: 5vxTAChbRtDwpbZYeZjPwSC44cc5vMkRBX47dFU1v5Qt
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-alice.testnet]:   No logs
+The "post" call to <warband-dailyboard.testnet> on behalf of <warband-alice.testnet> succeeded.
+│    Transaction ID: CSeiAPKqEXxwZmfSpoW7R32uqLxcGcsoHZcM4c2ycUem
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-dave.testnet]:   No logs
+The "claim" call to <warband-dailyboard.testnet> on behalf of <warband-dave.testnet> succeeded.
+│    Transaction ID: BEmxW8T3aCxjKiYoz8tzF3CFdp6TXB4uDUgdKDJG4ewu
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-dave.testnet]:   No logs
+The "submit" call to <warband-dailyboard.testnet> on behalf of <warband-dave.testnet> succeeded.
+│    Transaction ID: 6xYC9e4qwnYrXQCnxpy2jNuYQeDL5iM5V2cfA1AzPp9i
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-alice.testnet]:   No logs
+The "accept" call to <warband-dailyboard.testnet> on behalf of <warband-alice.testnet> succeeded.
+   bounty 0 'Draw the rank badges of the band page' 0.049999999999999996 NEAR AwaitingCouncil tier Council approved by None proposal None
+   carol is not on the council and tries to approve:
+│    Transaction ID: Fa9PSPGN6sqZa5Gq5L8fpQ2xiCcnGUuGCYEecAka1rfW
+│    Logs [warband-dailyboard.testnet]:   No logs
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-carol.testnet]:   No logs
+│    Logs [warband-dailyboard.testnet] (failed):   No logs
+│    Logs [warband-carol.testnet]:   No logs
+│    Logs [warband-carol.testnet]:   No logs
+Error: 
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: Not a member of the DAO council")
+   dave tries to approve his own payout:
+│    Transaction ID: FZURxopyebspdLjHe5cT2xx58f9j7H5XZhGsAzckGG3H
+│    Logs [warband-dailyboard.testnet] (failed):   No logs
+│    Logs [warband-dave.testnet]:   No logs
+Error: 
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: The contributor cannot approve their own payout")
+   warband-hq (council, read from the DAO policy) approves:
+│    Transaction ID: F3umfU11s8t1FVKNzJBczSiPBkozrVySeVtd45AKteYx
+│    Logs [warband-dailyboard.testnet]:   No logs
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-dave.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+The "approve" call to <warband-dailyboard.testnet> on behalf of <warband-hq.testnet> succeeded.
+   bounty 0 'Draw the rank badges of the band page' 0.049999999999999996 NEAR Paid tier Council approved by warband-hq.testnet proposal None
+   record warband-dave.testnet finished 1 paid 0.049999999999999996 trust limit 0.049999999999999996 [('0', 'Council', 'warband-hq.testnet')]
+
+== 3. with one paid bounty dave's trust limit is 0.05 NEAR: bob's 0.04 NEAR bounty pays out when bob accepts
+│    Transaction ID: Mx8LUMctaMTB5MmVkF3hp27qaweqoEqHQih8NtgufD6
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-bob.testnet]:   No logs
+The "post" call to <warband-dailyboard.testnet> on behalf of <warband-bob.testnet> succeeded.
+│    Transaction ID: GiH4k1Ue2UJFK2sDrsqBUfyFcJkLmrZEkcbBAKhgMeic
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-dave.testnet]:   No logs
+The "claim" call to <warband-dailyboard.testnet> on behalf of <warband-dave.testnet> succeeded.
+│    Transaction ID: 2G991z49fJx436Q4asDFHDreRD7TnLXamBnJGGQtVuTR
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-dave.testnet]:   No logs
+The "submit" call to <warband-dailyboard.testnet> on behalf of <warband-dave.testnet> succeeded.
+│    Transaction ID: GcKAAfxP4f3bWixQHj1DhHQ7dQe2eDML9DvJYQNHN6Xy
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-dave.testnet]:   No logs
+│    Logs [warband-bob.testnet]:   No logs
+│    Logs [warband-bob.testnet]:   No logs
+The "accept" call to <warband-dailyboard.testnet> on behalf of <warband-bob.testnet> succeeded.
+   bounty 1 'Translate the raid rules to French' 0.04 NEAR Paid tier Auto approved by warband-bob.testnet proposal None
+   record warband-dave.testnet finished 2 paid 0.09 trust limit 0.049999999999999996 [('0', 'Council', 'warband-hq.testnet'), ('1', 'Auto', 'warband-bob.testnet')]
+
+== 4. a 1 NEAR bounty is above the council cap: accepting it files a normal DAO proposal (alice pays the bond)
+│    Transaction ID: 4VxfxssxMH37iphWUUhi8NSE6cZ8ZaugJerKtvWCsBXW
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-alice.testnet]:   No logs
+The "post" call to <warband-dailyboard.testnet> on behalf of <warband-alice.testnet> succeeded.
+│    Transaction ID: GtbrvfQkTB9rn87GEfAoi27DKBwW8TPUuYkzjTTRAnCe
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-carol.testnet]:   No logs
+The "claim" call to <warband-dailyboard.testnet> on behalf of <warband-carol.testnet> succeeded.
+│    Transaction ID: qgSqzzRGvR8HGQQSotAgSZbfTti7owZP8jtMyqCB8UR
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-carol.testnet]:   No logs
+The "submit" call to <warband-dailyboard.testnet> on behalf of <warband-carol.testnet> succeeded.
+│    Transaction ID: 2eqhQPDi7FQcCuRJRW8MkFvhhXC7SKCBw3YCMiwounot
+│    Logs [warband-dailyboard.testnet]:   No logs
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-alice.testnet]:   No logs
+│    Logs [warband-dailyboard.testnet]:   No logs
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-alice.testnet]:   No logs
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-alice.testnet]:   No logs
+│    Logs [warband-alice.testnet]:   No logs
+│    Logs [warband-alice.testnet]:   No logs
+The "accept" call to <warband-dailyboard.testnet> on behalf of <warband-alice.testnet> succeeded.
+   bounty 2 'Review the raid contract before mainnet' 1.0 NEAR Proposed tier Dao approved by None proposal 3
+   settling before the vote is refused:
+│    Transaction ID: Hc61PWN1SxNCfSQD71nMMsLw7ZefM1wp23xzd9skgPRc
+│    Logs [warband-dailyboard.testnet]:   No logs
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-carol.testnet]:   No logs
+│    Logs [warband-dailyboard.testnet] (failed):   No logs
+│    Logs [warband-carol.testnet]:   No logs
+│    Logs [warband-carol.testnet]:   No logs
+Error: 
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: The DAO has not decided yet (InProgress)")
+   warband-alice.testnet votes for proposal 3
+│    Transaction ID: 74H9ZT8xBvmNDg2A58WyfCzf96ydYLwp6bb3z6Z3UpQf
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-alice.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <warband-alice.testnet> succeeded.
+   warband-bob.testnet votes for proposal 3
+│    Transaction ID: wZHb1hSSzSy3P8dZ8urE7DsfqAAmyEcrafiPFrsfgjV
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-bob.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <warband-bob.testnet> succeeded.
+   archer.warband-camp.testnet votes for proposal 3
+│    Transaction ID: 42utsjsA65Pwcz4Y5HFZtDrCMyjXNQD1V5yf5bjZcYMh
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [archer.warband-camp.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <archer.warband-camp.testnet> succeeded.
+   bard.warband-camp.testnet votes for proposal 3
+│    Transaction ID: 44bkwwXD4Y5yKkxyioWfuXzBWCgpMN8RZ9US6A73MQmR
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [bard.warband-camp.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <bard.warband-camp.testnet> succeeded.
+   drummer.warband-camp.testnet votes for proposal 3
+│    Transaction ID: GCuLiyb2GchVoB35c8yqKqkk3cWYKQRh3vihmXcDXnd9
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-carol.testnet]:   No logs
+│    Logs [drummer.warband-camp.testnet]:   No logs
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-dailyboard.testnet]:   No logs
+│    Logs [drummer.warband-camp.testnet]:   No logs
+│    Logs [drummer.warband-camp.testnet]:   No logs
+│    Logs [drummer.warband-camp.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <drummer.warband-camp.testnet> succeeded.
+   DAO proposal 3 Transfer Approved
+│    Transaction ID: EMGpEXjxMN1Kw4zBTXMFCWBmpG92UPZC6ZEPo5bcwuFP
+│    Logs [warband-dailyboard.testnet]:   No logs
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-carol.testnet]:   No logs
+│    Logs [warband-dailyboard.testnet]:
+│    Logs [warband-alice.testnet]:   No logs
+│    Logs [warband-carol.testnet]:   No logs
+│    Logs [warband-carol.testnet]:   No logs
+│    Logs [warband-carol.testnet]:   No logs
+The "settle_dao" call to <warband-dailyboard.testnet> on behalf of <warband-carol.testnet> succeeded.
+   bounty 2 'Review the raid contract before mainnet' 1.0 NEAR Paid tier Dao approved by dao-daily.warband-hq.testnet proposal 3
+   record warband-carol.testnet finished 1 paid 1.0 trust limit 0.049999999999999996 [('2', 'Dao', 'dao-daily.warband-hq.testnet')]
+
+== 5. the board
+   0 Paid             Council  0.049999999999999996 NEAR warband-dave.testnet <- warband-alice.testnet | Draw the rank badges of the band page
+   1 Paid             Auto     0.04 NEAR  warband-dave.testnet <- warband-bob.testnet | Translate the raid rules to French
+   2 Paid             Dao      1.0 NEAR   warband-carol.testnet <- warband-alice.testnet | Review the raid contract before mainnet
+{"dao":"dao-daily.warband-hq.testnet","tiers":{"trust_step":"50000000000000000000000","auto_cap":"250000000000000000000000","council_cap":"500000000000000000000000"},"petty_cash":"911521625106908800000000"}

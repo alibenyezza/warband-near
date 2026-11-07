@@ -1,0 +1,49 @@
+== 2026-11-07 11:04:53 UTC, dao-daily.warband-hq.testnet: 17 role permission(s) of the form kind:* (they include RemoveProposal)
+│    Transaction ID: 6XgowGCyLjKLUCgDeiLgeDW4XpNwEM3Ynhs9sz524m54
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-alice.testnet]:   No logs
+The "add_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <warband-alice.testnet> succeeded.
+   ChangePolicy is proposal 4
+   warband-alice.testnet votes for proposal 4
+│    Transaction ID: DaoFKX8iy4HpbTAUmJCp1qUk7UFg5Bn5rWACu8LSKkL4
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-alice.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <warband-alice.testnet> succeeded.
+   warband-bob.testnet votes for proposal 4
+│    Transaction ID: 8Wj3VY1cLgBBqoYPtSpE6gC1DwTP1CETrQC4cat1ftNb
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-bob.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <warband-bob.testnet> succeeded.
+   archer.warband-camp.testnet votes for proposal 4
+│    Transaction ID: DmiEz8CggcRDN5uiubiJZefg17VVsFcT4NF8DvxEFtDi
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [archer.warband-camp.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <archer.warband-camp.testnet> succeeded.
+   bard.warband-camp.testnet votes for proposal 4
+│    Transaction ID: kp9LsyLrUvY4fVXvbtZuUtsmVsF4pcrfme4S1D9TdZh
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [bard.warband-camp.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <bard.warband-camp.testnet> succeeded.
+   drummer.warband-camp.testnet votes for proposal 4
+│    Transaction ID: 2LiWZwE9P6oqj4R1RQGEhfnZ289a169Sa33MFZ3zof9n
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [drummer.warband-camp.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <drummer.warband-camp.testnet> succeeded.
+   hunter.warband-camp.testnet votes for proposal 4
+│    Transaction ID: 9dWrqbQTeiWQntsjvZ2yRedHCvNgHJ2iBUnhrK4xFPSr
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [hunter.warband-camp.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <hunter.warband-camp.testnet> succeeded.
+   mason.warband-camp.testnet votes for proposal 4
+│    Transaction ID: 4sgHSEZNtQm5m2DAVcSUMcJhmPdRaua8y7pAtJiHWmJp
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [mason.warband-camp.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <mason.warband-camp.testnet> succeeded.
+   monk.warband-camp.testnet votes for proposal 4
+│    Transaction ID: CSV51j9hPuLLeCKwbizWarfEX8AWwc1NX9CCuFsFKoE4
+│    Logs [dao-daily.warband-hq.testnet]:   No logs
+│    Logs [warband-alice.testnet]:   No logs
+│    Logs [monk.warband-camp.testnet]:   No logs
+│    Logs [monk.warband-camp.testnet]:   No logs
+The "act_proposal" call to <dao-daily.warband-hq.testnet> on behalf of <monk.warband-camp.testnet> succeeded.
+   proposal 4: Approved; kind:* permissions left: 0

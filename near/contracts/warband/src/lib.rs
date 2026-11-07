@@ -173,7 +173,7 @@ pub trait FungibleTokenReceiver {
 #[ext_contract(ext_self)]
 pub trait SelfCallbacks {
     fn on_dao_registered(&mut self, account_id: AccountId);
-    fn on_delegation(&mut self, account_id: AccountId, previous: U128);
+    fn on_delegation(&mut self, account_id: AccountId, previous: U128, pushed: Option<U128>);
     fn on_dao_flush(&mut self, amount: U128);
 }
 
@@ -444,11 +444,16 @@ impl Contract {
         self.push_weight(&account_id)
     }
 
+    /// A failed DAO call undoes only its own change (`pushed - previous`), so a later push that succeeded meanwhile is
+    /// kept. `pushed` is None for calls made before this version: then the old rule, back to `previous`.
     #[private]
-    pub fn on_delegation(&mut self, account_id: AccountId, previous: U128) {
+    pub fn on_delegation(&mut self, account_id: AccountId, previous: U128, pushed: Option<U128>) {
         if !promise_ok() {
             if let Some(h) = self.accounts.get_mut(&account_id) {
-                h.delegated = previous.0;
+                h.delegated = match pushed {
+                    Some(p) => (h.delegated + previous.0).saturating_sub(p.0),
+                    None => previous.0,
+                };
             }
         }
     }
@@ -804,7 +809,7 @@ impl Contract {
         Some(call.then(
             ext_self::ext(env::current_account_id())
                 .with_static_gas(GAS_FOR_CALLBACK)
-                .on_delegation(account.clone(), U128(previous)),
+                .on_delegation(account.clone(), U128(previous), Some(U128(weight))),
         ))
     }
 
