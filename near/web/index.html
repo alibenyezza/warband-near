@@ -128,8 +128,9 @@
 
     <section id="log" class="panel">
       <p class="label">// 09 log</p>
-      <h2>The last 100 buys, sells, joins, mints, pulls and burns</h2>
-      <p class="note">The contract keeps the last 100 entries; the raid record above keeps every raid. Every mint and
+      <h2>The latest buys, sells, joins, mints, pulls and burns</h2>
+      <p class="note">The table shows the last 30 of the 100 entries the contract keeps; the raid record above keeps every
+        raid someone joined (an empty day keeps no raid, its chest slice is burned). Every mint and
         burn is also an NEP-141 <code>ft_mint</code> / <code>ft_burn</code> event in its transaction, forever.</p>
       <div class="table-wrap"><table id="history"><thead><tr><th>#</th><th>When</th><th>What</th><th>Account</th><th class="num">NEAR</th><th class="num">BAND</th></tr></thead><tbody></tbody></table></div>
     </section>

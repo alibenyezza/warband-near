@@ -3,39 +3,143 @@
     {
       "name": "everyone",
       "kind": "Everyone",
-      "permissions": ["*:AddProposal"],
+      "permissions": [
+        "*:AddProposal"
+      ],
       "vote_policy": {}
     },
     {
       "name": "council",
-      "kind": { "Group": ["warband-hq.testnet"] },
+      "kind": {
+        "Group": [
+          "warband-hq.testnet"
+        ]
+      },
       "permissions": [
-        "config:*",
-        "policy:*",
-        "policy_add_or_update_role:*",
-        "policy_remove_role:*",
-        "policy_update_default_vote_policy:*",
-        "policy_update_parameters:*",
-        "add_member_to_role:*",
-        "remove_member_from_role:*",
-        "set_vote_token:*",
-        "vote:*"
+        "config:AddProposal",
+        "config:VoteApprove",
+        "config:VoteReject",
+        "config:VoteRemove",
+        "config:Finalize",
+        "policy:AddProposal",
+        "policy:VoteApprove",
+        "policy:VoteReject",
+        "policy:VoteRemove",
+        "policy:Finalize",
+        "policy_add_or_update_role:AddProposal",
+        "policy_add_or_update_role:VoteApprove",
+        "policy_add_or_update_role:VoteReject",
+        "policy_add_or_update_role:VoteRemove",
+        "policy_add_or_update_role:Finalize",
+        "policy_remove_role:AddProposal",
+        "policy_remove_role:VoteApprove",
+        "policy_remove_role:VoteReject",
+        "policy_remove_role:VoteRemove",
+        "policy_remove_role:Finalize",
+        "policy_update_default_vote_policy:AddProposal",
+        "policy_update_default_vote_policy:VoteApprove",
+        "policy_update_default_vote_policy:VoteReject",
+        "policy_update_default_vote_policy:VoteRemove",
+        "policy_update_default_vote_policy:Finalize",
+        "policy_update_parameters:AddProposal",
+        "policy_update_parameters:VoteApprove",
+        "policy_update_parameters:VoteReject",
+        "policy_update_parameters:VoteRemove",
+        "policy_update_parameters:Finalize",
+        "add_member_to_role:AddProposal",
+        "add_member_to_role:VoteApprove",
+        "add_member_to_role:VoteReject",
+        "add_member_to_role:VoteRemove",
+        "add_member_to_role:Finalize",
+        "remove_member_from_role:AddProposal",
+        "remove_member_from_role:VoteApprove",
+        "remove_member_from_role:VoteReject",
+        "remove_member_from_role:VoteRemove",
+        "remove_member_from_role:Finalize",
+        "set_vote_token:AddProposal",
+        "set_vote_token:VoteApprove",
+        "set_vote_token:VoteReject",
+        "set_vote_token:VoteRemove",
+        "set_vote_token:Finalize",
+        "vote:AddProposal",
+        "vote:VoteApprove",
+        "vote:VoteReject",
+        "vote:VoteRemove",
+        "vote:Finalize"
       ],
       "vote_policy": {}
     },
     {
       "name": "holders",
-      "kind": { "Member": "1" },
-      "permissions": ["transfer:*", "add_bounty:*", "bounty_done:*", "call:*"],
+      "kind": {
+        "Member": "1"
+      },
+      "permissions": [
+        "transfer:AddProposal",
+        "transfer:VoteApprove",
+        "transfer:VoteReject",
+        "transfer:VoteRemove",
+        "transfer:Finalize",
+        "add_bounty:AddProposal",
+        "add_bounty:VoteApprove",
+        "add_bounty:VoteReject",
+        "add_bounty:VoteRemove",
+        "add_bounty:Finalize",
+        "bounty_done:AddProposal",
+        "bounty_done:VoteApprove",
+        "bounty_done:VoteReject",
+        "bounty_done:VoteRemove",
+        "bounty_done:Finalize",
+        "call:AddProposal",
+        "call:VoteApprove",
+        "call:VoteReject",
+        "call:VoteRemove",
+        "call:Finalize"
+      ],
       "vote_policy": {
-        "transfer": { "weight_kind": "TokenWeight", "quorum": "0", "threshold": [1, 2] },
-        "add_bounty": { "weight_kind": "TokenWeight", "quorum": "0", "threshold": [1, 2] },
-        "bounty_done": { "weight_kind": "TokenWeight", "quorum": "0", "threshold": [1, 2] },
-        "call": { "weight_kind": "TokenWeight", "quorum": "0", "threshold": [1, 2] }
+        "transfer": {
+          "weight_kind": "TokenWeight",
+          "quorum": "0",
+          "threshold": [
+            1,
+            2
+          ]
+        },
+        "add_bounty": {
+          "weight_kind": "TokenWeight",
+          "quorum": "0",
+          "threshold": [
+            1,
+            2
+          ]
+        },
+        "bounty_done": {
+          "weight_kind": "TokenWeight",
+          "quorum": "0",
+          "threshold": [
+            1,
+            2
+          ]
+        },
+        "call": {
+          "weight_kind": "TokenWeight",
+          "quorum": "0",
+          "threshold": [
+            1,
+            2
+          ]
+        }
       }
     }
   ],
-  "default_vote_policy": { "weight_kind": "RoleWeight", "quorum": "0", "threshold": [1, 2] },
+  "default_vote_policy": {
+    "weight_kind": "RoleWeight",
+    "quorum": "0",
+    "threshold": [
+      1,
+      2
+    ]
+  },
   "proposal_bond": "100000000000000000000000",
   "proposal_period": "604800000000000",
   "bounty_bond": "100000000000000000000000",

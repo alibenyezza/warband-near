@@ -26,6 +26,7 @@ const RESERVE: u128 = 50_000_000_000_000_000_000_000; // 0.05 NEAR never paid ou
 const GAS_VIEW: Gas = Gas::from_tgas(10);
 const GAS_CALLBACK: Gas = Gas::from_tgas(20);
 const GAS_PROPOSAL: Gas = Gas::from_tgas(30);
+const GAS_BOND_CALLBACK: Gas = Gas::from_tgas(70);
 const DAY_MS: u64 = 86_400_000;
 
 /// Implicit accounts (64 hex characters, or an Ethereum-style 0x address) carry no name, so no reputation.
@@ -200,20 +201,18 @@ impl Bounties {
                 None
             }
             Tier::Dao => {
-                let bond = env::attached_deposit();
-                require!(bond.as_yoctonear() > 0, "A DAO proposal: attach the DAO's proposal bond");
-                let title = self.get(id).title.clone();
+                let attached = env::attached_deposit();
+                require!(attached.as_yoctonear() > 0, "A DAO proposal: attach the DAO's proposal bond");
+                // marked now so the bounty cannot be accepted twice while the DAO's bond is read
                 let b = self.get_mut(id);
                 b.status = Status::Proposed;
                 b.tier = Some(Tier::Dao);
-                let proposal = json!({ "proposal": {
-                    "description": format!("Warband bounty #{}: {} (accepted by {}, board {})", id.0, title, who, env::current_account_id()),
-                    "kind": { "Transfer": { "token_id": "", "receiver_id": contributor, "amount": U128(amount) } }
-                } });
+                // the board files the proposal with exactly the DAO's `proposal_bond` (Sputnik locks whatever is
+                // attached but returns only that), and gives any surplus back to the poster at once
                 Some(
                     Promise::new(self.dao.clone())
-                        .function_call("add_proposal", proposal.to_string().into_bytes(), bond, GAS_PROPOSAL)
-                        .then(Self::ext(env::current_account_id()).with_static_gas(GAS_CALLBACK).on_proposed(id, who, U128(bond.as_yoctonear()))),
+                        .function_call("get_policy", b"{}".to_vec(), NearToken::from_yoctonear(0), GAS_VIEW)
+                        .then(Self::ext(env::current_account_id()).with_static_gas(GAS_BOND_CALLBACK).on_bond(id, who, U128(attached.as_yoctonear()))),
                 )
             }
         }
@@ -225,6 +224,7 @@ impl Bounties {
         let b = self.get(id);
         require!(b.status == Status::AwaitingCouncil, "Bounty is not waiting for the council");
         require!(b.contributor.as_ref() != Some(&who), "The contributor cannot approve their own payout");
+        require!(b.poster != who, "The poster cannot approve their own bounty: another council member must");
         Promise::new(self.dao.clone())
             .function_call("get_policy", b"{}".to_vec(), NearToken::from_yoctonear(0), GAS_VIEW)
             .then(Self::ext(env::current_account_id()).with_static_gas(GAS_CALLBACK).on_policy(id, who))
@@ -274,9 +274,40 @@ impl Bounties {
     pub fn on_policy(&mut self, id: U64, approver: AccountId, #[callback_result] policy: Result<Value, PromiseError>) -> bool {
         let policy = policy.unwrap_or_else(|_| env::panic_str("Could not read the DAO policy"));
         require!(Self::is_council(&policy, &approver), "Not a member of the DAO council");
+        require!(self.get(id).poster != approver, "The poster cannot approve their own bounty: another council member must");
         require!(self.get(id).status == Status::AwaitingCouncil, "Bounty is not waiting for the council");
         self.pay(id, Tier::Council, approver);
         true
+    }
+
+    #[private]
+    pub fn on_bond(&mut self, id: U64, poster: AccountId, attached: U128, #[callback_result] policy: Result<Value, PromiseError>) -> Option<Promise> {
+        let need = policy.ok().and_then(|p| p["proposal_bond"].as_str().and_then(|s| s.parse::<u128>().ok()));
+        let Some(need) = need.filter(|n| attached.0 >= *n) else {
+            // the bond could not be read, or too little was attached: back to Submitted, everything back to the poster
+            let b = self.get_mut(id);
+            b.status = Status::Submitted;
+            b.tier = None;
+            Promise::new(poster).transfer(NearToken::from_yoctonear(attached.0)).detach();
+            self.log("proposal_failed", id.0, json!({ "reason": "attach at least the DAO's proposal bond" }));
+            return None;
+        };
+        if attached.0 > need {
+            Promise::new(poster.clone()).transfer(NearToken::from_yoctonear(attached.0 - need)).detach();
+        }
+        let (title, contributor, amount) = {
+            let b = self.get(id);
+            (b.title.clone(), b.contributor.clone().unwrap(), b.amount)
+        };
+        let proposal = json!({ "proposal": {
+            "description": format!("Warband bounty #{}: {} (accepted by {}, board {})", id.0, title, poster, env::current_account_id()),
+            "kind": { "Transfer": { "token_id": "", "receiver_id": contributor, "amount": amount } }
+        } });
+        Some(
+            Promise::new(self.dao.clone())
+                .function_call("add_proposal", proposal.to_string().into_bytes(), NearToken::from_yoctonear(need), GAS_PROPOSAL)
+                .then(Self::ext(env::current_account_id()).with_static_gas(GAS_CALLBACK).on_proposed(id, poster, U128(need))),
+        )
     }
 
     #[private]

@@ -289,3 +289,40 @@ fn the_dao_takes_the_petty_cash_back() {
     let _ = c.return_petty_cash(Some(U128(NEAR)));
     assert!(get_logs().iter().any(|l| l.contains("return_petty_cash")));
 }
+
+#[test]
+fn the_dao_bond_is_read_from_the_dao_and_a_short_bond_is_given_back() {
+    let mut c = board();
+    let id = submitted(&mut c, NEAR);
+    ctx("alice.testnet", NEAR / 2);
+    assert!(c.accept(id).is_some(), "get_policy promise");
+    assert_eq!(c.bounty(id).unwrap().status, Status::Proposed, "cannot be accepted twice meanwhile");
+    // the DAO asks 0.1 NEAR: the proposal is filed with 0.1, the 0.4 surplus goes back to the poster
+    ctx("board.testnet", 0);
+    let bond = json!({ "proposal_bond": (NEAR / 10).to_string() });
+    assert!(c.on_bond(id, acc("alice.testnet"), U128(NEAR / 2), Ok(bond.clone())).is_some(), "add_proposal promise");
+    assert_eq!(c.on_proposed(id, acc("alice.testnet"), U128(NEAR / 10), Ok(3)), Some(U64(3)));
+    assert_eq!(c.bounty(id).unwrap().bond, Some(U128(NEAR / 10)), "only the DAO's bond is passed back later");
+    // too little attached: back to Submitted
+    let other = submitted(&mut c, NEAR);
+    ctx("alice.testnet", NEAR / 100);
+    c.accept(other);
+    ctx("board.testnet", 0);
+    assert!(c.on_bond(other, acc("alice.testnet"), U128(NEAR / 100), Ok(bond)).is_none());
+    assert_eq!(c.bounty(other).unwrap().status, Status::Submitted);
+}
+
+#[test]
+#[should_panic(expected = "The poster cannot approve their own bounty")]
+fn a_council_member_cannot_approve_a_bounty_they_posted() {
+    let mut c = board();
+    ctx("hq.testnet", POST_DEPOSIT);
+    let id = c.post("Draw".into(), U128(NEAR / 20));
+    ctx("dave.testnet", 0);
+    c.claim(id);
+    c.submit(id, "ipfs://x".into());
+    ctx("hq.testnet", 0);
+    c.accept(id);
+    ctx("board.testnet", 0);
+    c.on_policy(id, acc("hq.testnet"), Ok(policy(&["hq.testnet"])));
+}

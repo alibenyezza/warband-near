@@ -1,0 +1,30 @@
+== 2026-11-07 00:36:34 UTC, dao.warband-hq.testnet: 14 role permission(s) of the form kind:* (they include RemoveProposal)
+│    Transaction ID: Fe3Cw22iKmm7T9ch8FjkYUeQoyyu1VzaAZsmBdxS1iCx
+│    Logs [dao.warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+The "add_proposal" call to <dao.warband-hq.testnet> on behalf of <warband-hq.testnet> succeeded.
+   ChangePolicy is proposal 9
+   warband-hq.testnet votes for proposal 9
+│    Transaction ID: 8hjCRpz3MQ2oU7MyozHKqLCtvWrS8eUvRxkE2LCciLMk
+│    Logs [dao.warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+The "act_proposal" call to <dao.warband-hq.testnet> on behalf of <warband-hq.testnet> succeeded.
+   proposal 9: Approved; kind:* permissions left: 0
+
+== 2026-11-07 00:36:42 UTC, dao-raids.warband-hq.testnet: 14 role permission(s) of the form kind:* (they include RemoveProposal)
+│    Transaction ID: GwEPv45SkEDLVytiuCP8EkbuWo19wA4uk8cnHcSkHxCk
+│    Logs [dao-raids.warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+The "add_proposal" call to <dao-raids.warband-hq.testnet> on behalf of <warband-hq.testnet> succeeded.
+   ChangePolicy is proposal 1
+   warband-hq.testnet votes for proposal 1
+│    Transaction ID: Eyq641Zn3JoPKNi2i4unygaUXu1n9eqgSeRcZXPfm7ZW
+│    Logs [dao-raids.warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+│    Logs [warband-hq.testnet]:   No logs
+The "act_proposal" call to <dao-raids.warband-hq.testnet> on behalf of <warband-hq.testnet> succeeded.
+   proposal 1: Approved; kind:* permissions left: 0
+

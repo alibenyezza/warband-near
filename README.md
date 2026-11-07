@@ -22,7 +22,7 @@ until 18 Nov 2026.
    See `raid`, `joiners`, `streak`, `won`, `lost` and `chest`.
 3. Check who holds keys: `near account list-keys <account> network-config testnet now` for the accounts in the
    table below. See the v1 token and DAO with no keys, and each gas-key keeper (`gk-keeper`, `gk-daily`) with a
-   single function-call gas key. `bash near/scripts/04-lock.sh --check` lists the keys of all eight contract accounts.
+   single function-call gas key. `bash near/scripts/04-lock.sh --check` lists the keys of the eight contract accounts (v1's two have none; the other six are deleted on 13 Nov).
 4. Read the DAO policy: `near contract call-function as-read-only dao-daily.warband-hq.testnet get_policy json-args {} network-config testnet now`.
    See the `council` role with only `config:*` and `vote:*`; every other power belongs to `holders`.
 
@@ -81,7 +81,16 @@ upgrades need two thirds of the holders' level-weighted weight; transfers, bount
 ([`near/dao/policy-daily.json`](near/dao/policy-daily.json)). The council set the staking contract once (Sputnik
 allows it only once), then handed those powers to the holders with a `ChangePolicy` (proposals 0 and 1). On v1 and v2
 the council still holds the policy powers of [`near/dao/policy.json`](near/dao/policy.json): it could rewrite those
-DAOs' policy alone.
+DAOs' policy alone. The council is one account, `warband-hq.testnet`, run by the author: it approves council-tier
+bounties (never one it posted) and is the single point of trust of that tier on testnet.
+
+**No proposal can be deleted without a vote.** In Sputnik 3.0.0 a permission `transfer:*` includes `RemoveProposal`,
+which deletes a proposal at once; with it, any holder could have deleted every treasury proposal. The policies now
+list the actions instead (`AddProposal`, `VoteApprove`, `VoteReject`, `VoteRemove`, `Finalize`), so a proposal leaves
+only by a vote ([`near/scripts/dao-policy-fix.sh`](near/scripts/dao-policy-fix.sh), log
+[`dao-policy-fix.log`](near/scripts/dao-policy-fix.log)). v1 and v2: the council passed it on 7 Nov (proposals 9 and
+1). v3: the holders pass it by two thirds of their weight, so the daily task files and votes it once on day 1
+(log `near/scripts/daily/policy-fix.log`).
 
 ## The problem
 
@@ -112,7 +121,8 @@ What is real and what is not:
   v1 5 minutes, so the recorded runs move during a video.
 - **Demo raiders:** the twelve raiders (`*.warband-camp.testnet`), Alice and Bob are accounts we created and
   scripted (`near/scripts/raids/02-play.sh` for v2; `near/scripts/daily/play-today.sh` for v3, run by a scheduled
-  task twice a day, log in `near/scripts/daily/daily.log`). Every one of their actions is a real transaction.
+  task twice a day on the author's PC, log in `near/scripts/daily/daily.log`; when the PC is off, the camp misses
+  that day). Every one of their actions is a real transaction.
   On v3 they are **all** the holders: the camp holds 64% of the supply, Alice and Bob the rest. So v3's raids show
   the rules running on real days, but they are won whenever the camp plays, which proves nothing about a real
   community. Day 5 is a scripted bad day (only six raiders show up) so the record also shows a lost raid, its burn
@@ -155,9 +165,9 @@ and Rust for the tests.
    `dao.warband-hq.testnet`: no keys, so v1's code and parameters can no longer change. v2 and v3 show one
    full-access key until 13 Nov (see Keys above).
 7. **Run the contract tests.** `cd near/contracts/warband && cargo test`: 43 tests (19 token, 24 raids), and
-   `cd near/contracts/bounties && cargo test`: 18. The token tests cover a transfer
+   `cd near/contracts/bounties && cargo test`: 20. The token tests cover a transfer
    in the middle of a lot, a partial LIFO sale, the floor and the daily cap of the buyback, bounded lots, the weight
-   pulled back from the DAO on a sale. 22 cover the raids: a split bag earns nothing extra, join-then-sell is not
+   pulled back from the DAO on a sale. 24 cover the raids: a split bag earns nothing extra, join-then-sell is not
    paid, a pump does not make pulls cheaper, loot odds over 2000 pulls, soulbound badges, storage covered.
 8. **Replay the attack on the agent** with your own keeper (the demo key is not in the repo):
    `cd near/agent && npm ci && npm run keygen`, run the printed `near account add-key …` for an account you
@@ -242,7 +252,7 @@ Limits, plainly:
 
 The live board, `warband-dailyboard.testnet`, sits on the v3 war chest `dao-daily.warband-hq.testnet`; the recorded
 run below used `warband-bountyboard.testnet` on the v1 war chest `dao.warband-hq.testnet`. Same contract
-([`near/contracts/bounties`](near/contracts/bounties/src/lib.rs), 18 tests), same script. It is not a multisig and holds no treasury: its only money is petty
+([`near/contracts/bounties`](near/contracts/bounties/src/lib.rs), 20 tests), same script. It is not a multisig and holds no treasury: its only money is petty
 cash that a DAO `Transfer` proposal voted to it, and only the DAO can change its tiers (`set_tiers`) or take the
 cash back (`return_petty_cash`). No owner method.
 
@@ -261,7 +271,11 @@ never raise trust, so a poster and a contributor who collude cannot farm it with
 (`auto_payouts_earn_no_trust_and_cannot_be_farmed`). Limits, written plainly: such a pair can still take up to the
 contributor's earned trust limit in auto payouts, at most 0.25 NEAR per 24 hours
 (`auto_payouts_to_one_contributor_are_capped_per_day`), and only from the petty cash the DAO chose to vote; anyone
-can post a bounty, so the poster's word is what an auto payout trusts.
+can post a bounty, so the poster's word is what an auto payout trusts. A council member cannot approve a bounty they
+posted (`a_council_member_cannot_approve_a_bounty_they_posted`). For a DAO-tier bounty the board reads the DAO's
+`proposal_bond`, files the proposal with exactly that, and gives any surplus back to the poster at once, so a poster
+cannot attach more and have the difference refunded out of petty cash later
+(`the_dao_bond_is_read_from_the_dao_and_a_short_bond_is_given_back`).
 
 Recorded run on testnet ([`near/scripts/bounties/run.sh`](near/scripts/bounties/run.sh), log
 [`run.log`](near/scripts/bounties/run.log)). On v3, holders' lots carry weight only from day 1, so the daily task
@@ -361,7 +375,7 @@ the gas-key keeper's upkeep, then the camp). Logs next to them; `daily.log` grow
 | Gas-key keeper `gk-daily.warband-hq.testnet` created by HQ (one gas key, 4 lanes) | `GmkpZTcX62UjNXMhbwvjTCBN2dTidwExWhjkrwYk75yW` ([log](near/scripts/daily/gas-keeper.log)) |
 | Bounty board `warband-dailyboard.testnet` on the v3 DAO; faucet surplus sent to HQ | `7LLAQN2GMj1oUDrV8a8UcjiVCJtyFGUSMAyC6BkW9sU1`, `47TtbH2vew3ARwTtjJjwuNhbHHdgsNBmvFYDBVQEz95B` |
 | Launch day: the twelve raiders, Alice and Bob buy and register as DAO voters | [`02-launch.log`](near/scripts/daily/02-launch.log) |
-| 7 Nov, before day 1, after an outside review: contract upgraded (same state) for the odds level, the ticket price after quiet days and the DAO weight after a lot merge; board upgraded for the trust rules. v2 and its board got the same code | `nsDtKFEqQv6eyhcqvtxB3C7RHkDgyoacNx7QBbHeas8`, `CpWvo4jYfjGv3p54LP3UwUnNLWTMj2hNSd2EMq1FU9mq`; v2 `AY8gC8WnLTd6daygdPkGGnyM94VrwkV7gWUohzmxfJKQ`, `4UgwssSUF9e7psicQUw7qsHRw9EoE13KS7vhXgDKkCao` |
+| 7 Nov, before day 1, after an outside review: contract upgraded (same state) for the odds level, the ticket price after quiet days and the DAO weight after a lot merge; board upgraded for the trust rules, then again for the DAO bond and the poster rule (HQ added 0.04 NEAR to the board, below its 0.05 NEAR storage reserve, so petty cash stayed 0). v2 and its board got the same code | `nsDtKFEqQv6eyhcqvtxB3C7RHkDgyoacNx7QBbHeas8`, `CpWvo4jYfjGv3p54LP3UwUnNLWTMj2hNSd2EMq1FU9mq`, `6ujS1KqCcaPAPkdT42y3vdLKqpgCGipcrKMb3qgbgjoL`; v2 `AY8gC8WnLTd6daygdPkGGnyM94VrwkV7gWUohzmxfJKQ`, `4UgwssSUF9e7psicQUw7qsHRw9EoE13KS7vhXgDKkCao`, `718R5YrbPTBMrWNStQLRcJVbQGSm8Tbf7JnZrmkYyn73` |
 
 ## Testnet record (v1)
 

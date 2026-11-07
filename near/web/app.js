@@ -347,7 +347,7 @@ async function account(id) {
       .map((l) => `<div class="lot"><span>L${l.level} ${esc(l.rank)}</span><div class="bar"><i style="width:${Number((big(l.amount) * 100n) / max)}%"></i></div><span>${band(l.amount)}</span></div>`)
       .join("")}</div>
     <p class="note">Lots are listed oldest first. A transfer or a sale takes from the bottom (youngest) first. The loot odds
-      above are this account's: its top level plus two per badge raise epic and legendary odds.</p>`;
+      above are this account's: its balance-weighted level plus two per badge raise epic and legendary odds.</p>`;
 }
 
 async function holders() {
@@ -395,8 +395,8 @@ async function board() {
   const [cfg, list] = await Promise.all([view(BOARD, "config"), view(BOARD, "bounties", { limit: 100 })]);
   const t = cfg.tiers;
   $("#board-rules").textContent =
-    `Each paid bounty adds ${near(t.trust_step, 2)} NEAR to what a contributor can be paid on the poster's word alone (up to ${near(t.auto_cap, 2)}). ` +
-    `Above that and up to ${near(t.council_cap, 2)} NEAR, one member of the council of ${cfg.dao} approves. Above, the board files a normal DAO proposal.`;
+    `Each bounty of at least ${near(t.trust_step, 2)} NEAR that a council member (not its poster) or a DAO vote approved adds ${near(t.trust_step, 2)} NEAR to what a contributor can be paid on the poster's word alone (up to ${near(t.auto_cap, 2)}, and at most that much per 24 hours); auto payouts add nothing. ` +
+    `Above that and up to ${near(t.council_cap, 2)} NEAR, one member of the council of ${cfg.dao} approves. Above, the board files a normal DAO proposal with the DAO's own bond.`;
   const people = [...new Set(list.map((b) => b.contributor).filter(Boolean))];
   const records = await Promise.all(people.map((a) => view(BOARD, "record_of", { account_id: a })));
   const paid = list.filter((b) => b.status === "Paid");

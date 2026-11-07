@@ -45,5 +45,15 @@ if ! grep -q "== 5. the board" board-run.log 2>/dev/null; then
     echo "-- bounty board run (log: board-run.log)"
     VOTERS="$ALICE $BOB $ALL" BOARD=$BOARD DAO=$DAO DEPLOY=0 bash ../bounties/run.sh > board-run.log 2>&1
     tail -6 board-run.log
+  else
+    echo "   bounty board run incomplete ($n bounties, no final step in board-run.log): resume by hand with FROM=<step> (bounties/run.sh)"
   fi
+fi
+
+# The DAO policy, once: no role may RemoveProposal (with `kind:*` any holder could delete a treasury proposal
+# without a vote). The holders pass it by two thirds of their level-weighted weight, so it waits for day 1.
+if view "$DAO" get_policy | grep -q '"transfer:\*"'; then
+  echo "-- DAO policy fix (log: policy-fix.log)"
+  bash ../dao-policy-fix.sh "$DAO" "$ALICE" $ALICE $BOB $ALL >> policy-fix.log 2>&1
+  tail -2 policy-fix.log
 fi
