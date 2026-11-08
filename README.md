@@ -379,7 +379,9 @@ four fit.
 Same contract and launch parameters as the README tables, with real days. Scripts in
 [`near/scripts/daily/`](near/scripts/daily): `01-setup.sh` (token, DAO, policy hand-over), `02-launch.sh` (launch-day
 buys and DAO registration), `play-today.sh` (one day of play, safe to rerun), `run-daily.ps1` (the scheduled task:
-the gas-key keeper's upkeep, then the camp). Logs next to them; `daily.log` grows with every run.
+the gas-key keeper's upkeep, then the camp). Logs next to them; `daily.log` grows with every run. A few joins in it
+end in `already in today's raid`: the public RPC timed out on the first send, the script sent again, and the
+contract refused the second copy. The first one counted (each day's summary line reads the joiners from the chain).
 
 | Step | Transaction |
 |---|---|

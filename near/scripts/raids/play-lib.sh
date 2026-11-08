@@ -10,6 +10,8 @@ tx() { # signer method args deposit gas
       attached-deposit "$4" sign-as "$1" network-config "$NET" sign-with-legacy-keychain send 2>&1 | sed 's/\x1b\[[0-9;]*m//g')
     if grep -qE "rate limit|has expired|Failed to fetch|timed out|503|502" <<<"$out"; then sleep $((t * 4)); continue; fi
     grep -E "Transaction ID|succeeded|panicked|Smart contract panicked|Error" <<<"$out" | grep -v "^Error: *$" | head -3
+    if [ "$t" -gt 1 ] && grep -q "already in today's raid" <<<"$out"; then
+      echo "   (resent after a send timeout: the first send went through, the contract refused this copy)"; fi
     return
   done
   echo "gave up: $1 $2"
