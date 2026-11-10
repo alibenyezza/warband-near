@@ -14,12 +14,12 @@
     <nav>
       <a href="#raid">Raid</a>
       <a href="#loot">Loot</a>
-      <a href="#badges">Badges</a>
+      <a href="#badges">Trophies</a>
       <a href="#rank">You</a>
       <a href="#market">Market</a>
-      <a href="#band">Band</a>
+      <a href="#band">Leaderboard</a>
       <a href="#chest">War chest</a>
-      <a href="#bounties">Bounties</a>
+      <a href="#bounties">Quests</a>
     </nav>
     <span class="net" id="net">testnet</span>
     <button class="connect" id="connect" type="button">Connect wallet</button>
@@ -29,56 +29,100 @@
     <section class="hero">
       <p class="prompt">$ near view <span id="token-id">warband-daily.testnet</span> raid_status<span class="cursor"></span></p>
       <h1>Hold. Show up. Loot.</h1>
-      <p class="lede">Every day the band raids. Holders check in with tokens held for at least a day. If enough of the
-        band shows up, the raiders are minted a share and pull loot from the chest. If it does not, part of the chest is
-        bought back and burned. Lots still level up the longer you hold, and the level still weighs your DAO vote.
-        Everything runs in the contract: no admin method, no pause, no parameter setter. The deployer's last keys on
-        this deployment are deleted on 13 Nov 2026; after that, nobody can change the code either.</p>
+      <p class="lede">A memecoin you play every day, with your whole band. Time counts more than money.</p>
+
+      <div class="howto" aria-label="How to play">
+        <div class="step">
+          <div class="step-icon ranks"><img src="ranks/00-recruit.svg" alt=""><img src="ranks/05-captain.svg" alt=""><img src="ranks/10-warlord.svg" alt=""></div>
+          <p class="step-n">1 · Hold</p>
+          <h3>Your tokens level up</h3>
+          <p>Every day you keep them, they gain a level: Recruit to Warlord. Higher level, louder vote. Tokens bought today have no vote.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">
+            <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><path d="M14 12l26 26M50 12L24 38" stroke="var(--bone)" stroke-width="4" stroke-linecap="round"/><path d="M36 42l8 8M28 42l-8 8M40 34l8-8M24 34l-8-8" stroke="var(--wax-hi)" stroke-width="4" stroke-linecap="round"/></svg>
+          </div>
+          <p class="step-n">2 · Show up</p>
+          <h3>Join today's raid</h3>
+          <p>Once a day, check in with your tokens. The raid needs at least 10 raiders, and enough tokens, before the clock runs out.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">
+            <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><rect x="10" y="26" width="44" height="26" rx="4" fill="var(--wax)"/><path d="M10 30c0-10 9-16 22-16s22 6 22 16" fill="var(--wax-hi)"/><rect x="28" y="30" width="8" height="10" rx="2" fill="var(--gold)"/></svg>
+          </div>
+          <p class="step-n">3 · Loot</p>
+          <h3>Win together, or burn</h3>
+          <p><span class="good">Raid won:</span> every raider gets new tokens and a share of the loot rolls. <span class="bad">Raid lost:</span> part of the chest buys tokens back and burns them.</p>
+        </div>
+      </div>
+
       <div class="scoreboard" id="scoreboard" aria-live="polite"></div>
-      <div class="facts" id="facts"></div>
-      <p class="deployments">Deployment: <span id="deployments"></span>. Read straight from NEAR testnet, no wallet needed.</p>
+      <p class="cta"><a class="play" href="#raid">See today's raid</a><a href="#rank">Play with your wallet</a></p>
+
+      <details class="nerd">
+        <summary>Under the hood</summary>
+        <p>Every day the band raids. Holders check in with tokens held for at least a day. If at least 10 raiders join
+          with 25% of the supply, the raiders are minted a share and pull loot from the chest. If not, part of the chest
+          is bought back and burned. Each lot of tokens gains a level per day held (0 to 10), and the vote in the DAO is
+          tokens × level. Everything runs in the contract: no admin method, no pause, no parameter setter. The
+          deployer's last keys on this deployment are deleted on 13 Nov 2026; after that, nobody can change the code
+          either.</p>
+        <div class="facts" id="facts"></div>
+        <p class="deployments">Deployment: <span id="deployments"></span>. Read straight from NEAR testnet, no wallet needed.</p>
+      </details>
     </section>
 
     <section id="raid" class="panel">
-      <p class="label">// 01 raid of the day</p>
+      <p class="label">// 01 today's raid</p>
       <div class="raid-head">
         <h2 id="raid-title">Raid</h2>
         <div class="clock"><span>ends in</span><strong id="raid-clock">–:––</strong></div>
       </div>
+      <p class="raid-say" id="raid-say" aria-live="polite"></p>
       <div id="raid-last" class="last" hidden></div>
-      <div class="meter" aria-label="Seasoned tokens joined against the target">
+      <div class="pips" id="raid-pips" aria-label="Raiders checked in"></div>
+      <div class="meter" aria-label="Raid power: seasoned tokens joined against the target">
+        <p class="meter-name">Raid power</p>
         <div class="meter-bar"><i id="raid-fill"></i><b id="raid-goal"></b></div>
         <div class="meter-legend"><span id="raid-joined">0 BAND joined</span><span id="raid-target">target –</span></div>
       </div>
-      <div class="pips" id="raid-pips" aria-label="Raiders checked in"></div>
-      <div class="grid six" id="raid-grid"></div>
       <div class="joined" id="raid-joiners"></div>
-      <h3>Raid record</h3>
+      <h3>Last raids</h3>
       <div class="table-wrap"><table id="raids"><thead><tr><th>Raid</th><th>Result</th><th class="num">Raiders</th><th class="num">Joined (BAND)</th><th class="num">Streak after</th><th class="num">Burned (BAND)</th></tr></thead><tbody></tbody></table></div>
-      <p class="note">A raid is won when the raiders' seasoned balance reaches 25% of the supply and at least 10 accounts
-        join. Each raider is minted 0.1% of what it joined with times the streak bonus (0.11% on the first win, up to
-        0.2% on a 10-raid streak), and the raid's 20
-        loot pulls are shared by joined balance, so splitting a bag across accounts earns nothing extra.</p>
+      <details class="nerd">
+        <summary>Raid numbers and exact rules</summary>
+        <div class="grid six" id="raid-grid"></div>
+        <p class="note">A raid is won when the raiders' seasoned balance reaches 25% of the supply and at least 10
+          accounts join. Each raider is minted 0.1% of what it joined with times the streak bonus (0.11% on the first
+          win, up to 0.2% on a 10-raid streak), and the raid's 20 loot pulls are shared by joined balance, so splitting a
+          bag across accounts earns nothing extra.</p>
+      </details>
     </section>
 
     <section id="loot" class="panel">
       <p class="label">// 02 loot</p>
-      <h2>The chest pays out</h2>
+      <h2>Every won raid opens the chest</h2>
+      <p class="lead2">The raiders share the raid's loot rolls. Most rolls are common; a rare few are legendary and take a big slice of the chest.</p>
       <div class="tiers" id="tiers"></div>
       <ol class="feed" id="feed"><li class="muted">Waiting for the first raid…</li></ol>
     </section>
 
     <section id="badges" class="panel bone">
-      <p class="label">// 03 badges</p>
-      <h2>Soulbound, they stay when you sell</h2>
+      <p class="label">// 03 trophies</p>
+      <h2>Trophies you keep forever</h2>
+      <p class="lead2">Earned, never bought: they cannot be sold or sent. Each one improves your loot rolls.</p>
       <div class="badge-wall" id="badge-wall"></div>
-      <p class="note">NEP-171 tokens minted by the contract. <code>nft_transfer</code> always fails. Each badge adds two
-        levels to the loot odds, up to double the base odds for epic and legendary pulls.</p>
+      <details class="nerd">
+        <summary>Under the hood</summary>
+        <p class="note">NEP-171 tokens minted by the contract. <code>nft_transfer</code> always fails. Each badge adds two
+          levels to the loot odds, up to double the base odds for epic and legendary pulls.</p>
+      </details>
     </section>
 
     <section id="rank" class="panel">
       <p class="label">// 04 you</p>
-      <h2>Your lots, raid and odds</h2>
+      <h2>Your warrior</h2>
+      <p class="lead2">Type any testnet account to see its rank, its tokens and whether it is in today's raid.</p>
       <form id="lookup" class="lookup">
         <input id="account" name="account" placeholder="account.testnet" value="archer.warband-camp.testnet" autocomplete="off" spellcheck="false">
         <button type="submit">Look up</button>
@@ -96,30 +140,45 @@
 
     <section id="market" class="panel">
       <p class="label">// 05 market</p>
-      <h2>Price and floor</h2>
+      <h2>Buy and sell BAND</h2>
+      <p class="lead2">Built into the contract. If the price drops hard, a reserve buys tokens back and burns them.</p>
       <div class="grid six" id="market-grid"><p class="muted">Loading testnet state…</p></div>
-      <p class="note">The buyback opens when the price falls 20% under the recent high (today and yesterday). Anyone,
-        or the keeper agent, can call it; each call spends 10% of the reserve, at most 20% per day, and burns what it
-        buys.</p>
+      <details class="nerd">
+        <summary>Under the hood</summary>
+        <p class="note">The buyback opens when the price falls 20% under the recent high (today and yesterday). Anyone,
+          or the keeper agent, can call it; each call spends 10% of the reserve, at most 20% per day, and burns what it
+          buys.</p>
+      </details>
     </section>
 
     <section id="band" class="panel">
-      <p class="label">// 06 the band</p>
-      <h2>By vote weight</h2>
-      <div class="table-wrap"><table id="holders"><thead><tr><th>#</th><th>Account</th><th>Rank</th><th>Badges</th><th class="num">Balance</th><th class="num">Weight</th><th class="num">Delegated to DAO</th></tr></thead><tbody></tbody></table></div>
+      <p class="label">// 06 leaderboard</p>
+      <h2>Ranked by voice, not by wallet</h2>
+      <p class="lead2">Voice = tokens × level. A big bag bought yesterday can rank below an older, smaller one.</p>
+      <div class="table-wrap"><table id="holders"><thead><tr><th>#</th><th>Account</th><th>Rank</th><th>Trophies</th><th class="num">Tokens</th><th class="num">Voice</th><th class="num">Voice in the DAO</th></tr></thead><tbody></tbody></table></div>
     </section>
 
     <section id="chest" class="panel bone">
       <p class="label">// 07 war chest</p>
-      <h2>The DAO spends it, by level-weighted vote</h2>
+      <h2>The band votes how to spend it</h2>
+      <p class="lead2">Trading fees fill a shared treasury (a Sputnik DAO). Every payout is a proposal the holders vote on.</p>
       <div class="grid" id="dao-grid"></div>
       <div class="table-wrap"><table id="proposals"><thead><tr><th>#</th><th>Kind</th><th>Description</th><th>Status</th><th class="num">Approve</th><th class="num">Reject</th></tr></thead><tbody></tbody></table></div>
     </section>
 
     <section id="bounties" class="panel">
-      <p class="label">// 08 bounty board</p>
-      <h2>Earned trust: the better your record, the less approval you need</h2>
-      <p class="muted" id="board-rules"></p>
+      <p class="label">// 08 quests</p>
+      <h2>Do a job for the band, get paid</h2>
+      <div class="quest-tiers">
+        <div><b>Small quest</b><span>paid at once, if you have a track record</span></div>
+        <div><b>Medium quest</b><span>one council member signs</span></div>
+        <div><b>Big quest</b><span>the whole band votes</span></div>
+      </div>
+      <p class="lead2">Nobody can approve their own payout. Every quest done builds your record.</p>
+      <details class="nerd">
+        <summary>Exact rules</summary>
+        <p class="muted" id="board-rules"></p>
+      </details>
       <div class="grid" id="board-grid"></div>
       <div class="table-wrap"><table id="board"><thead><tr><th>#</th><th>Bounty</th><th class="num">NEAR</th><th>Status</th><th>Tier</th><th>Contributor</th><th>Approved by</th></tr></thead><tbody></tbody></table></div>
       <h3>Contributors</h3>
@@ -127,11 +186,14 @@
     </section>
 
     <section id="log" class="panel">
-      <p class="label">// 09 log</p>
-      <h2>The latest buys, sells, joins, mints, pulls and burns</h2>
-      <p class="note">The table shows the last 30 of the 100 entries the contract keeps; the raid record above keeps every
-        raid someone joined (an empty day keeps no raid, its chest slice is burned). Every mint and
-        burn is also an NEP-141 <code>ft_mint</code> / <code>ft_burn</code> event in its transaction, forever.</p>
+      <p class="label">// 09 battle log</p>
+      <h2>Everything that happened</h2>
+      <details class="nerd">
+        <summary>Under the hood</summary>
+        <p class="note">The table shows the last 30 of the 100 entries the contract keeps; the raid record above keeps
+          every raid someone joined (an empty day keeps no raid, its chest slice is burned). Every mint and burn is also
+          an NEP-141 <code>ft_mint</code> / <code>ft_burn</code> event in its transaction, forever.</p>
+      </details>
       <div class="table-wrap"><table id="history"><thead><tr><th>#</th><th>When</th><th>What</th><th>Account</th><th class="num">NEAR</th><th class="num">BAND</th></tr></thead><tbody></tbody></table></div>
     </section>
   </main>

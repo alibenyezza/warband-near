@@ -166,11 +166,25 @@ async function raidStatus() {
     cell("Minted by raids", band(r.minted), "BAND"),
     cell("Burned by lost raids", recordBurned === null ? "–" : band(recordBurned.toString()), `BAND, last ${RECORD} raids`),
   ].join("");
+  const flame = `<svg class="flame" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-7 0 2 1 3 2 3 0-3-1-5 1-8z" fill="var(--wax-hi)"/></svg>`;
   $("#scoreboard").innerHTML = [
-    `<div><span>win streak</span><strong>${r.streak}</strong><em>best ${r.best_streak} · record ${r.won}–${r.lost}</em></div>`,
-    `<div><span>raid chest</span><strong>${near(r.chest, 3)}</strong><em>NEAR, shared by the next won raid</em></div>`,
+    `<div><span>win streak</span><strong>${r.streak > 0 ? flame : ""}${r.streak}</strong><em>raids won in a row · best ${r.best_streak} · ${r.won} won, ${r.lost} lost</em></div>`,
+    `<div><span>loot chest</span><strong>${near(r.chest, 3)}</strong><em>NEAR waiting for the next won raid</em></div>`,
     `<div><span>${r.raid === "0" ? "launch day · first raid opens in" : `raid #${r.raid} ends in`}</span><strong id="score-clock">–</strong><em>${r.joiners} / ${r.min_joiners} raiders in</em></div>`,
   ].join("");
+  // today's raid in one plain sentence
+  const need = Math.max(0, r.min_joiners - r.joiners);
+  const ofGoal = target > 0n ? Math.floor(Number((joined * 100n) / target)) : 0;
+  $("#raid-say").innerHTML =
+    r.raid === "0"
+      ? "Launch day: tokens are aging. The first raid opens tomorrow."
+      : need === 0 && target > 0n && joined >= target
+        ? `<b class="good">${r.joiners} raiders are in. Goal reached!</b> If the day ends like this, the raid is won.`
+        : need === 0
+          ? `<b>${r.joiners} raiders are in,</b> but the raid needs more tokens: ${ofGoal}% of the goal.`
+          : r.joiners === 0
+            ? `<b>Nobody has joined yet.</b> The raid needs ${r.min_joiners} raiders before the clock runs out.`
+            : `<b>${r.joiners} of ${r.min_joiners} raiders so far.</b> ${need} more needed before the clock runs out.`;
   const last = r.last;
   const banner = $("#raid-last");
   if (last && last.joiners > 0) {

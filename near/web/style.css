@@ -222,6 +222,47 @@ td.mini .seal { margin-right: 3px; vertical-align: middle; }
 .deployments a { color: var(--muted); }
 .deployments b { color: var(--text); font-weight: 500; }
 
+/* ---- simple, game-like layer (Nov 2026): how to play, plain sentences, details folded away */
+.lede { font-size: 20px; color: var(--text); }
+.howto { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 36px; }
+.step { padding: 24px 22px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); }
+.step-icon { height: 72px; display: flex; align-items: flex-end; gap: 6px; }
+.step-icon.ranks img { width: 46px; height: 55px; }
+.step-icon.ranks img:nth-child(2) { width: 54px; height: 64px; }
+.step-icon.ranks img:nth-child(3) { width: 62px; height: 74px; }
+.step-n { margin-top: 16px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--wax-hi); }
+.step h3 { margin: 6px 0 8px; font-size: 22px; font-weight: 600; letter-spacing: -0.03em; }
+.step p { font-size: 14px; line-height: 1.55; }
+.good { color: var(--ok); }
+.bad { color: var(--wax-hi); }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.cta a { text-decoration: none; padding: 12px 20px; border-radius: 12px; border: 1px solid var(--line); font-weight: 600; color: var(--text); }
+.cta a.play { background: var(--wax-hi); color: var(--ink); border-color: var(--wax-hi); }
+.flame { vertical-align: -2px; margin-right: 6px; }
+.lead2 { margin: -10px 0 22px; max-width: 70ch; font-size: 16px; color: var(--muted); }
+.bone .lead2 { color: #5d564b; }
+.raid-say { margin: -6px 0 18px; font-size: 20px; line-height: 1.5; color: var(--muted); }
+.raid-say b { color: var(--text); font-weight: 600; }
+.raid-say b.good { color: var(--ok); }
+.meter-name { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); margin-bottom: 8px; }
+.pips i { width: 34px; height: 34px; }
+.quest-tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 0 0 18px; }
+.quest-tiers > div { padding: 18px 20px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+.quest-tiers b { display: block; font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+.quest-tiers > div:nth-child(1) b { color: var(--ok); }
+.quest-tiers > div:nth-child(2) b { color: var(--gold); }
+.quest-tiers > div:nth-child(3) b { color: var(--wax-hi); }
+.quest-tiers span { display: block; margin-top: 6px; font-size: 14px; color: var(--muted); }
+details.nerd { margin-top: 22px; border: 1px dashed var(--line); border-radius: 12px; padding: 0 16px; }
+details.nerd > summary { cursor: pointer; padding: 12px 0; font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+details.nerd[open] { padding-bottom: 16px; }
+details.nerd .grid { margin-top: 6px; }
+.bone details.nerd { border-color: rgba(15, 14, 12, 0.2); }
+.bone details.nerd > summary { color: #7d7466; }
+@media (max-width: 720px) {
+  .howto, .quest-tiers { grid-template-columns: 1fr; }
+}
+
 /* raid record */
 #raids .won { color: var(--ok); font-weight: 600; }
 #raids .lost, #raids td.lost { color: var(--wax-hi); font-weight: 600; }
