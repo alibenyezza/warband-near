@@ -6,6 +6,9 @@
   <title>WARBAND · testnet</title>
   <meta name="description" content="WARBAND: a NEAR memecoin played as a daily raid. Hold, show up with the band, loot the chest. Live testnet state.">
   <link rel="icon" href="assets/seal-icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@400;600;700;800;900&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,6 +16,7 @@
     <a class="brand" href="#top"><img src="assets/seal-icon.svg" alt="" width="30" height="30"><span>WARBAND</span></a>
     <nav>
       <a href="#raid">Raid</a>
+      <a href="#how">How</a>
       <a href="#loot">Loot</a>
       <a href="#badges">Trophies</a>
       <a href="#rank">You</a>
@@ -26,76 +30,109 @@
   </header>
 
   <main id="top">
-    <section class="hero">
-      <p class="prompt">$ near view <span id="token-id">warband-daily.testnet</span> raid_status<span class="cursor"></span></p>
-      <h1>Hold. Show up. Loot.</h1>
-      <p class="lede">A memecoin you play every day, with your whole band. Time counts more than money.</p>
-
-      <div class="howto" aria-label="How to play">
-        <div class="step">
-          <div class="step-icon ranks"><img src="ranks/00-recruit.svg" alt=""><img src="ranks/05-captain.svg" alt=""><img src="ranks/10-warlord.svg" alt=""></div>
-          <p class="step-n">1 · Hold</p>
-          <h3>Your tokens level up</h3>
-          <p>Every day you keep them, they gain a level: Recruit to Warlord. Higher level, louder vote. Tokens bought today have no vote.</p>
+    <!-- The raid of the day, as a siege. Live: every raider who joined today is a warrior in front of the fort, each
+         one breaks a block of the gate; 10 warriors break it. Drawn here, filled from raid_status and the log. -->
+    <section class="stage" id="raid" aria-labelledby="raid-title">
+      <div class="stage-top">
+        <div>
+          <h1 id="raid-title">Raid</h1>
+          <p class="raid-say" id="raid-say" aria-live="polite"></p>
         </div>
-        <div class="step">
-          <div class="step-icon">
-            <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><path d="M14 12l26 26M50 12L24 38" stroke="var(--bone)" stroke-width="4" stroke-linecap="round"/><path d="M36 42l8 8M28 42l-8 8M40 34l8-8M24 34l-8-8" stroke="var(--wax-hi)" stroke-width="4" stroke-linecap="round"/></svg>
-          </div>
-          <p class="step-n">2 · Show up</p>
-          <h3>Join today's raid</h3>
-          <p>Once a day, check in with your tokens. The raid needs at least 10 raiders, and enough tokens, before the clock runs out.</p>
-        </div>
-        <div class="step">
-          <div class="step-icon">
-            <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><rect x="10" y="26" width="44" height="26" rx="4" fill="var(--wax)"/><path d="M10 30c0-10 9-16 22-16s22 6 22 16" fill="var(--wax-hi)"/><rect x="28" y="30" width="8" height="10" rx="2" fill="var(--gold)"/></svg>
-          </div>
-          <p class="step-n">3 · Loot</p>
-          <h3>Win together, or burn</h3>
-          <p><span class="good">Raid won:</span> every raider gets new tokens and a share of the loot rolls. <span class="bad">Raid lost:</span> part of the chest buys tokens back and burns them.</p>
-        </div>
+        <div class="clock"><span>Ends in</span><strong id="raid-clock">–:––</strong></div>
       </div>
 
-      <div class="scoreboard" id="scoreboard" aria-live="polite"></div>
-      <p class="cta"><a class="play" href="#raid">See today's raid</a><a href="#rank">Play with your wallet</a></p>
+      <div class="scene" id="scene" data-state="open">
+        <svg class="scene-art" viewBox="0 0 1200 520" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+          <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d0a29"/><stop offset="1" stop-color="#2b1f5c"/></linearGradient>
+            <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a4f8a"/><stop offset="1" stop-color="#3d3566"/></linearGradient>
+            <radialGradient id="glow"><stop offset="0" stop-color="#ffc23d" stop-opacity=".9"/><stop offset="1" stop-color="#ffc23d" stop-opacity="0"/></radialGradient>
+          </defs>
+          <rect width="1200" height="520" fill="url(#sky)"/>
+          <g fill="#fff6e0" opacity=".7"><circle cx="90" cy="60" r="2"/><circle cx="220" cy="120" r="1.5"/><circle cx="360" cy="40" r="2"/><circle cx="480" cy="100" r="1.5"/><circle cx="600" cy="50" r="2"/><circle cx="160" cy="190" r="1.2"/><circle cx="420" cy="170" r="1.2"/><circle cx="1130" cy="200" r="1.5"/><circle cx="560" cy="150" r="1.2"/></g>
+          <circle cx="1080" cy="90" r="42" fill="#fff6e0"/><circle cx="1066" cy="80" r="42" fill="#2b1f5c" opacity=".25"/>
+          <path d="M0 380 Q150 300 320 360 T640 340 T1200 330 V520 H0Z" fill="#231a4d"/>
+          <!-- the fort -->
+          <g class="fort">
+            <rect x="660" y="190" width="380" height="250" fill="url(#stone)"/>
+            <path d="M660 190 h380 v-24 h-30 v14 h-30 v-14 h-30 v14 h-30 v-14 h-30 v14 h-30 v-14 h-30 v14 h-30 v-14 h-30 v14 h-30 v-14 h-30 v14 h-30 v-14 h-20z" fill="#5a4f8a"/>
+            <rect x="620" y="130" width="90" height="310" fill="#4a4178"/>
+            <path d="M620 130 v-22 h22 v12 h23 v-12 h22 v12 h23 v-12 v22z" fill="#5a4f8a"/>
+            <rect x="990" y="130" width="90" height="310" fill="#4a4178"/>
+            <path d="M990 130 v-22 h22 v12 h23 v-12 h22 v12 h23 v-12 v22z" fill="#5a4f8a"/>
+            <rect x="652" y="200" width="20" height="34" rx="10" fill="#171238"/><rect x="1022" y="200" width="20" height="34" rx="10" fill="#171238"/>
+            <path d="M1035 108 v-60" stroke="#fff6e0" stroke-width="4"/><path d="M1037 50 h46 l-12 14 l12 14 h-46z" fill="#ff4b3e"/>
+            <!-- the gate: its blocks break one per warrior -->
+            <path d="M780 440 V330 a70 70 0 0 1 140 0 V440z" fill="#171238"/>
+          <!-- the loot chest behind the gate: it glows when the gate is down -->
+            <g class="chest" transform="translate(818 382)">
+              <circle class="chest-glow" cx="32" cy="22" r="70" fill="url(#glow)"/>
+              <rect x="0" y="20" width="64" height="38" rx="5" fill="#a3221b"/><path d="M0 26c0-14 13-22 32-22s32 8 32 22z" fill="#ff4b3e"/><rect x="27" y="22" width="10" height="14" rx="2" fill="#ffc23d"/>
+            </g>
+            <g id="gate-blocks"></g>
+            <circle class="torch" cx="755" cy="300" r="34" fill="url(#glow)"/><rect x="751" y="300" width="8" height="26" fill="#6b4a2a"/><circle cx="755" cy="298" r="7" fill="#ffc23d"/>
+            <circle class="torch" cx="945" cy="300" r="34" fill="url(#glow)"/><rect x="941" y="300" width="8" height="26" fill="#6b4a2a"/><circle cx="945" cy="298" r="7" fill="#ffc23d"/>
+          </g>
+          <rect y="440" width="1200" height="80" fill="#1a1440"/>
+          <path d="M0 440 H1200" stroke="#3d3566" stroke-width="4"/>
+        </svg>
+        <div class="gate-hp" aria-label="Gate">
+          <span>Gate</span>
+          <div class="hp" id="gate-hp"></div>
+        </div>
+        <ol class="army" id="army" aria-label="Today's raiders"></ol>
+        <div class="verdict" id="verdict" hidden></div>
+      </div>
 
-      <details class="nerd">
-        <summary>Under the hood</summary>
-        <p>Every day the band raids. Holders check in with tokens held for at least a day. If at least 10 raiders join
-          with 25% of the supply, the raiders are minted a share and pull loot from the chest. If not, part of the chest
-          is bought back and burned. Each lot of tokens gains a level per day held (0 to 10), and the vote in the DAO is
-          tokens × level. Everything runs in the contract: no admin method, no pause, no parameter setter. The
-          deployer's last keys on this deployment are deleted on 13 Nov 2026; after that, nobody can change the code
-          either.</p>
-        <div class="facts" id="facts"></div>
-        <p class="deployments">Deployment: <span id="deployments"></span>. Read straight from NEAR testnet, no wallet needed.</p>
-      </details>
+      <div class="stats">
+        <div class="stat"><span>Warriors</span><strong id="stat-warriors">–</strong><em>10 break the gate</em></div>
+        <div class="stat"><span>Raid power</span><div class="power"><i id="raid-fill"></i><b id="raid-goal"></b></div><em id="raid-joined">tokens in the raid</em></div>
+        <div class="stat"><span>Loot chest</span><strong id="stat-chest">–</strong><em>NEAR for the winners</em></div>
+        <div class="stat"><span>Win streak</span><strong id="stat-streak">–</strong><em id="stat-record"></em></div>
+      </div>
+      <div id="raid-last" class="last" hidden></div>
+      <p class="cta"><a class="play" href="#rank">Join with your wallet</a><a href="#how">What's a raid?</a></p>
     </section>
 
-    <section id="raid" class="panel">
-      <p class="label">// 01 today's raid</p>
-      <div class="raid-head">
-        <h2 id="raid-title">Raid</h2>
-        <div class="clock"><span>ends in</span><strong id="raid-clock">–:––</strong></div>
+    <!-- A raid in three pictures -->
+    <section class="how" id="how" aria-label="What's a raid">
+      <div class="panel-pic">
+        <svg viewBox="0 0 160 120" aria-hidden="true"><path d="M58 20h44M58 100h44M64 20c0 26 32 30 32 40s-32 14-32 40M96 20c0 26-32 30-32 40s32 14 32 40" stroke="#fff6e0" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M70 92c6-8 14-8 20 0z" fill="#ffc23d"/><circle cx="124" cy="36" r="16" fill="#ffc23d"/><text x="124" y="42" text-anchor="middle" font-family="Bungee" font-size="16" fill="#171238">B</text></svg>
+        <h3>Hold your BAND</h3>
+        <p>Tokens kept for a day can fight. The longer you hold, the higher your rank.</p>
       </div>
-      <p class="raid-say" id="raid-say" aria-live="polite"></p>
-      <div id="raid-last" class="last" hidden></div>
-      <div class="pips" id="raid-pips" aria-label="Raiders checked in"></div>
-      <div class="meter" aria-label="Raid power: seasoned tokens joined against the target">
-        <p class="meter-name">Raid power</p>
-        <div class="meter-bar"><i id="raid-fill"></i><b id="raid-goal"></b></div>
-        <div class="meter-legend"><span id="raid-joined">0 BAND joined</span><span id="raid-target">target –</span></div>
+      <div class="panel-pic">
+        <svg viewBox="0 0 160 120" aria-hidden="true"><g fill="#5ee08a"><use href="#w-mini" x="10" y="40"/><use href="#w-mini" x="42" y="40"/><use href="#w-mini" x="74" y="40"/></g><rect x="112" y="24" width="38" height="76" fill="#3d3566"/><path d="M118 100v-30a13 13 0 0 1 26 0v30z" fill="#171238"/><path d="M118 66l26 16M144 66l-26 16" stroke="#ff4b3e" stroke-width="4"/></svg>
+        <h3>Raid once a day</h3>
+        <p>Join before the clock runs out. 10 warriors break the gate.</p>
       </div>
-      <div class="joined" id="raid-joiners"></div>
-      <h3>Last raids</h3>
-      <div class="table-wrap"><table id="raids"><thead><tr><th>Raid</th><th>Result</th><th class="num">Raiders</th><th class="num">Joined (BAND)</th><th class="num">Streak after</th><th class="num">Burned (BAND)</th></tr></thead><tbody></tbody></table></div>
+      <div class="panel-pic split">
+        <svg viewBox="0 0 160 120" aria-hidden="true"><g transform="translate(14 40)"><rect y="20" width="54" height="34" rx="5" fill="#a3221b"/><path d="M0 24c0-12 11-20 27-20s27 8 27 20z" fill="#ff4b3e" transform="rotate(-24 0 24)"/><circle cx="16" cy="6" r="6" fill="#ffc23d"/><circle cx="32" cy="-2" r="6" fill="#ffc23d"/><circle cx="46" cy="8" r="6" fill="#ffc23d"/></g><g transform="translate(92 40)"><rect y="20" width="54" height="34" rx="5" fill="#3d3566"/><path d="M0 24c0-12 11-20 27-20s27 8 27 20z" fill="#5a4f8a"/><path d="M10 20c4-16 12-20 10-36 10 10 16 18 14 36M28 20c2-10 8-14 6-24 8 8 10 14 8 24" fill="#ff4b3e"/></g></svg>
+        <h3><span class="good">Win</span>: loot. <span class="bad">Lose</span>: burn.</h3>
+        <p>Gate down: every warrior gets new BAND and loot. Gate holds: part of the chest is burned.</p>
+      </div>
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><g id="w-mini"><circle cx="13" cy="10" r="9"/><rect x="4" y="20" width="18" height="26" rx="6"/><path d="M0 24h10v16a5 5 0 0 1-10 0z" fill="#fff6e0"/></g></defs></svg>
+    </section>
+
+    <section class="panel" id="record">
+      <h2>Last raids</h2>
+      <div class="medals" id="medals"></div>
       <details class="nerd">
-        <summary>Raid numbers and exact rules</summary>
+        <summary>Every number of today's raid, and the exact rules</summary>
+        <p class="note" id="raid-target"></p>
+        <div class="pips" id="raid-pips" aria-label="Raiders checked in"></div>
+        <div class="joined" id="raid-joiners"></div>
         <div class="grid six" id="raid-grid"></div>
+        <div class="table-wrap"><table id="raids"><thead><tr><th>Raid</th><th>Result</th><th class="num">Raiders</th><th class="num">Joined (BAND)</th><th class="num">Streak after</th><th class="num">Burned (BAND)</th></tr></thead><tbody></tbody></table></div>
         <p class="note">A raid is won when the raiders' seasoned balance reaches 25% of the supply and at least 10
           accounts join. Each raider is minted 0.1% of what it joined with times the streak bonus (0.11% on the first
           win, up to 0.2% on a 10-raid streak), and the raid's 20 loot pulls are shared by joined balance, so splitting a
-          bag across accounts earns nothing extra.</p>
+          bag across accounts earns nothing extra. Lost raid: 10% of the chest buys BAND back and burns it. Every
+          parameter is set at launch and readable with <code>config</code>; the contract has no admin method, no pause,
+          no setter, and the deployer's last keys on this deployment are deleted on 13 Nov 2026.</p>
+        <div class="facts" id="facts"></div>
+        <p class="deployments"><span id="token-id">warband-daily.testnet</span> · <span id="deployments"></span>. Read straight from NEAR testnet, no wallet needed.</p>
+        <div id="scoreboard" hidden></div>
       </details>
     </section>
 
@@ -194,7 +231,9 @@
           every raid someone joined (an empty day keeps no raid, its chest slice is burned). Every mint and burn is also
           an NEP-141 <code>ft_mint</code> / <code>ft_burn</code> event in its transaction, forever.</p>
       </details>
+<details class="nerd"><summary>Show the full log</summary>
       <div class="table-wrap"><table id="history"><thead><tr><th>#</th><th>When</th><th>What</th><th>Account</th><th class="num">NEAR</th><th class="num">BAND</th></tr></thead><tbody></tbody></table></div>
+      </details>
     </section>
   </main>
 

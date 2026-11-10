@@ -151,8 +151,8 @@ async function raidStatus() {
   $("#raid-fill").style.width = `${pct}%`;
   $("#raid-fill").classList.toggle("met", target > 0n && joined >= target);
   $("#raid-goal").style.left = `${100 / 1.6}%`;
-  $("#raid-joined").innerHTML = `<b>${band(r.joined)}</b> BAND joined${target > 0n ? ` · ${Number((joined * 1000n) / target) / 10}% of target` : ""}`;
-  $("#raid-target").textContent = target > 0n ? `target ${band(r.target)} (25% of supply)` : "target set by the first raider";
+  $("#raid-joined").innerHTML = target > 0n ? `<b>${Math.floor(Number((joined * 100n) / target))}%</b> of the power needed` : "no power yet";
+  $("#raid-target").textContent = target > 0n ? `Raid power: ${band(r.joined)} BAND joined, target ${band(r.target)} (25% of the supply).` : "Raid power: the target is set by the first raider.";
   const slots = Math.max(r.min_joiners, r.joiners);
   $("#raid-pips").innerHTML =
     Array.from({ length: slots }, (_, i) => `<i class="${i < r.joiners ? "on" : ""}"></i>`).join("") +
@@ -172,19 +172,21 @@ async function raidStatus() {
     `<div><span>loot chest</span><strong>${near(r.chest, 3)}</strong><em>NEAR waiting for the next won raid</em></div>`,
     `<div><span>${r.raid === "0" ? "launch day · first raid opens in" : `raid #${r.raid} ends in`}</span><strong id="score-clock">–</strong><em>${r.joiners} / ${r.min_joiners} raiders in</em></div>`,
   ].join("");
-  // today's raid in one plain sentence
+  // today's raid in one plain sentence, and the siege scene
   const need = Math.max(0, r.min_joiners - r.joiners);
   const ofGoal = target > 0n ? Math.floor(Number((joined * 100n) / target)) : 0;
+  const powered = target > 0n && joined >= target;
   $("#raid-say").innerHTML =
     r.raid === "0"
-      ? "Launch day: tokens are aging. The first raid opens tomorrow."
-      : need === 0 && target > 0n && joined >= target
-        ? `<b class="good">${r.joiners} raiders are in. Goal reached!</b> If the day ends like this, the raid is won.`
+      ? "Launch day: the warriors are training. The first raid opens tomorrow."
+      : need === 0 && powered
+        ? `<b class="good">The gate is down!</b> If the day ends like this, the raid is won.`
         : need === 0
-          ? `<b>${r.joiners} raiders are in,</b> but the raid needs more tokens: ${ofGoal}% of the goal.`
+          ? `<b>The gate is down,</b> but the raid needs more power: ${ofGoal}% of the goal.`
           : r.joiners === 0
-            ? `<b>Nobody has joined yet.</b> The raid needs ${r.min_joiners} raiders before the clock runs out.`
-            : `<b>${r.joiners} of ${r.min_joiners} raiders so far.</b> ${need} more needed before the clock runs out.`;
+            ? `<b>No warrior yet.</b> ${r.min_joiners} are needed to break the gate.`
+            : `<b>${r.joiners} warrior${r.joiners > 1 ? "s" : ""} at the gate.</b> ${need} more to break it.`;
+  renderScene(r, need, powered, ofGoal);
   const last = r.last;
   const banner = $("#raid-last");
   if (last && last.joiners > 0) {
@@ -202,6 +204,75 @@ async function raidStatus() {
     banner.innerHTML = `<b>Raid #${Number(r.raid) - 1}</b> · nobody showed up · lost`;
   } else banner.hidden = true;
   tickClock();
+}
+
+// ------------------------------------------------------------------ the siege scene
+// The gate has one block per raider needed (min_joiners): each raider of the day breaks one, from the top.
+function renderScene(r, need, powered, ofGoal) {
+  const n = r.min_joiners;
+  const broken = Math.min(n, r.joiners);
+  const g = $("#gate-blocks");
+  if (g.childElementCount !== n) {
+    const cols = 2;
+    const rows = Math.ceil(n / cols);
+    const h = 140 / rows;
+    g.innerHTML = `<clipPath id="gate-clip"><path d="M780 440 V330 a70 70 0 0 1 140 0 V440z"/></clipPath><g clip-path="url(#gate-clip)">${Array.from({ length: n }, (_, i) => {
+      const row = Math.floor(i / cols);
+      const col = i % cols;
+      return `<rect class="blk" data-i="${i}" x="${780 + col * 70 + 2}" y="${300 + row * h + 2}" width="66" height="${h - 4}" rx="4"/>`;
+    }).join("")}</g>`;
+  }
+  g.querySelectorAll(".blk").forEach((b) => b.classList.toggle("broken", Number(b.dataset.i) < broken));
+  $("#gate-hp").innerHTML = Array.from({ length: n }, (_, i) => `<i class="${i < n - broken ? "on" : ""}"></i>`).join("");
+  const scene = $("#scene");
+  scene.dataset.state = r.raid === "0" ? "training" : need === 0 ? (powered ? "down" : "down-weak") : "open";
+  const v = $("#verdict");
+  v.hidden = !(r.raid !== "0" && need === 0);
+  v.innerHTML = powered ? "Gate down" : `Gate down · power ${ofGoal}%`;
+  $("#stat-warriors").textContent = `${r.joiners}/${n}`;
+  $("#stat-chest").textContent = near(r.chest, 3);
+  $("#stat-streak").innerHTML = `${r.streak > 0 ? `<svg class="flame" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-7 0 2 1 3 2 3 0-3-1-5 1-8z" fill="var(--blood)"/></svg>` : ""}${r.streak}`;
+  $("#stat-record").textContent = `${r.won} won, ${r.lost} lost`;
+}
+
+// Today's raiders as warriors in front of the fort (from the log: the joins since the day started).
+const HUES = ["#5ee08a", "#ffc23d", "#7cc4ff", "#ff8bd1", "#c49bff", "#ff9b54", "#9be7ff", "#e6ff7a"];
+const hue = (id) => HUES[[...id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % HUES.length];
+const warrior = (id) => {
+  const c = hue(id);
+  const name = id.split(".")[0];
+  return `<li title="${esc(id)}"><svg viewBox="0 0 40 56" width="40" height="56" aria-hidden="true">
+    <path d="M8 18a12 12 0 0 1 24 0v4H8z" fill="${c}"/><rect x="18.5" y="2" width="3" height="8" rx="1.5" fill="${c}"/>
+    <rect x="11" y="18" width="18" height="12" rx="4" fill="#ffd9b0"/><rect x="11" y="22" width="18" height="3" fill="#171238"/>
+    <rect x="9" y="30" width="22" height="20" rx="6" fill="${c}"/>
+    <path d="M2 32h14v12a7 7 0 0 1-14 0z" fill="#fff6e0" stroke="#171238" stroke-width="1.5"/>
+    <text x="9" y="44" text-anchor="middle" font-family="Bungee" font-size="9" fill="#171238">${esc(name[0].toUpperCase())}</text>
+    <path d="M34 14v30" stroke="#d9d9e6" stroke-width="3" stroke-linecap="round"/><path d="M30 40h8" stroke="#6b4a2a" stroke-width="3" stroke-linecap="round"/>
+  </svg><span>${esc(name)}</span></li>`;
+};
+let armyKey = "";
+function renderArmy(ids) {
+  const key = ids.join(",");
+  if (key === armyKey) return;
+  const fresh = armyKey !== "";
+  armyKey = key;
+  const shown = ids.slice(0, 16);
+  $("#army").innerHTML = shown.length
+    ? shown.map(warrior).join("") + (ids.length > shown.length ? `<li class="more">+${ids.length - shown.length}</li>` : "")
+    : `<li class="empty">No warrior yet</li>`;
+  if (!fresh) $("#army").classList.add("march");
+}
+
+function renderMedals(rows) {
+  $("#medals").innerHTML = rows.length
+    ? rows
+        .map(([id, r]) => {
+          const res = r === undefined ? "unknown" : r === null ? "lost" : r.won === true ? "won" : r.won === false ? "lost" : "pending";
+          const raiders = r ? r.joiners : 0;
+          return `<div class="medal ${res}" title="Raid #${id}: ${res}, ${raiders} raiders"><b>${res === "won" ? "W" : res === "lost" ? "L" : "?"}</b><span>#${id}</span><em>${raiders} warriors</em></div>`;
+        })
+        .join("")
+    : `<p class="muted">The first raid opens on day 1.</p>`;
 }
 
 function tickClock() {
@@ -270,7 +341,7 @@ async function history() {
   const newest = h.length ? Number(h[0].n) : -1;
   $("#feed").innerHTML = lines.length
     ? lines
-        .slice(0, 24)
+        .slice(0, 8)
         .map(({ e, l }) => `<li class="${l.cls} ${seen !== null && Number(e.n) > seen ? "new" : ""}"><span class="when">${ago(e.at)}</span><span>${l.text}</span></li>`)
         .join("")
     : `<li class="muted">Waiting for the first raid…</li>`;
@@ -281,6 +352,7 @@ async function history() {
     $("#raid-joiners").innerHTML = today.length
       ? today.map((e) => `<span class="chip">${who(e.account)} <em>${band(e.tokens)}</em></span>`).join("")
       : `<span class="muted">No raider has checked in yet today.</span>`;
+    renderArmy([...new Set(today.slice().reverse().map((e) => e.account))]);
   }
   if (seen !== null) {
     const fresh = h.filter((e) => Number(e.n) > seen).reverse();
@@ -313,6 +385,7 @@ async function raidRecord() {
         })
         .join("")
     : `<tr><td class="muted" colspan="6">The first raid opens on day 1.</td></tr>`;
+  renderMedals(rows);
   recordBurned = rows.reduce((a, [, r]) => a + (r ? big(r.burned) : 0n), 0n);
   const cells = document.querySelectorAll("#raid-grid .cell");
   if (cells[5]) cells[5].innerHTML = `<span>Burned by lost raids</span><strong>${band(recordBurned.toString())}</strong><em>BAND, last ${RECORD} raids</em>`;

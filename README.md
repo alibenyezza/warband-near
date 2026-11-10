@@ -14,11 +14,12 @@ until 25 Nov 2026.
 
 ## Check it in 30 seconds, without a wallet
 
-1. Open the live page. It starts with "How to play" in three steps, then the win streak, the loot chest and the
-   countdown to the end of today's raid, with one plain sentence on how the raid stands. Below: the raiders checked
-   in today, the loot feed, the trophies (badges), the leaderboard ranked by voice (tokens × level, not balance), the
-   war chest DAO and its proposals, the quests (the bounty board, with each contributor's record) and the battle
-   log. The exact rules and numbers sit in the "Under the hood" folds.
+1. Open the live page. Today's raid is a siege: every account that joined today is a warrior in front of the
+   fort, and each one breaks a block of the gate (10 break it); the chest glows when the gate is down. Below: the
+   warriors count, the raid power, the loot chest and the win streak, a raid in three pictures, the last raids as
+   won/lost medals, then the loot, the trophies (badges), your warrior, the market, the leaderboard ranked by
+   voice (tokens × level, not balance), the war chest DAO, the quests (the bounty board) and the battle log. The
+   exact numbers and rules sit in the folds ("Every number of today's raid", "Under the hood").
 2. Read the raid from a terminal:
    `curl -s https://rpc.testnet.fastnear.com -H 'content-type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"query","params":{"request_type":"call_function","finality":"final","account_id":"warband-daily.testnet","method_name":"raid_status","args_base64":"e30="}}' | python3 -c 'import sys,json;print(bytes(json.load(sys.stdin)["result"]["result"]).decode())'`
    See `raid`, `joiners`, `streak`, `won`, `lost` and `chest`.
