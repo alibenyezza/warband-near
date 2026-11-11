@@ -231,30 +231,24 @@ function renderScene(r, need, powered, ofGoal) {
   v.innerHTML = powered ? "Gate down" : `Gate down · power ${ofGoal}%`;
   $("#stat-warriors").textContent = `${r.joiners}/${n}`;
   $("#stat-chest").textContent = near(r.chest, 3);
-  $("#stat-streak").innerHTML = `${r.streak > 0 ? `<svg class="flame" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-7 0 2 1 3 2 3 0-3-1-5 1-8z" fill="var(--blood)"/></svg>` : ""}${r.streak}`;
+  $("#stat-streak").innerHTML = `${r.streak > 0 ? `<svg class="flame" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-7 0 2 1 3 2 3 0-3-1-5 1-8z" fill="var(--wax-hi)"/></svg>` : ""}${r.streak}`;
   $("#stat-record").textContent = `${r.won} won, ${r.lost} lost`;
 }
 
-// Today's raiders as warriors in front of the fort (from the log: the joins since the day started).
-const HUES = ["#5ee08a", "#ffc23d", "#7cc4ff", "#ff8bd1", "#c49bff", "#ff9b54", "#9be7ff", "#e6ff7a"];
-const hue = (id) => HUES[[...id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % HUES.length];
+// Today's raiders in front of the fort, each as the rank shield of its oldest lot (from the band list; Recruit until
+// that list has loaded). The log gives who joined since the day started.
+const rankOf = new Map();
+const shieldSrc = (lvl) => `ranks/${String(lvl).padStart(2, "0")}-${RANKS[lvl].toLowerCase()}.svg`;
 const warrior = (id) => {
-  const c = hue(id);
+  const lvl = rankOf.get(id) ?? 0;
   const name = id.split(".")[0];
-  return `<li title="${esc(id)}"><svg viewBox="0 0 40 56" width="40" height="56" aria-hidden="true">
-    <path d="M8 18a12 12 0 0 1 24 0v4H8z" fill="${c}"/><rect x="18.5" y="2" width="3" height="8" rx="1.5" fill="${c}"/>
-    <rect x="11" y="18" width="18" height="12" rx="4" fill="#ffd9b0"/><rect x="11" y="22" width="18" height="3" fill="#171238"/>
-    <rect x="9" y="30" width="22" height="20" rx="6" fill="${c}"/>
-    <path d="M2 32h14v12a7 7 0 0 1-14 0z" fill="#fff6e0" stroke="#171238" stroke-width="1.5"/>
-    <text x="9" y="44" text-anchor="middle" font-family="Bungee" font-size="9" fill="#171238">${esc(name[0].toUpperCase())}</text>
-    <path d="M34 14v30" stroke="#d9d9e6" stroke-width="3" stroke-linecap="round"/><path d="M30 40h8" stroke="#6b4a2a" stroke-width="3" stroke-linecap="round"/>
-  </svg><span>${esc(name)}</span></li>`;
+  return `<li title="${esc(id)} · ${RANKS[lvl]}"><img src="${shieldSrc(lvl)}" alt=""><span>${esc(name)}</span></li>`;
 };
 let armyKey = "";
 function renderArmy(ids) {
   const key = ids.join(",");
   if (key === armyKey) return;
-  const fresh = armyKey !== "";
+  const fresh = armyKey !== "" || document.querySelector("#army li img");
   armyKey = key;
   const shown = ids.slice(0, 16);
   $("#army").innerHTML = shown.length
@@ -445,6 +439,8 @@ async function holders() {
     if (page.length < 100) break;
   }
   all.sort((a, b) => (big(b.weight) > big(a.weight) ? 1 : big(b.weight) < big(a.weight) ? -1 : 0));
+  for (const h of all) rankOf.set(h.account_id, Math.max(0, RANKS.indexOf(h.rank)));
+  if (armyKey) { const ids = armyKey.split(","); armyKey = ""; renderArmy(ids); }
   $("#holders tbody").innerHTML = all
     .map((h, i) => {
       const mine = badges.filter((b) => b.owner_id === h.account_id);
