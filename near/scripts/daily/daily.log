@@ -404,3 +404,260 @@ The "burn_for_pull" call to <warband-daily.testnet> on behalf of <scout.warband-
 │    Transaction ID: 2Mvtn9mtyq86NS8wM3oLnQPGuYXYkdWkRDzjqMFz4Twm
 The "burn_for_pull" call to <warband-daily.testnet> on behalf of <smith.warband-camp.testnet> succeeded.
    raid 4 joiners 13 streak 3 chest 0.19830508775223127 NEAR
+
+== 2026-11-11 12:49:13 UTC, run-daily.ps1
+   day 5, keeper gk-daily.warband-hq.testnet on warband-daily.testnet
+   keeper settle_raids: ok  tx etwD8Nr5TNpvqCsT36xFTM2AtGaQxg9Nw1AA1otVdXX
+   keeper sync_weight archer.warband-camp.testnet: ok  tx J4kpp7d9AAHgrKktncnBfwRjP5mkPk4rxTjXUaVJyxpq
+   keeper sync_weight bard.warband-camp.testnet: ok  tx 6kqY8qKWERPzvt9tNzasidycb4vip2U15hxgkB5KuUsZ
+   keeper sync_weight drummer.warband-camp.testnet: ok  tx 24VNXXWT4dwcNRRXARtbYLmkANYmq3SAjzynBT6iCw8U
+   keeper sync_weight hunter.warband-camp.testnet: ok  tx 6y1RFdfF6re8TBwFBLBq41yeNLTyDZfVZ1VgAFiSyTPQ
+   keeper sync_weight mason.warband-camp.testnet: ok  tx AUcq1vBYemhGZ3io2YrRDXiG9cNAHoowPeHqZSyQvXQG
+   keeper sync_weight monk.warband-camp.testnet: ok  tx 9dQn1LhHDfXxU3Xxhppo8xrRZoFNoqzDzZSgnXhfdS9h
+   keeper sync_weight piper.warband-camp.testnet: ok  tx 6iRib9oYJSsK1RkVRR3QNTMuCTWtoSwAYfYxtabAGUVr
+   keeper sync_weight rider.warband-camp.testnet: ok  tx 7Hzf18KGk2EeT4nLvGttk4Kr4eCtVKAuJTyJMXazAWsC
+
+== 2026-11-11 22:00:02 UTC, run-daily.ps1
+   day 5, keeper gk-daily.warband-hq.testnet on warband-daily.testnet
+   keeper settle_raids: ok  tx 62gekX2Z7Vc2wZmSokh8xT6M66bJRkjvvNcJnJVascHC
+   keeper sync_weight archer.warband-camp.testnet: ok  tx EQfXwHknXfsDZVNmkqmYqSmFrMAK6m1G2Kq2mSoGYyq8
+   keeper sync_weight bard.warband-camp.testnet: ok  tx 5FF33m7Hd7n9rYxf5aBcknrA1M8bcB4AQi4BLwqCiY8h
+   keeper sync_weight drummer.warband-camp.testnet: ok  tx H2ogLvaBBMHifJ72zntFukakEjZgaEXTur5gFuc3ppkJ
+   keeper sync_weight hunter.warband-camp.testnet: ok  tx 6LgJaRSweAduRzq58kEJxxKy3gdb9L3EY2Mt5r3b8mDK
+   keeper sync_weight mason.warband-camp.testnet: ok  tx MuysYgExUZwUgie9a5CmJMiE2fowWQFmNpX4TM9YDQU
+   keeper sync_weight monk.warband-camp.testnet: ok  tx BbEkLtQYSBSV1PfeLtZ7p3kRBVe3jscQPxX9BWUqQG96
+   keeper sync_weight piper.warband-camp.testnet: ok  tx BAYqfTUbtDCrmRZ698bJ8ZRMo5PN4khBuCFTDCYeWWt9
+   keeper sync_weight rider.warband-camp.testnet: ok  tx Gk4DsU676YkuwbaJaiY1BSnnooz3y8DYrCtHERPGYn3R
+   keeper sync_weight scout.warband-camp.testnet: ok  tx F4Bhpxv2KiCYnZzE4CriHd572xBaYu5yonzzWHAk7UQP
+   keeper sync_weight smith.warband-camp.testnet: ok  tx GhTE2Nem5NTdHHXucEjvxoMruWoMWFu3LewxfSJ7r61V
+   keeper sync_weight tanner.warband-camp.testnet: ok  tx HQi71mmWFRJfqGw54qvgcuND8AZEQBxU74Zm1wjDqtNn
+   keeper sync_weight warden.warband-camp.testnet: ok  tx 4RJwohjFKG7czU6xt5qKr7t7gE3SSXr2UtnjvHAc7yH3
+   keeper sync_weight warband-alice.testnet: ok  tx BdvMw5ykPLCAhtawRjep8jtZo9FmgUfFDQpdi9RMoCVQ
+   keeper sync_weight warband-bob.testnet: ok  tx ER5eZv3x64dPD2nAcMuuXMHSSN6NdWxrHwgTpaAWvNj3
+== 2026-11-11 22:01:27 UTC, day 5 of warband-daily.testnet
+-- archer.warband-camp.testnet joins
+│    Transaction ID: 9xnHuz4gfEY7czaddMDdagwvSwyS3BCJvhYprgnAdGJy
+The "join_raid" call to <warband-daily.testnet> on behalf of <archer.warband-camp.testnet> succeeded.
+-- bard.warband-camp.testnet joins
+│    Transaction ID: CsZCjjC74dFKgC5oy84wCs1iLwdD3TGrZmdujkxCV28t
+The "join_raid" call to <warband-daily.testnet> on behalf of <bard.warband-camp.testnet> succeeded.
+-- drummer.warband-camp.testnet joins
+│    Transaction ID: 5coMmdBhfuZALKVF5SJYZEsqW5144ZEx5XgqaxV5H2Hj
+The "join_raid" call to <warband-daily.testnet> on behalf of <drummer.warband-camp.testnet> succeeded.
+-- hunter.warband-camp.testnet joins
+│    Transaction ID: AF5x5PRL2KjvCrJhE5yRNFLQcNnedKcXexueLSuTiFG
+The "join_raid" call to <warband-daily.testnet> on behalf of <hunter.warband-camp.testnet> succeeded.
+-- mason.warband-camp.testnet joins
+│    Transaction ID: ENPZpZ57wwEJ85pgGzTUWYnDEMhJLbvagBgLp1pR9DY1
+The "join_raid" call to <warband-daily.testnet> on behalf of <mason.warband-camp.testnet> succeeded.
+-- monk.warband-camp.testnet joins
+│    Transaction ID: 4va9Xbm4L1MpL7EMjdL3KffghDZSJ8LJ8nVma9mwd7bV
+The "join_raid" call to <warband-daily.testnet> on behalf of <monk.warband-camp.testnet> succeeded.
+   raid 5 joiners 6 streak 4 chest 0.19564087987936593 NEAR
+
+== 2026-11-12 11:00:02 UTC, run-daily.ps1
+
+== 2026-11-12 22:00:03 UTC, run-daily.ps1
+   day 6, keeper gk-daily.warband-hq.testnet on warband-daily.testnet
+   keeper settle_raids: ok  tx BMP3dWmcstXhszUh27E8mn67Z2GEvZ6oB7cJAMErB2Mb
+   keeper sync_weight archer.warband-camp.testnet: ok  tx 7YBXHZgjAZ5LhYruhTVjDXMsGej4JyPu2pXkFDPxLf1d
+   keeper sync_weight bard.warband-camp.testnet: ok  tx 55daD5Juz1e5oTCPjMXTzRzmtGXq2wkPkHdaGf3edwA5
+   keeper sync_weight drummer.warband-camp.testnet: ok  tx 4wQXWqVqeWDmPJ9VyN9SWk5nr6tzoPxJwfTKQkNyWAHm
+   keeper sync_weight hunter.warband-camp.testnet: ok  tx 8UhzzijpNnvRCYxHLS5MpYrcG33soCbxbnZuQ8UfmfLu
+   keeper sync_weight mason.warband-camp.testnet: ok  tx GhJPJ7zhzgcV67TKVcXB9EZgqvCpEUgqWXx4LK7S28za
+   keeper sync_weight monk.warband-camp.testnet: ok  tx G8XMWv6oKU2vmZWk5mC9PL9f69Bz2sZB4y9as5WF4jAt
+   keeper sync_weight piper.warband-camp.testnet: ok  tx DpBrgxsPRPD7dshM3DM6RiBLrS9sfwnibv4SdP69cU5j
+   keeper sync_weight rider.warband-camp.testnet: ok  tx FWLYffFmZp5u3KnV75tffPpjBAXoETYHsXzwgN6uZeht
+   keeper sync_weight scout.warband-camp.testnet: ok  tx AFYvvFimnyMrSivftUR7Yb3ymcUZsJ6oG2ujTbaRSvK5
+   keeper sync_weight smith.warband-camp.testnet: ok  tx ACfEA4Ao9aRARTEDMgxAtLiV1QcLH3cgX59serrGBaAN
+   keeper sync_weight tanner.warband-camp.testnet: ok  tx 5x2xwim3VdJFhVZrZysbzfxAGG7hrbZkPXwn679Yx3NJ
+   keeper sync_weight warden.warband-camp.testnet: ok  tx BZRSKktFkurEGWhSDwhU8YNYh2r1yRiDEHF7GQ6R3ymM
+   keeper sync_weight warband-alice.testnet: ok  tx GLNH5pAAZnC5VvwCYa3pSnsa6y6upJyk1Y7hDYQndYgS
+   keeper sync_weight warband-bob.testnet: ok  tx 7EPqQsTDJKt9RWfFfgH3X5j7Mr7NBLifrpZ9qgHLSL1H
+== 2026-11-12 22:01:18 UTC, day 6 of warband-daily.testnet
+-- archer.warband-camp.testnet joins
+│    Transaction ID: BkbLUa4SrbvqUKNJvH48bU1gXerNQwHzE8vJdZEqef3k
+The "join_raid" call to <warband-daily.testnet> on behalf of <archer.warband-camp.testnet> succeeded.
+-- bard.warband-camp.testnet joins
+│    Transaction ID: 8H1JWr26RvZU5AFZJ463WwXyMPPb7nq4DCuZdqnbuikE
+The "join_raid" call to <warband-daily.testnet> on behalf of <bard.warband-camp.testnet> succeeded.
+-- drummer.warband-camp.testnet joins
+│    Transaction ID: FJHKaxCVieGNNFvaVRCxbdydSmsGwFQVo4XPosse4HbY
+The "join_raid" call to <warband-daily.testnet> on behalf of <drummer.warband-camp.testnet> succeeded.
+-- hunter.warband-camp.testnet joins
+│    Transaction ID: 5p43atC4aZse7HP17WmAnwDurksUH6P72sP7W9saDZrm
+The "join_raid" call to <warband-daily.testnet> on behalf of <hunter.warband-camp.testnet> succeeded.
+-- mason.warband-camp.testnet joins
+│    Transaction ID: DEYEbUrF7MhcAfx8bKMsy6aoezyMLWL6gH4uE2h8B4Dg
+The "join_raid" call to <warband-daily.testnet> on behalf of <mason.warband-camp.testnet> succeeded.
+-- monk.warband-camp.testnet joins
+│    Transaction ID: 8KxKHhKSu1VzNT7YakEf73BtuH8rfoQic6qCBPERyLs9
+The "join_raid" call to <warband-daily.testnet> on behalf of <monk.warband-camp.testnet> succeeded.
+-- piper.warband-camp.testnet joins
+│    Transaction ID: Gcsma6cNqeSi11xC5dkRLkq7nYxQhpXkM5acyhjirmbn
+The "join_raid" call to <warband-daily.testnet> on behalf of <piper.warband-camp.testnet> succeeded.
+-- rider.warband-camp.testnet joins
+│    Transaction ID: BAw6g2wFmKBhWmE2mBVUkYe9VFtsP1xfYGcUuYNx2uho
+The "join_raid" call to <warband-daily.testnet> on behalf of <rider.warband-camp.testnet> succeeded.
+-- scout.warband-camp.testnet joins
+│    Transaction ID: 21zPiiDzutPnLJsV1PXCFvX6kuHBL6Q1ogTdqKDHA4b4
+The "join_raid" call to <warband-daily.testnet> on behalf of <scout.warband-camp.testnet> succeeded.
+-- smith.warband-camp.testnet joins
+│    Transaction ID: 8WNp931Pa5mLq6ALA9uqk6EB6DvXDxPWBzrbjecnzej8
+The "join_raid" call to <warband-daily.testnet> on behalf of <smith.warband-camp.testnet> succeeded.
+-- tanner.warband-camp.testnet joins
+│    Transaction ID: 2QgXFq6WzrzeqGh4CTNkTJs8te9y539y3coTXFDUUh4f
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: already in today's raid")
+   (resent after a send timeout: the first send went through, the contract refused this copy)
+-- warden.warband-camp.testnet joins
+│    Transaction ID: DYm8c7h9WBSXLGngsMhW6oiY5ikZDR7yLhPJztbroqbb
+The "join_raid" call to <warband-daily.testnet> on behalf of <warden.warband-camp.testnet> succeeded.
+-- warband-alice.testnet joins
+│    Transaction ID: 3DqGjhvR8egzXST2K4ZddJKR2QXxxhUhQwzbz8Fk7SnR
+The "join_raid" call to <warband-daily.testnet> on behalf of <warband-alice.testnet> succeeded.
+   raid 6 joiners 13 streak 0 chest 0.16748976737721988 NEAR
+
+== 2026-11-13 22:00:02 UTC, run-daily.ps1
+   day 7, keeper gk-daily.warband-hq.testnet on warband-daily.testnet
+   keeper settle_raids: ok  tx EoNzj7hTUAgQB3MYeaPdVYPMsiioBS4MDBwz2n2zqykb
+   keeper sync_weight archer.warband-camp.testnet: ok  tx GeA22mK2tYRthd5aDQWZT4R9qKybJfX6TYT2hMEF9Yrk
+   keeper sync_weight bard.warband-camp.testnet: ok  tx 3MEUuKxQssSnGigCBcVMDLa8TWh3ssevUoV2K5hDfJ45
+   keeper sync_weight drummer.warband-camp.testnet: ok  tx 6sdExR5ofKQHUDzAAMSrYbK6Rz3ejCosgoyPzH2Y4goy
+   keeper sync_weight hunter.warband-camp.testnet: ok  tx 3jqiLBeTaivMqEtdrNrdp121CNVDhED89AUzwBnXFpHS
+   keeper sync_weight mason.warband-camp.testnet: ok  tx 5V2VM8ZtKpgvujGrppaQMuFMadTeAC4Bib3mu6Ywf2Pw
+   keeper sync_weight monk.warband-camp.testnet: ok  tx 8HiisSiorTd98vZuxBcAZDdDpAU4TRyU4cjRT7QeotEY
+   keeper sync_weight piper.warband-camp.testnet: ok  tx 956XmG6Uup71aGuCN56cmCeHiZAVy9e4af1DSGJbapva
+   keeper sync_weight rider.warband-camp.testnet: ok  tx 7Z7F7MrSkjxc29yKUR8vBzYKHDrj9MgsR1gV9Lj6Yroi
+   keeper sync_weight scout.warband-camp.testnet: ok  tx Dzze86AkGaFBMzxxzP6m4opZHUrzpYbSuEMo9v6T1bU5
+   keeper sync_weight smith.warband-camp.testnet: ok  tx FBEAUKuAUFocUjtqk84jwPoYZ71f4j4W6VJfxCqKD3ap
+   keeper sync_weight tanner.warband-camp.testnet: ok  tx ENQUb3ke94g57iGXqDpc4nyWi6LaU5Wh6i6wq3aZ3759
+   keeper sync_weight warden.warband-camp.testnet: ok  tx cBbfEXA28uE1QL817iA7CuuKdrqmVFHPDsoERieAc4u
+   keeper sync_weight warband-alice.testnet: ok  tx D41k7dhZxGnxyK2Yn8t4vvCAXYBJjXhAcWie3kEyg9oi
+   keeper sync_weight warband-bob.testnet: ok  tx 9UL7yxFUEGVeRdYAGrXEsTChb3sbQgAavcDuPfXjdjCJ
+== 2026-11-13 22:01:25 UTC, day 7 of warband-daily.testnet
+-- archer.warband-camp.testnet joins
+│    Transaction ID: GMYEJofMZuwfgsit6tURjqLr6yhtXgAENP2aai1yA6aX
+The "join_raid" call to <warband-daily.testnet> on behalf of <archer.warband-camp.testnet> succeeded.
+-- bard.warband-camp.testnet joins
+│    Transaction ID: 4eVFgqu6wcH25x7pJSPV9NW3MquJjDSgmmZKJynpZegF
+The "join_raid" call to <warband-daily.testnet> on behalf of <bard.warband-camp.testnet> succeeded.
+-- drummer.warband-camp.testnet joins
+│    Transaction ID: 2CCYxpjmm6BTgkH2nyECePquBHZz5JXnrifLQTidfP6x
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: already in today's raid")
+   (resent after a send timeout: the first send went through, the contract refused this copy)
+-- hunter.warband-camp.testnet joins
+│    Transaction ID: EKEabS5ev8cfoFNeSmaSAxQsoEEVPKjZupcRwNKcwEAn
+The "join_raid" call to <warband-daily.testnet> on behalf of <hunter.warband-camp.testnet> succeeded.
+-- mason.warband-camp.testnet joins
+│    Transaction ID: 5FgL24ccETA4X9J5HdhZixU88XtmjH54G3C9sBJ6Tpwv
+The "join_raid" call to <warband-daily.testnet> on behalf of <mason.warband-camp.testnet> succeeded.
+-- monk.warband-camp.testnet joins
+│    Transaction ID: 8UshdkbF1gA4tCFtyrWC6SVmQex9dAxSxP6oxuMQXeWc
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: already in today's raid")
+   (resent after a send timeout: the first send went through, the contract refused this copy)
+-- piper.warband-camp.testnet joins
+│    Transaction ID: BQ4oCgMP7bA4GowVmXJ6hHkAXsMFMYAASJ8pERZYYPd2
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: already in today's raid")
+   (resent after a send timeout: the first send went through, the contract refused this copy)
+-- rider.warband-camp.testnet joins
+│    Transaction ID: 9ugb57Ru2e1uGUmAoZefE7JPyw9giuH5EEQ4xy6mma3
+The "join_raid" call to <warband-daily.testnet> on behalf of <rider.warband-camp.testnet> succeeded.
+-- scout.warband-camp.testnet joins
+│    Transaction ID: 4mBvrqqhuZEoo9igPBnxfJFQzMRT5FNirvxuE8HkxPkm
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: already in today's raid")
+   (resent after a send timeout: the first send went through, the contract refused this copy)
+-- smith.warband-camp.testnet joins
+│    Transaction ID: EyHqanK82pyUgKLJtktDqeKfNtge3C7WyWUP3swma6sR
+The "join_raid" call to <warband-daily.testnet> on behalf of <smith.warband-camp.testnet> succeeded.
+-- tanner.warband-camp.testnet joins
+│    Transaction ID: FKkywB8GYgTqKPJSpewaJbHjCYiqyFS7EEAwJjSnwyBh
+The "join_raid" call to <warband-daily.testnet> on behalf of <tanner.warband-camp.testnet> succeeded.
+-- warden.warband-camp.testnet joins
+│    Transaction ID: FrYSE2HNkYCnNTP3rs6WbZf9dyJ7h3N7vrQ6RYM3gKys
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: already in today's raid")
+   (resent after a send timeout: the first send went through, the contract refused this copy)
+-- warband-alice.testnet joins
+│    Transaction ID: 3i7KLJmKKYupswkdDFEvd357BjC4pd3nQNYsxLEzV3oN
+The "join_raid" call to <warband-daily.testnet> on behalf of <warband-alice.testnet> succeeded.
+-- hunter.warband-camp.testnet burns for a pull
+│    Transaction ID: DM4EC146nudVAd1vdYBVLGgFWGBKJNBmrvK7kGxkuMep
+The "burn_for_pull" call to <warband-daily.testnet> on behalf of <hunter.warband-camp.testnet> succeeded.
+-- monk.warband-camp.testnet burns for a pull
+│    Transaction ID: 8DYNsMLZg1uGFC17GFAKk2onqvad13z8C98ehLonKVAF
+The "burn_for_pull" call to <warband-daily.testnet> on behalf of <monk.warband-camp.testnet> succeeded.
+   raid 7 joiners 13 streak 1 chest 0.15860600569420075 NEAR
+
+== 2026-11-14 11:00:02 UTC, run-daily.ps1
+   day 8, keeper gk-daily.warband-hq.testnet on warband-daily.testnet
+   keeper settle_raids: ok  tx 9Ui3uxcYFuQEodddtNVJWRGFxMK41esQ7r3Sd17UHLHk
+   keeper sync_weight archer.warband-camp.testnet: ok  tx 8FfAMpqLNt8XnocYBG3bG6TmP2WS2NrRstAM1VcoxNiY
+   keeper sync_weight bard.warband-camp.testnet: ok  tx B7M83KdAaeRCbiQH1hGhpHv6cqSukG7ZLR3C7xwVtFWB
+   keeper sync_weight drummer.warband-camp.testnet: ok  tx 9mqXbd3DnahmrT3kYgBQm7ZmowjVdM2YcApVaw93TjSW
+   keeper sync_weight hunter.warband-camp.testnet: ok  tx EQbDExjCyd9NuYwc2FiZH6FvgC8NGWaDWJnVxSjUMjm5
+   keeper sync_weight mason.warband-camp.testnet: ok  tx 81DWkzqhfQbi73ppp1rvN4XtL7UXiM55ywyS8LRWLQBS
+   keeper sync_weight monk.warband-camp.testnet: ok  tx 2rdecfEZcTq3ut9HFJzKFDc2K59f7asP27BPoQVkv9hq
+   keeper sync_weight piper.warband-camp.testnet: ok  tx GMyTW9MHdbEt4KSjcXxCb9A3KpEGjdhdi1Q6XhKBps8s
+   keeper sync_weight rider.warband-camp.testnet: ok  tx GyUEqedKrxB4st9rWHKV1yMWnBKZmypRYr2Hij8gsbLg
+   keeper sync_weight scout.warband-camp.testnet: ok  tx EDtFb95yikAmUMKpuUHGBEH9r8AZ4ihHXukrRBZSCacG
+   keeper sync_weight smith.warband-camp.testnet: ok  tx FtNVpY13nR5aAn3xaciVzbH5dfgRTzYZgq3MWhHxs63m
+   keeper sync_weight tanner.warband-camp.testnet: ok  tx Ag9DF9rKFtNkAWJLryEXufb634W4ztMmo1s28aYj5ZJi
+   keeper sync_weight warden.warband-camp.testnet: ok  tx AXZA5Ru6XggxYEusBtSZTdnXXEPEFiLCgWwU9qKDh7dM
+   keeper sync_weight warband-alice.testnet: ok  tx 6eHv6WJhYPR1Ngw1d6ynBpcpXzSPBJgapw2aJhTyzBDd
+   keeper sync_weight warband-bob.testnet: ok  tx EoPssEdUA3k1nns6aptCU4AYNeT1RownejZSLBjZpgVA
+== 2026-11-14 11:01:21 UTC, day 8 of warband-daily.testnet
+-- archer.warband-camp.testnet joins
+│    Transaction ID: 81GuAukpcs3zBgFsKrrTgrZPg9pCWKo9oR8K2FnRiqmh
+The "join_raid" call to <warband-daily.testnet> on behalf of <archer.warband-camp.testnet> succeeded.
+-- bard.warband-camp.testnet joins
+│    Transaction ID: F1W1piJbP3tG2wivFSuJFHSkB64aJuMP7ZLMuZLY2kRf
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: already in today's raid")
+   (resent after a send timeout: the first send went through, the contract refused this copy)
+-- drummer.warband-camp.testnet joins
+│    Transaction ID: Asu4GKBtTh1fbWhEZnYpaxRNywgGRYW7UL4uXF4oB7Xz
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: already in today's raid")
+   (resent after a send timeout: the first send went through, the contract refused this copy)
+-- hunter.warband-camp.testnet joins
+│    Transaction ID: F9D8VkZGDBPgHL5gTTppQyKbqFFgFzGL1MauEZBdjijw
+The "join_raid" call to <warband-daily.testnet> on behalf of <hunter.warband-camp.testnet> succeeded.
+-- mason.warband-camp.testnet joins
+│    Transaction ID: DT7DjeQtTZ4iAgWBqQGxBvK8TwPjd3cedWkeySuhiwkm
+The "join_raid" call to <warband-daily.testnet> on behalf of <mason.warband-camp.testnet> succeeded.
+-- monk.warband-camp.testnet joins
+│    Transaction ID: 8enkC1ZYLYLG7SiT8rmsvCbiqw43ojpwQvyawMTCfJDm
+The "join_raid" call to <warband-daily.testnet> on behalf of <monk.warband-camp.testnet> succeeded.
+-- piper.warband-camp.testnet joins
+│    Transaction ID: 3tGwDoTYMfcJ8DuNSene3ty6RxDxnPtiR4QxS5x6FSRJ
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: already in today's raid")
+   (resent after a send timeout: the first send went through, the contract refused this copy)
+-- rider.warband-camp.testnet joins
+│    Transaction ID: BtnM17CCJ8BrFYvuAsGEFkdf2H5nNhZMnFLhZ7rcTzXD
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: already in today's raid")
+   (resent after a send timeout: the first send went through, the contract refused this copy)
+-- scout.warband-camp.testnet joins
+│    Transaction ID: 3PyRSh7Y5xWfcWjtKjnF1m13LgrgKy7Vnquq84ZuY393
+The "join_raid" call to <warband-daily.testnet> on behalf of <scout.warband-camp.testnet> succeeded.
+-- smith.warband-camp.testnet joins
+│    Transaction ID: HBacBVPu4VrDeREHD5Em4tC8Yyw9zPYW7wXoBwogTNpp
+The "join_raid" call to <warband-daily.testnet> on behalf of <smith.warband-camp.testnet> succeeded.
+-- tanner.warband-camp.testnet joins
+│    Transaction ID: 8CwXPwpyzTerj8LBWMCcWo7tqToGYvbPnD6bdirmvFPQ
+The "join_raid" call to <warband-daily.testnet> on behalf of <tanner.warband-camp.testnet> succeeded.
+-- warden.warband-camp.testnet joins
+│    Transaction ID: MScWygzpvS8FAU57JLfErvavb5QVPSkfakrx8AfWL6F
+The "join_raid" call to <warband-daily.testnet> on behalf of <warden.warband-camp.testnet> succeeded.
+-- warband-alice.testnet joins
+│    Transaction ID: 24ro4djN4ziNWUi4y6ZNQ7u72sfd8QRa4qpg4kGDCjGB
+   0: Error: An error occurred during a `FunctionCall` action.
+      ExecutionError("Smart contract panicked: already in today's raid")
+   (resent after a send timeout: the first send went through, the contract refused this copy)
+   raid 8 joiners 13 streak 2 chest 0.15026857855870082 NEAR
