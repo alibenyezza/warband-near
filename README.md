@@ -8,7 +8,7 @@ does not, the chest buys back BAND and burns it. Badges are soulbound NFTs that 
 
 Built for NEAR HACKATHON 2026, tracks **Memecoins With Mechanics** (`memecoins`) and **Social Money** (`social`).
 
-**Live page: https://alibenyezza.github.io/warband-near/** (reads NEAR testnet from your browser, no wallet needed).
+**Demo video (2 min): https://youtu.be/riFKxVc1jk4** · **Live page: https://alibenyezza.github.io/warband-near/** (reads NEAR testnet from your browser, no wallet needed).
 It opens on the daily deployment, `warband-daily.testnet`, where the twelve-raider camp joins one raid per real day
 until 25 Nov 2026.
 
@@ -440,7 +440,7 @@ The bounty's deliverable is the set of rank badges in `near/web/ranks/`, drawn f
 WARBAND is a port of **WARCHEST**, an earlier project by the same author on another chain. The first commit of this
 repository, tagged [`pre-hackathon`](https://github.com/alibenyezza/warband-near/tree/pre-hackathon), is a copy of
 it; that code has since been removed from the tree. **Everything in this repository (`near/`) was built during the
-hackathon:** [diff `pre-hackathon...main`](https://github.com/alibenyezza/warband-near/compare/pre-hackathon...main).
+hackathon:** [diff `pre-hackathon...hackathon-submission`](https://github.com/alibenyezza/warband-near/compare/pre-hackathon...hackathon-submission).
 What carried over is the idea (levels per lot, LIFO, level-weighted governance, a keeper that cannot withdraw), the
 rank names and the visual identity; the code is a rewrite, with the levels inside the token contract and a Sputnik DAO
 for governance.
