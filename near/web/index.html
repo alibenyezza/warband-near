@@ -6,7 +6,7 @@
   <title>WARBAND · testnet</title>
   <meta name="description" content="WARBAND: a NEAR memecoin played as a daily raid. Hold, show up with the band, loot the chest. Live testnet state.">
   <link rel="icon" href="assets/seal-icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=20261111">
+  <link rel="stylesheet" href="style.css?v=20261114">
 </head>
 <body>
   <header class="header">
@@ -126,7 +126,7 @@
           win, up to 0.2% on a 10-raid streak), and the raid's 20 loot pulls are shared by joined balance, so splitting a
           bag across accounts earns nothing extra. Lost raid: 10% of the chest buys BAND back and burns it. Every
           parameter is set at launch and readable with <code>config</code>; the contract has no admin method, no pause,
-          no setter, and the deployer's last keys on this deployment are deleted on 13 Nov 2026.</p>
+          no setter, and since 14 Nov 2026 no contract account has an access key: nobody can change the code.</p>
         <div class="facts" id="facts"></div>
         <p class="deployments"><span id="token-id">warband-daily.testnet</span> · <span id="deployments"></span>. Read straight from NEAR testnet, no wallet needed.</p>
         <div id="scoreboard" hidden></div>
@@ -240,7 +240,7 @@
     <p>Live view of NEAR testnet, straight from the contracts over RPC. Built at NEAR HACKATHON 2026.
       <a href="https://github.com/alibenyezza/warband-near">Source</a></p>
   </footer>
-  <script type="module" src="app.js?v=20261111"></script>
-  <script type="module" src="wallet.js?v=20261111"></script>
+  <script type="module" src="app.js?v=20261114"></script>
+  <script type="module" src="wallet.js?v=20261114"></script>
 </body>
 </html>

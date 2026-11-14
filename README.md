@@ -25,7 +25,7 @@ until 25 Nov 2026.
    See `raid`, `joiners`, `streak`, `won`, `lost` and `chest`.
 3. Check who holds keys: `near account list-keys <account> network-config testnet now` for the accounts in the
    table below. See the v1 token and DAO with no keys, and each gas-key keeper (`gk-keeper`, `gk-daily`) with a
-   single function-call gas key. `bash near/scripts/04-lock.sh --check` lists the keys of the eight contract accounts (v1's two have none; the other six are deleted on 13 Nov).
+   single function-call gas key. `bash near/scripts/04-lock.sh --check` lists the keys of the eight contract accounts (none has a key: v1's since 31 Oct, the other six since 14 Nov).
 4. Read the DAO policy: `near contract call-function as-read-only dao-daily.warband-hq.testnet get_policy json-args {} network-config testnet now`.
    See the `council` role with only `config:*` and `vote:*`; every other power belongs to `holders`.
 
@@ -39,7 +39,7 @@ until 25 Nov 2026.
 | If it misses, a slice of the treasury burns and the streak resets | 10% of the raid chest buys BAND on the curve and burns it; the streak goes back to 0 | test `a_lost_raid_burns_part_of_the_chest_and_resets_the_streak` |
 | The longest streak printed like a high score | `raid_status` returns `streak` and `best_streak`; the page shows "win streak … best N" and the won–lost record | the live page, top of the raid section |
 | An NEP-141 token with the mechanic in the contract, not in a backend | Token, raids, chest, market and buyback are one contract (`near/contracts/warband`); settlement runs on the first action after a raid ends, by anyone | `cd near/contracts/warband && cargo test`: 44 tests |
-| All parameters set at launch and readable by anyone; no admin key that can change them | Every parameter is set in `new` and returned by `config`; the contract has no owner, setter or pause method. v1's accounts have no key; v2 and v3 keys are deleted on 13 Nov (see "Keys, plainly" below) | `config` on `warband-daily.testnet` (values in the table below); `near account list-keys warband-band.testnet network-config testnet now` |
+| All parameters set at launch and readable by anyone; no admin key that can change them | Every parameter is set in `new` and returned by `config`; the contract has no owner, setter or pause method. no contract account has a key (v1 since 31 Oct, v2 and v3 since 14 Nov; see "Keys, plainly" below) | `config` on `warband-daily.testnet` (values in the table below); `near account list-keys warband-band.testnet network-config testnet now` |
 | Sybil resistance good enough for a demo, with its limits written plainly | Mints and pulls are proportional to the balance joined, so splitting a bag earns nothing extra; a transfer restarts the tokens at level 0, so they cannot join that day. Limit: splitting does help reach the 10-raider minimum, at the cost of ten storage deposits and ten seasoned 1M bags | [`near/RAIDS.md`](near/RAIDS.md) threat model; tests `a_split_bag_cannot_join_twice`, `tokens_sold_after_joining_are_not_paid_for`; "Sybil resistance, and its limits" below |
 | A page with the current streak, today's progress and a log of every mint and burn | The live page: streak and best streak, raiders and seasoned balance against the target, countdown, chest; the log shows every buy, sell, join, raid mint (`raid_claim`), pull, buyback burn and lost-raid burn. The contract keeps the last 100 entries; every mint and burn is also an NEP-141 `ft_mint` / `ft_burn` event in its transaction | <https://alibenyezza.github.io/warband-near/>; test `the_public_log_shows_joins_and_big_loot` |
 | Simulate 60 days under a few scenarios, then pick the parameters | `near/sim/raids.py`: five invented bands (`engaged`, `fading`, `gamblers`, `whale_carry`, `sybil_farm`) under the contract's rules, minted and burned supply over 60 days, and a sweep of `mint_bps` × `target_bps`; `near/sim/simulate.py` does the same for the market and the vote weight. The launch parameters were picked from the sweep | [`near/sim/raids_results.md`](near/sim/raids_results.md), [`near/RAIDS.md`](near/RAIDS.md) "Launch parameters (picked with the simulation)", `python3 near/sim/raids.py` |
@@ -72,11 +72,13 @@ The same contract, deployed three times on testnet:
 
 The page shows v3; `?token=warband-raids.testnet` or `?token=warband-band.testnet` shows the others.
 
-**Keys, plainly.** v1's token and DAO have no access keys (deleted 31 Oct 2026). The v2 and v3 token, DAO and board
-accounts still have the deployer's full-access key: whoever holds it could redeploy the code. Those keys are deleted
-on 13 Nov 2026, before submission, with `near/scripts/04-lock.sh` (all six accounts; `--check` lists the keys
-without changing anything); until then, treat v2 and v3 as upgradeable by the
-author. The contracts themselves have no owner method: no pause, no parameter setter, no mint outside the rules.
+**Keys, plainly.** No contract account of Warband has an access key any more: v1's token and DAO since 31 Oct 2026,
+the v2 and v3 token, DAO and board accounts since 14 Nov 2026, before submission (`near/scripts/04-lock.sh`;
+transactions `96uXnsqhWarQgxPnGiJWnzqfGxLTsVzDS8264ibckRUu` warband-raids, `4pPKc73W4Qadyq1iZuo3FvwsYy2p6sFkcJeuU8mx4s7X`
+dao-raids, `GNDJSUiYTy9KWq8hJYdss25DcaN47nCdPmcB8vKUxznh` bountyboard, `4Jy18nXWuYTwKdGbnqETLALsNzLuvAUPXsLSfzqu5FDu`
+warband-daily, `2wLbPeLdRH82vh7riUc6rCK8L32wYVtnbLvMWbpUL8YQ` dao-daily, `DBGzCoVzvLQE7J9K2hjWKq6RwFbAUFhx9pv1fwexFZjz`
+dailyboard). `bash near/scripts/04-lock.sh --check` lists the keys of all eight: none. Nobody can redeploy the code.
+The contracts themselves have no owner method: no pause, no parameter setter, no mint outside the rules.
 
 **Council powers, exactly.** On the v3 DAO the council (`warband-hq.testnet`) can only change the DAO's name,
 purpose and metadata (`config`) and vote on signalling proposals (`vote`). Policy, roles, the vote token and
@@ -113,7 +115,7 @@ can also empty everything.
 | Buyback rule: when the price falls 20% under the recent high (today and yesterday), anyone may call `buyback`; it spends 10% of the reserve per call, at most 20% per day, and burns what it buys. | same contract |
 | Level-weighted vote: the contract is the Sputnik DAO's staking contract and delegates each holder's Σ lot × level. Treasury transfers, bounties and calls are voted with that weight. Selling or sending tokens pulls the weight back in the same transaction. | contract + Sputnik DAO v2 |
 | Bounty board with earned trust: members post bounties, contributors claim and finish them, payouts come from the war chest. A contributor's record of council- or DAO-approved bounties decides the approval: small payouts on the poster's word alone (capped per day), mid-size ones with one council member, large ones as a normal DAO vote. | `near/contracts/bounties` + Sputnik DAO v2 |
-| No admin: every parameter is set at `new` and readable with `config`; the contract has no owner method. The full-access keys of the token and DAO accounts are deleted (v1 already, v2 and v3 on 13 Nov: see Keys above). | `near/scripts/04-lock.sh` |
+| No admin: every parameter is set at `new` and readable with `config`; the contract has no owner method. The full-access keys of the token and DAO accounts are deleted (v1 already, v2 and v3 on 14 Nov: see Keys above). | `near/scripts/04-lock.sh` |
 | Keeper agent: runs buybacks, weight syncs and DAO flushes with a function-call key that can call only `buyback`, `sync_weight` and `flush_to_dao`, with no deposit, under a 0.25 NEAR gas allowance. | `near/agent` |
 
 What is real and what is not:
@@ -166,8 +168,8 @@ and Rust for the tests.
    then `near contract call-function as-transaction warband-band.testnet buy json-args '{}' prepaid-gas '100 Tgas' attached-deposit '0.5 NEAR' sign-as <you>.testnet network-config testnet sign-with-legacy-keychain send`.
    Look yourself up on the page: one lot, level 0, weight 0. Five minutes later: level 1.
 6. **Check the keys.** `near account list-keys warband-band.testnet network-config testnet now` and the same for
-   `dao.warband-hq.testnet`: no keys, so v1's code and parameters can no longer change. v2 and v3 show one
-   full-access key until 13 Nov (see Keys above).
+   `dao.warband-hq.testnet`: no keys, so v1's code and parameters can no longer change. The same holds for v2 and v3 since 14 Nov
+   (`warband-daily.testnet`, `dao-daily.warband-hq.testnet`, `warband-dailyboard.testnet`; see Keys above).
 7. **Run the contract tests.** `cd near/contracts/warband && cargo test`: 44 tests (20 token, 24 raids), and
    `cd near/contracts/bounties && cargo test`: 20. The token tests cover a transfer
    in the middle of a lot, a partial LIFO sale, the floor and the daily cap of the buyback, bounded lots, the weight

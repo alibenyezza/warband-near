@@ -7,8 +7,8 @@ account did and improve its loot odds.
 
 It replaces the yield logic with a game loop. Levels, LIFO lots and the level-weighted DAO vote stay the same.
 Everything runs in the contract (`contracts/warband/src/raids.rs`), with no backend. The contract has no admin
-method and every parameter is fixed at launch and readable through `config`. Upgrades are possible only while the
-account keeps a full-access key: v1's is deleted, v2's and v3's are deleted on 13 Nov 2026 (README, "Keys").
+method and every parameter is fixed at launch and readable through `config`. No upgrade is possible either:
+no account keeps a key (v1's deleted on 31 Oct, v2's and v3's on 14 Nov 2026; README, "Keys").
 
 ## One raid
 
